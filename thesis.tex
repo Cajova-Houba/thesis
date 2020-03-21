@@ -62,6 +62,7 @@
 
 % Umožňuje vkládání obrázků
 \usepackage[pdftex]{graphicx}
+\graphicspath{{./img/}}
 
 % Odkazy v PDF jsou aktivní; navíc se automaticky vkládá
 % balíček 'url', který umožňuje např. dělení slov
@@ -78,7 +79,6 @@
 % (odvozen z csplainnat, http://repo.or.cz/w/csplainnat.git)
 % lze snadno modifikovat vzhled citací v textu
 \usepackage[numbers,sort&compress]{natbib}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % VLASTNÍ TEXT PRÁCE
@@ -90,7 +90,65 @@
 \tableofcontents
 
 \chapter{Úvod}
-V souboru \texttt{literatura.bib} jsou uvedeny příklady, jak citovat knihu \cite{KnuthAOCP2}, článek v časopisu \cite{Hoare1961}, webovou stránku \cite{Graphics2D}.
+
+- k čemu je práce dobrá
+- co text práce obahuje
+- use casy
+
+\chapter{Principy webových služeb, techniky}
+
+ - co je to API
+ - co jsou to webové služby
+ - REST
+
+\chapter{Datové typy a porovnávání}
+
+- přednášky FJP
+- jak jazyky řeší datové typy
+- tady budu citovat \cite{abadi1995subytping}
+	- subtyping
+	- kontrvaariance
+
+
+\chapter{Popis ukládání metadat v CRCE, popis indexování API}
+
+\section{Metadata v CRCE}
+
+ - tady budu citovat \cite{brada2015repository}
+ - Resource + Capability
+ - Capability mají Attributy + Properties
+ - Properties mají atributy
+ 
+ \begin{figure}[h]
+ 	\centering
+ 	\includegraphics{resource-uml}
+ 	\caption{Reprezentace metadat v CRCE}
+ 	\label{fig:crce-resource-uml}
+ \end{figure}
+
+\section{Indexování API}
+
+- různé druhy jsou jinak indexované
+- každý druh API indexován vlastním modulem
+- popis opravených chyb
+- taky budu citovat diplomky od Pejřimovského \cite{pejrimovsky2015ws} a Hessové \cite{hessova2015rest}
+
+\chapter{Popis funkce porovnávače (co se jak porovnává pro jaké typy API)}
+
+- zmínit taky omezení, která plynou z indexovaných dat
+- v podstatě se porovnávají stromy Capabilit
+- detaily v euromicro článku
+- popsat MOV
+
+
+\chapter{Implementační detaily (jen stručně)}
+
+
+\chapter{Testování}
+
+- nějaká reálná data
+	- STAG (WSDL)
+- i syntetická data
  
 % 
 % PRO ANGLICKOU SAZBU JE NUTNÉ ZMĚNIT
