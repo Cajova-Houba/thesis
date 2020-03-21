@@ -107,7 +107,7 @@
 - jak jazyky řeší datové typy
 - tady budu citovat \cite{abadi1995subytping}
 	- subtyping
-	- kontrvaariance
+	- kontravariance
 
 
 \chapter{Popis ukládání metadat v CRCE, popis indexování API}
@@ -116,8 +116,11 @@
 
  - tady budu citovat \cite{brada2015repository}
  - Resource + Capability
+ - Capabilita je rekurzivní + má napespace
+ - Jsou root capability (přiřazené přímo Resource) a child capabilities
  - Capability mají Attributy + Properties
  - Properties mají atributy
+ - Lze tak modelovat různé vlastnosti indexovaného objektu (viz \cite{brada2015repository}, tam je to dobře popsaný)
  
  \begin{figure}[h]
  	\centering
@@ -129,9 +132,26 @@
 \section{Indexování API}
 
 - různé druhy jsou jinak indexované
-- každý druh API indexován vlastním modulem
-- popis opravených chyb
-- taky budu citovat diplomky od Pejřimovského \cite{pejrimovsky2015ws} a Hessové \cite{hessova2015rest}
+- každý druh API indexován vlastním modulem - diplomky Pejřimovského \cite{pejrimovsky2015ws} a Hessové \cite{hessova2015rest}
+
+\subsection{Indexování REST API}
+
+- nějaký trefný obrázek indexovaných dat
+- podpora formátů:
+	- binární, funguje na principu hledání patternů v byte kódu
+	- REST: Jersey, Resteasy + nějaké další
+- není podpora custom datových typů (a nejsou tedy zaindexovány pokud jsou definovány)
+	- binárně by to asi bylo i celkem složité
+
+\subsection{Indexování WS}
+- nějaký trefný obrázek indexovaných dat
+- podpora formátů:
+	- WS: WSDL, WADL, Json-WSP
+	- parsování souboru s popisem API, CRCE stačí i URL
+- není podpora custom datových typů (a nejsou tedy zaindexovány pokud jsou definovány)
+- indexer obsahoval drobné chyby, které jsem v rámci DP opravil
+
+
 
 \chapter{Popis funkce porovnávače (co se jak porovnává pro jaké typy API)}
 
