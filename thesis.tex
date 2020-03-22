@@ -133,6 +133,11 @@
 
 - různé druhy jsou jinak indexované
 - každý druh API indexován vlastním modulem - diplomky Pejřimovského \cite{pejrimovsky2015ws} a Hessové \cite{hessova2015rest}
+- někde by asi bylo fajn ustanovit názvosloví:
+	- co je API
+	- co je web service
+	- co je endpoint (v kontextu REST a WS)
+	- co je operace/metoda (v kontextu WS)
 
 \subsection{Indexování REST API}
 
@@ -158,11 +163,63 @@
 - zmínit taky omezení, která plynou z indexovaných dat
 - v podstatě se porovnávají stromy Capabilit
 - detaily v euromicro článku
-- popsat MOV
 
+\section{Popis porovnávacího algoritmu}
+- WSDL porovnávač má v nejhorším možném případě složitost $O(n^3)$, závisí na počtu WS, a počtu endpointů ve WS 
+- problémy řešené v algoritmu:
+	1. jak vybrat který endpoint/ws porovnat s kterým
+	2. MOV - pick the best
+	3. datové typy (java built-in, xsd, custom)
+	4. kontravariance (počkám a co řekne p. Brada)
+	5. verze v URL u REST API (taky vede na MOV)
+	
+\subsection{MOV flag}	
+
+- popsat MOV
+- co: Příznak označující, že API/endpoint má (částečně) shodnou implementaci, ale nachází se na jiné adrese
+- proč: endpointy v API mohou mít jiné url/jména, ale implementačně mohou být shodné -> potřeba detekovat
+- jak: na základě ostatních metadat (počet parametrů, počet endpointů ve WS)
+	
+\section{Výsledek porovnání - Diff}	
+- popis výsledné datové struktury
+	- Diff, Compatibility
+	- vychází z \cite{brada2006diff}
+	- stromová struktura rozdílů mezi jednotlivými uzly stromu metadat
+	- obrázek \ref{fig:diff-construction} hezky popisuje jak to vznikne
+	- výsledné hodnoty diffu a jejich významy pro klienta v tabulce \ref{tab:diff-level}
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics{diff-construction}
+	\caption{Vytvoření diffů}
+	\label{fig:diff-construction}
+\end{figure}
+
+\subsection{Vyhodnocení výsledku}
+
+- jak probíhá vyhodnocení (nejdříve se určí hodnoty listů, z nich se pak počítá dál nahoru)
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{c|c}
+		Difference type & Impact on client  \\
+		\hline
+		None (NON) & safe \\
+		Generalization (GEN) & safe  \\
+		Insertion (INS) & safe \\
+		Deletion (DEL) & potentially dangerous \\
+		Specialization (SPE) & potentially dangerous \\
+		Mutation (MUT) & dangerous \\
+		Unkown (UNK) & dangerous
+	\end{tabular}
+	\caption{Types of differences between two nodes }
+	\label{tab:diff-level}
+\end{table}
 
 \chapter{Implementační detaily (jen stručně)}
 
+ - zmínit, proč třídy pro porovnávání REST API a WS nemají společného předka (krom rozhraní)
+ 	- důvod: chtěl jsem nechat implementaci obou porovnávačů oddělenou pro případ, že by se změnila funkce indexerů
 
 \chapter{Testování}
 
