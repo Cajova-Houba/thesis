@@ -103,11 +103,20 @@
 
 \chapter{Datové typy a porovnávání}
 
-- přednášky FJP
+- přednášky z FJP
 - jak jazyky řeší datové typy
+	- rekurzivní vs. nerekurzivní
+- primitivní typy (v xsd)
+- built-in typy (v Jave)
 - tady budu citovat \cite{abadi1995subytping}
-	- subtyping
-	- kontravariance
+	- subtyping: A <: B <=> A může být použito v kdekoliv kde je očekáváno B
+	- kontravariance: F'(A) <: F(B) <=> B <: A
+
+\subsection{Porovnávání datových typů}
+
+ - jak to funguje
+ - problémy při porovnání
+ - subtyping vs. matching (\cite{abadi1995subytping})
 
 
 \chapter{Popis ukládání metadat v CRCE, popis indexování API}
@@ -119,6 +128,7 @@
 
  - tady budu citovat \cite{brada2015repository}
  - Resource + Capability + Properties + Atributy
+ 	- stromová struktura
  - taky Requirements, ale ty v práci nepoužívám
  - Capabilita je rekurzivní + má napespace
  - Jsou root capability (přiřazené přímo Resource) a child capabilities
