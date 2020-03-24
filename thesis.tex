@@ -222,6 +222,19 @@
 - co: Příznak označující, že API/endpoint má (částečně) shodnou implementaci, ale nachází se na jiné adrese
 - proč: endpointy v API mohou mít jiné url/jména, ale implementačně mohou být shodné -> potřeba detekovat
 - jak: na základě ostatních metadat (počet parametrů, počet endpointů ve WS)
+
+- nemusí vždy fungovat
+- algorimuts:
+	- obecná detekce před samotným porovnáním -> MovDetectionResult
+		- 3x diff: host, path to endpoint, operace
+	- MovDetectionResult se pak použije při výběru endpointu k porovnání a při samotném porovnání (pickBest)
+	
+- kombinace které vedou na mov: 
+	- $h \land !pe \land !o$
+	- $h \land pe \land !o$
+	- todo
+	- todo
+	
 	
 \section{Výsledek porovnání - Diff}	
 - popis výsledné datové struktury
