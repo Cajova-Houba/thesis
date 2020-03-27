@@ -100,7 +100,31 @@
  - co je to API
  - co jsou to webové služby
  - REST
-
+ - asi by bylo fajn zmínit i XML
+ - relevantní protokoly:
+ 	- HTTP (na REST a obecné API)
+ 		- protokol aplikační vrstvy
+ 	- SOAP (web service)
+ 		- typicky používá HTTP
+ 		- používá XML pro popis datového modelu
+ 		- specifikace: https://www.w3.org/TR/soap12-part1/\#intro
+ - mohlo by se hodit: https://www.w3.org/TR/2004/NOTE-ws-arch-20040211/\#relwwwrest
+ 	- popisuje vztah REST a WWW
+ 			 - REST: založeno na manipulaci s XML reprezentací webových resources skrze stateless operace
+ 	- popis použitých technologií: XML, SOAP, WSDL
+ 	- formální popis použití WS
+ - popis architektonického stylu REST: https://www.ics.uci.edu/~fielding/pubs/dissertation/rest\_arch\_style.htm
+ 	- popis elementů:
+ 		- data, konektory, komponenty
+ 	- popis view(na modelování)
+ - RFC na HTTP: https://tools.ietf.org/html/rfc7231\#section-4
+ 	- odkaz konkrétně na request methods
+ 	- mohlo by se hodit, protože ty jsou indexovány, tak alespoň na citaci
+ - existují různé, strojově čitelné, formáty pro popis API
+ 	- WSDL, WADL, JSON-WSP
+ 	- Swagger, Raml, OpenApi
+ 	- v případě REST bohužel není nic formálně nutné (oproti třeba SOAP), takže specifikace API nemusí být kompatibilní, nemusí být úplné, nebo můžou být ad-hoc (např. slovní popis ve Word dokumentu) a tím pádem nemusí existovat univerzální způsob strojového čtení těchto specifikací
+ 
 \chapter{Datové typy a porovnávání}
 
 - přednášky z FJP
