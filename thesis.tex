@@ -213,8 +213,22 @@
 	1. jak vybrat který endpoint/ws porovnat s kterým
 	2. MOV - pick the best
 	3. datové typy (java built-in, xsd, custom)
-	4. kontravariance (počkám a co řekne p. Brada)
+	4. kontravariance
+		- není to úplně problém, ale při vyhodnocování finálního Diffu pro endpoint je potřeba brát v potaz 
+		- GEN/SPE může vzniknout jen z datových typů parametrů/response endpointu, takže je to poměrně přímočaré
 	5. verze v URL u REST API (taky vede na MOV)
+	
+\subsection{Verze REST API v cestě k endpointu}	
+
+- proč: klient může chtít volat novou verzi API a je tedy žádané zjistit, jak moc je API kompatibilní (např. se mohla změnit jen implementace, takže signatura je stále stejná)
+- normálně by algoritmus skončil MUT, protože by kvůli rozdílným cestám k endpointům vyhodnotil endpointy z API 1 jako DEL a endpointy z API 2 jako INS
+- to není žádané, takže algoritmus je schopný detekovat verzi v cestě k endpointu a při výběru endpointů k porovnání ji ignorovat
+- podporovaný formát
+	- \verb|v<major>[.minor[.micro]]|
+	- lowecase i uppercase
+	- oddělovat může být '.', nebo '-'
+	- regex: \verb|\/[vV][0-9]+(?:[.-][0-9]+){0,2}\/|
+- pokud je detekce zapnutá, algoritmus se před porovnáním cest pokusí najít verzi a pokud ji najde, z cesty ji vyřadí a porovná cesty bez verze
 	
 \subsection{MOV flag}	
 
@@ -223,6 +237,9 @@
 - proč: endpointy v API mohou mít jiné url/jména, ale implementačně mohou být shodné -> potřeba detekovat
 - jak: na základě ostatních metadat (počet parametrů, počet endpointů ve WS)
 
+- mov se také nastaví pokud je zaplé ignorování verzi REST API v endpoint path a pokud 
+	- cesty s verzí nejsou stejné
+	- cesty bez verze jsou stejné
 - nemusí vždy fungovat
 - algorimuts:
 	- obecná detekce před samotným porovnáním -> MovDetectionResult
@@ -243,6 +260,8 @@
 	- stromová struktura rozdílů mezi jednotlivými uzly stromu metadat
 	- obrázek \ref{fig:diff-construction} hezky popisuje jak to vznikne
 	- výsledné hodnoty diffu a jejich významy pro klienta v tabulce \ref{tab:diff-level}
+		- SPE/GEN může vzniknout jen z daových typů parametrů/response -> lze spolehlivě použít kontravarianci a výsledek obrátit
+		- pokud tedy vyjde SPE, znamená to např generalizovaný parametr a tedy je to pro klienta bezpečné
 	
 \begin{figure}[h]
 	\centering
@@ -261,10 +280,10 @@
 		Difference type & Impact on client  \\
 		\hline
 		None (NON) & safe \\
-		Generalization (GEN) & safe  \\
+		Specialization (SPE) & safe  \\
 		Insertion (INS) & safe \\
 		Deletion (DEL) & potentially dangerous \\
-		Specialization (SPE) & potentially dangerous \\
+		Generalization (GEN) & potentially dangerous \\
 		Mutation (MUT) & dangerous \\
 		Unkown (UNK) & dangerous
 	\end{tabular}
