@@ -121,20 +121,27 @@
 
 \chapter{Popis ukládání metadat v CRCE, popis indexování API}
 
- - V této kapitole jsou popsány obecné způsoby ukládání metadat v CRCE
+ - V této kapitole jsou popsány obecné způsoby ukládání metadat v CRCE \cite{brada2015repository}
+ - CRCE je systém pro ukládání SW komponent, který je vyvíjený na KIV FAV
+ - CRCE je modulární a lze přidat pluginy pro indexaci custom dat
  - také jsou popsány podporované formáty API a způsoby jejich indexování
 
 \section{Metadata v CRCE}
 
- - tady budu citovat \cite{brada2015repository}
- - Resource + Capability + Properties + Atributy
- 	- stromová struktura
- - taky Requirements, ale ty v práci nepoužívám
- - Capabilita je rekurzivní + má napespace
- - Jsou root capability (přiřazené přímo Resource) a child capabilities
+ - Metadata v CRCE mají hierachickou strukturu:
+	 - Resource + Capability + Properties + Atributy
+	 - taky Requirements, ale ty v práci nepoužívám
+	 - Resource reprezentuje indexovanou komponentu
+	 - jednotlivé featury (indexovaná data) jsou reprezantovány stromem Capabilit
+	 	- k Resource je vždy přiřazena root Capabilita
+	 	- každá Capabilita má namespace, podle kterého lze určit co za konkrétní vlastnost popisuje
+	 	- v případě root Capability by namespace měl být unikátní pro Resource (a resource by tedy neměl mít více root Capabilit s jedním namespace (snad?))
+	 	- detaily fetatury jsou pak uloženy v dětských capabilitách, jejich Properties a Attributes
  - Capability mají Attributy + Properties
  - Properties mají atributy
+ - Attributes pak nesou konkrétní hodnoty (Capability a Propeties slouží pouze jako jakési kontejnery)
  - Lze tak modelovat různé vlastnosti indexovaného objektu (viz \cite{brada2015repository}, tam je to dobře popsaný)
+ - hierarchická struktura metadat je vhodná pro reprezentaci webových API, která jsou rovněž hierarchická
  
  \begin{figure}[h]
  	\centering
@@ -154,12 +161,20 @@
 	- co je endpoint
 		- WSDL: port+operation
 		- endpoint: REST, WADL, JSON-WSP
-- API je v CRCE uloženo jako Resource		
+- indexované API je v CRCE uloženo jako Resource		
 - popis API je reprezentován jako samostatná feature (1 root Capability) daného Resource
+	- Namespacy kořenových Capabilit si definuje indexer
 - Service a endpoint jsou reprezentovány jako Capaibility
 - endpoint parametry, endpoint response, endpoint request body a endpoint request body jako Property
+	- obecná struktura indexovaných dat na obrázku \ref{fig:indexed-api-general}
 - vlastní hodnoty pak jako Attribute
 - příklad metadat indexovaného API: \ref{fig:indexed-api-example}
+
+\begin{figure}[h]
+	\centering
+	\caption{Obecná struktura indexovaného API}
+	\label{fig:indexed-api-general}
+\end{figure}
 
  \begin{figure}[h]
 	\centering
