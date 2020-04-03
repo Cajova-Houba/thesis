@@ -175,6 +175,7 @@
  \end{figure}
 
 \section{Indexování API}
+\label{sec:api-index}
 
 - různé druhy jsou jinak indexované
 - každý druh API indexován vlastním modulem - diplomky Pejřimovského \cite{pejrimovsky2015ws} a Hessové \cite{hessova2015rest}
@@ -242,22 +243,61 @@
 
 \chapter{Popis funkce porovnávače (co se jak porovnává pro jaké typy API)}
 
-- zmínit taky omezení, která plynou z indexovaných dat
-- v podstatě se porovnávají stromy Capabilit
-- detaily v euromicro článku
+V této kapitole je detailně popsána funkce porovnávacího algoritmu společně s daty, nad kterými je možné porovnávač použít. Zároveň je zde popsán způsob vyhodnocení výsledků porovnání a formát takto získaných dat.
 
 \section{Popis porovnávacího algoritmu}
-- WSDL porovnávač má v nejhorším možném případě složitost $O(n^3)$, závisí na počtu WS, a počtu endpointů ve WS 
-- problémy řešené v algoritmu:
-	1. jak vybrat který endpoint/ws porovnat s kterým
-	2. MOV - pick the best
-	3. datové typy (java built-in, xsd, custom)
-	4. kontravariance
-		- není to úplně problém, ale při vyhodnocování finálního Diffu pro endpoint je potřeba brát v potaz 
-		- GEN/SPE může vzniknout jen z datových typů parametrů/response endpointu, takže je to poměrně přímočaré
-	5. verze v URL u REST API (taky vede na MOV)
+
+Porovnávací algoritmus pracuje s výše zmíněnými metadaty, reprezentovanými stromovou strukturou, jejíž uzly tvoří instance tříd \verb|Capability|, \verb|Properties| a \verb|Attributes|. Algoritmus pracuje pouze s daty, která byla vytvořena indexery popsanými v části \ref{sec:api-index}. Ostatní metadata, jež mohou být případně navěšená na \verb|Resource| reprezentující API zůstanou nedotčena. V současné době je možné porovnat pouze API, jejichž metadata byla vytvořena stejným indexerem. Není tedy možné porovnat například metadata REST API získaná binární analýzou jar s metadaty získanými čtením JSON-WSP dokumentu.
+
+- zmínit taky omezení, která plynou z indexovaných dat
+
+\subsection{Složitost algoritmu}
+
+- v nejhorším případě:
+
+	- WSDL: $O(n^3)$ (ws endpointy ve ws)
 	
-\subsection{Verze REST API v cestě k endpointu}	
+	- ostatní $O(n^2)$ (endpointy1 x endpointy 2)
+
+\subsection{Obecný algoritmus porovnání}
+
+TODO: obecný popis, formulovat lépe
+
+Algoritmus pro vše krom WSDL obecně:
+\begin{enumerate}
+	\item Vstupem jsou endpointy obou API: \verb|endpoints1|, \verb|endpoints2|
+	\item Vyber endpoint \verb|e1| z \verb|endpoints1|
+	\item Vyber endpoint \verb|e2| z \verb|endpoints2|, který je vhodný k porovnání s \verb|e1|
+	\item Pokud neexistuje vhodný \verb|e2|, ulož mezivýsledek reprezentující přebývající endpoint a jdi zpět na 2
+	\item Postupně porovnej metadata, parametry, tělo request, tělo response obou endpointů
+	\item Ulož objekt reprezentující mezivýsledek porovnání
+	\item Pokud není \verb|endpoints1| prázdné, jdi na krok 2, jinak pokračuj dále
+	\item Pro všechny zbývající endpointy \verb|endpoints2| ulož mezivýsledek reprezentující chybějící endpoint
+	\item Z mezivýsledků sestav finální objekt reprezentující výsledek porovnání dvou API
+\end{enumerate}
+
+\subsection{Problémy při porovnávání}	
+
+TODO: rozepsat v patřičných subsections
+\begin{enumerate}
+	\item jak vybrat který endpoint/ws porovnat s kterým
+	\item MOV - pick the best
+	\item datové typy (java built-in, xsd, custom)
+	\item verze v URL u REST API (taky vede na MOV)
+\end{enumerate}
+	
+\subsubsection{Výběr endpointu/ws vhodného k porovnání}
+ - metadata
+ 
+ - počet parametrů
+ 
+\subsubsection{Porovnávání datových typů}
+ - custom datové typy
+ 
+ - built-in datové typy (java, xsd)
+
+	
+\subsubsection{Verze REST API v cestě k endpointu}	
 
 - proč: klient může chtít volat novou verzi API a je tedy žádané zjistit, jak moc je API kompatibilní (např. se mohla změnit jen implementace, takže signatura je stále stejná)
 - normálně by algoritmus skončil MUT, protože by kvůli rozdílným cestám k endpointům vyhodnotil endpointy z API 1 jako DEL a endpointy z API 2 jako INS
@@ -312,6 +352,12 @@
 \subsection{Vyhodnocení výsledku}
 
 - jak probíhá vyhodnocení (nejdříve se určí hodnoty listů, z nich se pak počítá dál nahoru)
+
+- kontravariance
+
+	- není to úplně problém, ale při vyhodnocování finálního Diffu pro endpoint je potřeba brát v potaz 
+	
+	- GEN/SPE může vzniknout jen z datových typů parametrů/response endpointu, takže je to poměrně přímočaré
 
 \begin{table}[h!]
 	\centering
