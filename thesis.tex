@@ -263,7 +263,7 @@ Porovnávací algoritmus pracuje s výše zmíněnými metadaty, reprezentovaný
 
 TODO: obecný popis, formulovat lépe
 
-Algoritmus pro vše krom WSDL obecně:
+Algoritmus pro vše krom WSDL obecně (WSDL má navíc výběr a porovnání webservice):
 \begin{enumerate}
 	\item Vstupem jsou endpointy obou API: \verb|endpoints1|, \verb|endpoints2|
 	\item Vyber endpoint \verb|e1| z \verb|endpoints1|
@@ -287,60 +287,94 @@ TODO: rozepsat v patřičných subsections
 \end{enumerate}
 	
 \subsubsection{Výběr endpointu/ws vhodného k porovnání}
- - metadata
- 
- - počet parametrů
+
+Metadata:
+\begin{itemize}
+	\item kvůli MOV se teoreticky nelze spoléhat na jméno endpointu
+	\item kvůli verzi v cestě k endpointu (popsáno dále v \ref{sec:api-path-version}) se nelze spoléhat na cestu k endpointu
+\end{itemize}
+
+Počet parametrů
+\begin{itemize}
+	\item některé mohou být nepovinné
+\end{itemize}
  
 \subsubsection{Porovnávání datových typů}
- - custom datové typy
+Custom datové typy: nejsou indexované a lze tedy porovnávat pouze podle jména (např fully qualified name v případě Java tříd).
  
- - built-in datové typy (java, xsd)
+Built-in datové typy (java, xsd)
+
+\begin{itemize}
+	\item Java: podpora typů z \verb|java.lang| + dědičnost
+	\item xsd: podpora built-in typů xsd (musí být správná předpona) + dědičnost ve smyslu 'vejde se do'
+\end{itemize}
 
 	
 \subsubsection{Verze REST API v cestě k endpointu}	
+\label{sec:api-path-version}
 
-- proč: klient může chtít volat novou verzi API a je tedy žádané zjistit, jak moc je API kompatibilní (např. se mohla změnit jen implementace, takže signatura je stále stejná)
-- normálně by algoritmus skončil MUT, protože by kvůli rozdílným cestám k endpointům vyhodnotil endpointy z API 1 jako DEL a endpointy z API 2 jako INS
-- to není žádané, takže algoritmus je schopný detekovat verzi v cestě k endpointu a při výběru endpointů k porovnání ji ignorovat
-- podporovaný formát
-	- \verb|v<major>[.minor[.micro]]|
-	- lowecase i uppercase
-	- oddělovat může být '.', nebo '-'
-	- regex: \verb|\/[vV][0-9]+(?:[.-][0-9]+){0,2}\/|
-- pokud je detekce zapnutá, algoritmus se před porovnáním cest pokusí najít verzi a pokud ji najde, z cesty ji vyřadí a porovná cesty bez verze
+Proč: 
+
+\begin{itemize}
+	\item klient může chtít volat novou verzi API a je tedy žádané zjistit, jak moc je API kompatibilní (např. se mohla změnit jen implementace, takže signatura je stále stejná)
+	
+	\item Normálně by algoritmus skončil MUT, protože by kvůli rozdílným cestám k endpointům vyhodnotil endpointy z API 1 jako DEL a endpointy z API 2 jako INS
+	
+	\item to není žádané, takže algoritmus je schopný detekovat verzi v cestě k endpointu a při výběru endpointů k porovnání ji ignorovat
+\end{itemize}
+
+Podporovaný formát:
+\begin{itemize}
+	\item \verb|v<major>[.minor[.micro]]|
+	\item lowecase i uppercase
+	\item oddělovač může být '.', nebo '-'
+	\item regex: \verb|\/[vV][0-9]+(?:[.-][0-9]+){0,2}\/|
+\end{itemize}
+
+Detekci verze je možno vypnout. Pokud je detekce zapnutá, algoritmus se před porovnáním cest pokusí najít verzi a pokud ji najde, z cesty ji vyřadí a porovná cesty bez verze
 	
 \subsection{MOV flag}	
 
-- popsat MOV
-- co: Příznak označující, že API/endpoint má (částečně) shodnou implementaci, ale nachází se na jiné adrese
-- proč: endpointy v API mohou mít jiné url/jména, ale implementačně mohou být shodné -> potřeba detekovat
-- jak: na základě ostatních metadat (počet parametrů, počet endpointů ve WS)
+Popis MOV
 
-- mov se také nastaví pokud je zaplé ignorování verzi REST API v endpoint path a pokud 
-	- cesty s verzí nejsou stejné
-	- cesty bez verze jsou stejné
-- nemusí vždy fungovat
-- algorimuts:
-	- obecná detekce před samotným porovnáním -> MovDetectionResult
-		- 3x diff: host, path to endpoint, operace
-	- MovDetectionResult se pak použije při výběru endpointu k porovnání a při samotném porovnání (pickBest)
+Co: Příznak označující, že API/endpoint má (částečně) shodnou implementaci, ale nachází se na jiné adrese
+
+Proč: endpointy v API mohou mít jiné url/jména, ale implementačně mohou být shodné -> potřeba detekovat
+
+Jak: na základě ostatních metadat (počet parametrů, počet endpointů ve WS)
+
+Mov se také nastaví pokud je zaplé ignorování verzi REST API v endpoint path a pokud: 
+\begin{itemize}
+	\item cesty s verzí nejsou stejné
+	\item cesty bez verze jsou stejné
+\end{itemize}
+
+Algorimuts (nemusí vždy fungovat správně):
+\begin{itemize}
+	\item  obecná detekce před samotným porovnáním -> MovDetectionResult
+	\item  3x diff: host, path to endpoint, operace
+	\item  MovDetectionResult se pak použije při výběru endpointu k porovnání a při samotném porovnání (pickBest)
+\end{itemize}
 	
 - kombinace které vedou na mov: 
-	- $h \land !pe \land !o$
-	- $h \land pe \land !o$
-	- todo
-	- todo
+\begin{itemize}
+	\item $h \land !pe \land !o$
+	\item $h \land pe \land !o$
+	\item TODO
+\end{itemize}
 	
 	
 \section{Výsledek porovnání - Diff}	
-- popis výsledné datové struktury
-	- Diff, Compatibility
-	- vychází z \cite{brada2006diff}
-	- stromová struktura rozdílů mezi jednotlivými uzly stromu metadat
-	- obrázek \ref{fig:diff-construction} hezky popisuje jak to vznikne
-	- výsledné hodnoty diffu a jejich významy pro klienta v tabulce \ref{tab:diff-level}
-		- SPE/GEN může vzniknout jen z daových typů parametrů/response -> lze spolehlivě použít kontravarianci a výsledek obrátit
-		- pokud tedy vyjde SPE, znamená to např generalizovaný parametr a tedy je to pro klienta bezpečné
+Popis výsledné datové struktury
+\begin{itemize}
+	\item Diff, Compatibility
+	\item vychází z \cite{brada2006diff}
+	\item stromová struktura rozdílů mezi jednotlivými uzly stromu metadat
+	\item obrázek \ref{fig:diff-construction} hezky popisuje jak to vznikne
+	\item výsledné hodnoty diffu a jejich významy pro klienta v tabulce \ref{tab:diff-level}
+	\item SPE/GEN může vzniknout jen z daových typů parametrů/response -> lze spolehlivě použít kontravarianci a výsledek obrátit
+	\item pokud tedy vyjde SPE, znamená to např generalizovaný parametr a tedy je to pro klienta bezpečné
+\end{itemize}
 	
 \begin{figure}[h]
 	\centering
