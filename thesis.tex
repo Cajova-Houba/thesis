@@ -212,32 +212,24 @@ Pojem 'webová služba' má různé významy pro různé lidi, ale dá se najít
 
 \chapter{Popis ukládání metadat v CRCE, popis indexování API}
 
-Tato kapitola popisuje formát a způsob ukládání metadat v úložišti CRCE. Dále je zde popsána funkce modulů, která indexují API a získané údaje, nad kterými je později provedeno porovnání, ukládají do CRCE.
+Cílem této práce je vytvořit rozšíření pro úložiště CRCE\footnote{Component Repository supporting Compatibility Evaluation}, které bude schopno vyhodnocovat kompatibilitu indexovaných webových služeb. Tato kapitola popisuje samotné úložiště, formát a obecný způsob získávání metadat a princip fungování konkrétních rozšíření, která indexují webové služby.
 
 \section{CRCE}
 
-\begin{itemize}
-	\item Citovat \cite{brada2015repository}
-	\item CRCE je systém pro ukládání SW komponent, který je vyvíjený na KIV FAV
-	\item CRCE je modulární a lze přidat pluginy pro indexaci custom dat
-\end{itemize}
+% TODO: citovat \cite{brada2015repository} ? 
+
+CRCE je úložiště dlouhodobě vyvíjené a spravované Katedrou Informatiky ZČU jehož primárním účelem je indexace a následná kontrola vzájemné kompatibility komponent. Úložiště je postaveno na modulární architektuře (viz obrázek \ref{fig:crce-arch}) a je tedy možné přidat rozšíření pro indexaci a zpracování vlastních dat.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=10cm]{crce-arch.jpg}
+	\caption{Architektura CRCE}
+	\label{fig:crce-arch}
+\end{figure} 
 
 \subsection{Metadata v CRCE}
 
- - Metadata v CRCE mají hierachickou strukturu:
-	 - Resource + Capability + Properties + Atributy
-	 - taky Requirements, ale ty v práci nepoužívám
-	 - Resource reprezentuje indexovanou komponentu
-	 - jednotlivé featury (indexovaná data) jsou reprezantovány stromem Capabilit
-	 	- k Resource je vždy přiřazena root Capabilita
-	 	- každá Capabilita má namespace, podle kterého lze určit co za konkrétní vlastnost popisuje
-	 	- v případě root Capability by namespace měl být unikátní pro Resource (a resource by tedy neměl mít více root Capabilit s jedním namespace (snad?))
-	 	- detaily fetatury jsou pak uloženy v dětských capabilitách, jejich Properties a Attributes
- - Capability mají Attributy + Properties
- - Properties mají atributy
- - Attributes pak nesou konkrétní hodnoty (Capability a Propeties slouží pouze jako jakési kontejnery)
- - Lze tak modelovat různé vlastnosti indexovaného objektu (viz \cite{brada2015repository}, tam je to dobře popsaný)
- - hierarchická struktura metadat je vhodná pro reprezentaci webových API, která jsou rovněž hierarchická
+Data, která vzniknou indexací komponenty a případným dalším zpracováním (např. porovnáním) jsou označována jako metadata a představují klíčový element systému CRCE. Návrh struktury těchto metadat, který je naznačen na obrázku \ref{fig:crce-resource-uml}, vychází z OBR\footnote{OSGi bundle repository} konceptu \textit{requirements} a \textit{capabilities}\cite{brada2015repository}, což jsou množiny vlastností popisující co komponenta (reprezentována třídou \textit{Resource}) ke své správné funkci vyžaduje, respektive co naopak poskytuje. Model také umožňuje přidání key-value atributů k vlastnostem.
  
  \begin{figure}[h]
  	\centering
@@ -246,8 +238,29 @@ Tato kapitola popisuje formát a způsob ukládání metadat v úložišti CRCE.
  	\label{fig:crce-resource-uml}
  \end{figure}
 
+V mé práci jsem pracoval především s množinou poskytovaných vlastností (\textit{capabilities}) a proto zde popíši hlavně jejich strukturu. Každá konkrétní vlastnost je reprezentována elementem \textit{Capability} a od ostatních je odlišena identifikátorem \textit{namespace}. Detaily konkrétní vlastnosti jsou popsány elementy \textit{Property} a \textit{Attribute}, kde \textit{Property} reprezentuje logický celek několika atributů. Atributy pak představují páry klíč-hodnota, které nesou konkrétní informace jako např. jméno endpointu, nebo datový typ parametru.
+
+Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \textit{Capability}, toho lze využít a jednoduché vlastnosti skládat do větších celků. Vznikne tím stromová struktura, která je vhodná k modelování dat hierarchické povahy jako jsou například popisy webových služeb. V případě takto komplexních vlastností je ke komponentně (\textit{Resource}) přiřazena tzv. kořenová capabilita, která reprezentuje celou vlastnost.
+
+%Metadata v CRCE mají hierachickou strukturu:
+%- Resource + Capability + Properties + Atributy
+%- taky Requirements, ale ty v práci nepoužívám
+%- Resource reprezentuje indexovanou komponentu
+%- jednotlivé featury (indexovaná data) jsou reprezantovány stromem Capabilit
+%- k Resource je vždy přiřazena root Capabilita
+%- každá Capabilita má namespace, podle kterého lze určit co za konkrétní vlastnost popisuje
+%- v případě root Capability by namespace měl být unikátní pro Resource (a resource by tedy neměl mít více root Capabilit s jedním namespace (snad?))
+%- detaily fetatury jsou pak uloženy v dětských capabilitách, jejich Properties a Attributes
+%- Capability mají Attributy + Properties
+%- Properties mají atributy
+%- Attributes pak nesou konkrétní hodnoty (Capability a Propeties slouží pouze jako jakési kontejnery)
+%- Lze tak modelovat různé vlastnosti indexovaného objektu (viz \cite{brada2015repository}, tam je to dobře popsaný)
+%- hierarchická struktura metadat je vhodná pro reprezentaci webových API, která jsou rovněž hierarchická
+
 \section{Indexování API}
 \label{sec:api-index}
+
+- lifecycle komponenty: nahrání do bufferu -> indexace -> uložení do store
 
 - různé druhy jsou jinak indexované
 - každý druh API indexován vlastním modulem - diplomky Pejřimovského \cite{pejrimovsky2015ws} a Hessové \cite{hessova2015rest}
