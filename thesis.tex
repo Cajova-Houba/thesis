@@ -79,6 +79,12 @@
 % (odvozen z csplainnat, http://repo.or.cz/w/csplainnat.git)
 % lze snadno modifikovat vzhled citací v textu
 \usepackage[numbers,sort&compress]{natbib}
+
+
+% na seznam zktratek
+\usepackage{longtable}
+\newcommand\nomenclature[2]{#1 & #2 \\}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % VLASTNÍ TEXT PRÁCE
@@ -97,33 +103,94 @@
 
 \chapter{Principy webových služeb, techniky}
 
- - co je to API
- - co jsou to webové služby
- - REST
- - asi by bylo fajn zmínit i XML
- - relevantní protokoly:
- 	- HTTP (na REST a obecné API)
- 		- protokol aplikační vrstvy
- 	- SOAP (web service)
- 		- typicky používá HTTP
- 		- používá XML pro popis datového modelu
- 		- specifikace: https://www.w3.org/TR/soap12-part1/\#intro
- - mohlo by se hodit: https://www.w3.org/TR/2004/NOTE-ws-arch-20040211/\#relwwwrest
- 	- popisuje vztah REST a WWW
- 			 - REST: založeno na manipulaci s XML reprezentací webových resources skrze stateless operace
- 	- popis použitých technologií: XML, SOAP, WSDL
- 	- formální popis použití WS
+
+V této kapitole jsou definovány webové služby a související pojmy. Jsou zde představeny strojově čitelné způsoby popisu rozhraní služeb a protokoly sloužící ke komunikaci s webovými službami. Tato kapitola také obsahuje popis REST. 
+
+%co je v téhle kapitole:
+%
+% - co jsou to webové služby
+% - k čemu webové služby jsou
+% - co je to REST (protože se to přímo dotýká mé práce)
+% - co je to API
+% - protokoly skrze které se s WS komunikuje
+% - strojově čitelné formáty popisu ws
+
+\section{Webové služby}
+
+Pojem 'webová služba' má různé významy pro různé lidi, ale dá se najít několik společných bodů \cite{w3cWsDesignIssues}:
+\begin{itemize}
+	\item Použití HTML, XML a dalších standardů webové architektury jako stavebních kamenů
+	\item Zaměření na podnikové a vnitropodnikové operace
+\end{itemize}
+
+% v citovaném článku je spousta zajímavých informací o WS, např "The fact that data is exchanged for business purposes and between different social entities means that accountability is required, rather than just reliable transmission. "
+ - pro účely této práce je použita následující definice od W3C \cite{w3cWsArch}:
+ "Webová služba je softwarový systém navržený pro podporu mezistrojové komunikace po síti. Webová služba má rozhraní, které je popsáno ve strojově čitelném formátu (konkrétně WSDL). Ostatní systémy interagují s webovými službami předepsaným způsobem za použití zpráv protokolu SOAP, které jsou typicky zprostředkované protokolem HTTP s využitím serializace XML a dalších webových standardů."
+ 
+ % A Web service is a software system designed to support interoperable machine-to-machine interaction over a network. It has an interface described in a machine-processable format (specifically WSDL). Other systems interact with the Web service in a manner prescribed by its description using SOAP messages, typically conveyed using HTTP with an XML serialization in conjunction with other Web-related standards.
+
+- poskytovatel služby = server
+
+- konzument služby = klient (typicky nějaká aplikace)
+
+% zmínit:
+% zmínit RPC, SOAP
+%- popis použitých technologií: XML, SOAP, WSDL
+
+\section{REST}
+
+%
+% - co je REST
+% - jak se liší od WS definované v předchozí sekci
+% - základní popis elementů použitých v REST
+
+- mohlo by se hodit: https://www.w3.org/TR/2004/NOTE-ws-arch-20040211/\#relwwwrest
+- popisuje vztah REST a WWW
+- REST: založeno na manipulaci s XML reprezentací webových resources skrze stateless operace
+
  - popis architektonického stylu REST: https://www.ics.uci.edu/~fielding/pubs/dissertation/rest\_arch\_style.htm
- 	- popis elementů:
- 		- data, konektory, komponenty
- 	- popis view(na modelování)
- - RFC na HTTP: https://tools.ietf.org/html/rfc7231\#section-4
- 	- odkaz konkrétně na request methods
- 	- mohlo by se hodit, protože ty jsou indexovány, tak alespoň na citaci
- - existují různé, strojově čitelné, formáty pro popis API
- 	- WSDL, WADL, JSON-WSP
- 	- Swagger, Raml, OpenApi
- 	- v případě REST bohužel není nic formálně nutné (oproti třeba SOAP), takže specifikace API nemusí být kompatibilní, nemusí být úplné, nebo můžou být ad-hoc (např. slovní popis ve Word dokumentu) a tím pádem nemusí existovat univerzální způsob strojového čtení těchto specifikací
+- popis elementů:
+- data, konektory, komponenty
+- popis view(na modelování)
+
+- RFC na HTTP: https://tools.ietf.org/html/rfc7231\#section-4
+
+- odkaz konkrétně na request methods, mohlo by se hodit, protože ty jsou indexovány, tak alespoň na citaci
+
+\subsection{Technologie použité k realizaci webových služeb}
+
+- zmínit: RPC, SOAP
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{ws-tech-stack.png}
+	\caption{Technologie zahrnuté ve webových službách}
+	\label{fig:ws-tech-stack}	
+\end{figure}
+
+\section{Protokoly}
+
+- relevantní protokoly: RPC, SOAP, HTTP
+
+- HTTP (na REST a WS obecně)
+
+- protokol aplikační vrstvy SOAP (web service)
+
+- XML pro popis datového modelu
+
+- specifikace SOAP: https://www.w3.org/TR/soap12-part1/\#intro
+
+\section{Formální popis webových služeb}
+
+- existují různé, strojově čitelné, formáty pro popis API
+
+- WSDL 1.1, 2.0, WADL (REST), JSON-WSP
+
+- Swagger, Raml, OpenApi
+
+- v případě REST bohužel není nic formálně nutné (oproti třeba SOAP), takže specifikace API nemusí být kompatibilní, nemusí být úplné, nebo můžou být ad-hoc (např. slovní popis ve Word dokumentu) a tím pádem nemusí existovat univerzální způsob strojového čtení těchto specifikací
+
+- v mé práci se věnuji především formátům WSDL, WADL a JSON-WSP
  
 \chapter{Datové typy a porovnávání}
 
@@ -448,5 +515,28 @@ Popis výsledné datové struktury
 {\raggedright\small
 \bibliography{literatura}
 }
+
+% seznam zkratek
+\chapter*{Seznam zkratek}
+\addcontentsline{toc}{chapter}{Seznam zkratek}
+
+\begin{longtable}{@{}p{3cm}@{}p{\dimexpr\textwidth-1cm\relax}@{}}
+	\nomenclature{CRCE}{Component Repository supporting Compatibility Evaluation}
+	\nomenclature{API}{Application Programming Interface}
+	\nomenclature{HTTP}{Hypertext Transfer Protocol}
+	\nomenclature{JAR}{Java Archive}
+	\nomenclature{JSON}{JavaScript Object Notation}
+	\nomenclature{JSON}{JSON Web-Service Protocol}
+	\nomenclature{OSGi}{Open Services Gateway initiative}
+	\nomenclature{REST}{Representational State Transfer}
+	\nomenclature{SOAP}{Simple Object Access Protocol}
+	\nomenclature{UML}{Unified Modeling Language}
+	\nomenclature{URI}{Uniform Resource Identifier}
+	\nomenclature{URL}{Uniform Resource Locator}
+	\nomenclature{WADL}{Web Application Description Language}
+	\nomenclature{WSDL}{Web Services Description Language}
+	\nomenclature{XML}{Extensible Markup Language}
+	\nomenclature{XSD}{XML Schema Definition}
+\end{longtable}
 
 \end{document}
