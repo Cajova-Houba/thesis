@@ -227,7 +227,25 @@ CRCE je úložiště dlouhodobě vyvíjené a spravované Katedrou Informatiky Z
 	\label{fig:crce-arch}
 \end{figure} 
 
-\subsection{Metadata v CRCE}
+\subsection{Komponenta v CRCE a její životní cyklus}
+
+ - primárně komponenta = OSGI bundle, ale může být cokoliv (např i pouhý textový soubor)
+
+ - nahrání do bufferu
+ 
+ - analýza
+ 
+ - commit do store
+ 
+ - další analýza
+ 
+ - během toho se vytvářejí metadata
+ 
+ - jednotlivé fáze mají callbacky, na které je možné v modulu navěsit vlastní funkcionalitu (\textit{BeforeUploadToBuffer}, \textit{AfterUploadToBuffer}, \textit{BeforeCommit}, ...)
+
+
+\subsection{Metadata komponent}
+\label{subsec:crce-metadata}
 
 Data, která vzniknou indexací komponenty a případným dalším zpracováním (např. porovnáním) jsou označována jako metadata a představují klíčový element systému CRCE. Návrh struktury těchto metadat, který je naznačen na obrázku \ref{fig:crce-resource-uml}, vychází z OBR\footnote{OSGi bundle repository} konceptu \textit{requirements} a \textit{capabilities}\cite{brada2015repository}, což jsou množiny vlastností popisující co komponenta (reprezentována třídou \textit{Resource}) ke své správné funkci vyžaduje, respektive co naopak poskytuje. Model také umožňuje přidání key-value atributů k vlastnostem.
  
@@ -260,45 +278,55 @@ Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \te
 \section{Indexování API}
 \label{sec:api-index}
 
-- lifecycle komponenty: nahrání do bufferu -> indexace -> uložení do store
+V této podkapitole je rozebrán způsob indexace API v CRCE konkrétními moduly a reprezentace popisu API metadaty v CRCE. 
+
+- indexované api = komponenta v CRCE
 
 - různé druhy jsou jinak indexované
-- každý druh API indexován vlastním modulem - diplomky Pejřimovského \cite{pejrimovsky2015ws} a Hessové \cite{hessova2015rest}
-- někde by asi bylo fajn ustanovit názvosloví použité v práci:
-	- co je API: interface přístupné skrze síť (internet)
-	- co je web service: service popsaný WSDL, WADL, nebo Json-WSP dokumentem
-	- co je service: Service element in WSDL
-	- co je endpoint
-		- WSDL: port+operation
-		- endpoint: REST, WADL, JSON-WSP
-- indexované API je v CRCE uloženo jako Resource		
-- popis API je reprezentován jako samostatná feature (1 root Capability) daného Resource
-	- Namespacy kořenových Capabilit si definuje indexer
-- Service a endpoint jsou reprezentovány jako Capaibility
-- endpoint parametry, endpoint response, endpoint request body a endpoint request body jako Property
-	- obecná struktura indexovaných dat na obrázku \ref{fig:indexed-api-general}
-- vlastní hodnoty pak jako Attribute
-- příklad metadat indexovaného API: \ref{fig:indexed-api-example}
 
-\begin{figure}[h]
-	\centering
-	\caption{Obecná struktura indexovaného API}
-	\label{fig:indexed-api-general}
-\end{figure}
+- každý druh API indexován vlastním modulem - diplomky Pejřimovského \cite{pejrimovsky2015ws} a Hessové \cite{hessova2015rest}
+
+- někde by asi bylo fajn ustanovit názvosloví použité v práci:
+\begin{itemize}
+	\item co je API: interface přístupné skrze síť (internet)
+	\item co je web service: service popsaný WSDL, WADL, nebo Json-WSP dokumentem
+	\item co je service: Service element in WSDL
+	\item co je endpoint
+	\item WSDL: port+operation
+	\item endpoint: REST, WADL, JSON-WSP
+\end{itemize}
+
+\subsection{Obecná struktura metadata popisujících API}
+
+Hierarchickou strukturu popisu API lze snadno vyjádřit metadaty CRCE (popsanými v části \ref{subsec:crce-metadata}). Během indexování komponenty reprezentující API jsou shromážděny různé typy popisných vlastnosti. Jedním z těchto typů je i samotný popis rozhraní, který je reprezentován stromem metadat a ke komponentě je přiřazen skrze  kořenovou \textit{Capability}.   
+
+I když jsou různé druhy API indexovány rozdílnými moduly, výsledná metadata mají podobnou strukturu. Příklad metadat API je zobrazen na objektovém diagramu \ref{fig:indexed-api-example}, jedná se o webovou službu, která vrací strip komixu Dilbert pro dnešní den.
+
+%\begin{figure}[h]
+%	\centering
+%	\caption{Obecná struktura indexovaného API}
+%	\label{fig:indexed-api-general}
+%\end{figure}
 
  \begin{figure}[h]
 	\centering
 	\includegraphics[height=13cm]{indexed-api-example}
-	\caption{Příklad indexované SOAP web service Dilbert }
+	\caption{Příklad indexované SOAP webové služby pro komix Dilbert }
 	\label{fig:indexed-api-example}
 \end{figure}
+
+Z uvedeného obrázku je vidět, že klíčové elementy API jako web service, nebo endpoint jsou reprezentovány objektem \textit{Capability}. Vlastnosti těchto elementů jsou reprezentovány objekty \textit{Property}. Jedná se zejména o parametry endpointů, těla requestů a response. Objekt \textit{Attribute} pak představuje konkrétní hodnoty, jež jsou na obrázku naznačeny jen jako "klíč=hodnota". \textit{Attribute} nemusí být vázaný jen na \textit{Property} a lze jej použít i pro popis \textit{Capability}, jak je tomu např. u objektu \textit{WebService1}.
 
 \subsection{Indexování REST API}
 
 - práce: \cite{hessova2015rest}
+
 - binární analýza JAR s implementací API
+
 - funguje na principu hledání patternů v byte kódu
+
 - indexer vytváří hierarchii metadat ve formátu root capability -> child endpoint capabilities
+
 - podpora formátů:
 	- REST: JAX-RS, Spring Web MVC podporovány
 
