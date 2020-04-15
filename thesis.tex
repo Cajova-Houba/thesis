@@ -545,6 +545,72 @@ Popis výsledné datové struktury
 	- popsat verze API (čím se liší), případně zdůvodnit očekávaný výsledek
 	- tabulka vzájemného porovnání s výsledky
 
+\subsection{Syntetický server v Jave}
+\begin{itemize}
+	\item postaveno na Jersey
+	\item REST API
+	\item alespoň obrázek/raml api?
+	\item 2 verze otestované křížem
+\end{itemize}
+
+Popis verzí API (rozdíl je vždy popsaný oproti verzi 1):
+\begin{itemize}
+	\item V1: základní verze
+	\item V2: typ parametru změněn z Long na Number
+\end{itemize}
+
+Co se testuje:
+\begin{itemize}
+	\item GEN/SPEC a kontravariance u parametru endpointu
+\end{itemize}	
+	
+\subsection{Příklad JSON-WSP z wiki}
+
+\begin{itemize}
+	\item popsáno JSON-WSP souborem
+	\item https://en.wikipedia.org/wiki/JSON-WSP
+	\item 4 verze otestované křížem
+\end{itemize}
+
+Popis verzí API (rozdíl je vždy popsaný oproti verzi 1):
+\begin{itemize}
+	\item V1: základní verze
+	\item V2: typ User je jiný
+	\item V3: přidána metoda deleteUser
+	\item v4: metoda listGroups změněna na getUsersInGroup
+\end{itemize}
+
+Co se testuje:
+\begin{itemize}
+	\item ne-indexování custom datových typů (takže v2 = v1)
+	\item mutace endpointu
+	\item INS, DEL
+\end{itemize}
+
+\subsection{FuelEconomy API}
+
+\begin{itemize}
+ \item popsáno WADL souborem
+ \item https://www.fueleconomy.gov/ws/rest/application.wadl
+ \item 3 verze otestované křížem
+\end{itemize}
+
+Popis verzí API (rozdíl je vždy popsaný oproti verzi 1):
+\begin{itemize}
+	\item V1: základní verze
+	\item V2: odebrán (poslední) resource /labelvehicle
+	\item V3: odebrán (poslední) resource /labelvehicle, přidán resource /somethingDifferent
+\end{itemize}
+
+Co se testuje:
+\begin{itemize}
+	\item  INS, DEL a MUT
+\end{itemize}
+
+\subsection{Stag WS}
+
+TODO
+
 \chapter{Závěr}	
 
  
