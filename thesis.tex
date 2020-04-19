@@ -232,7 +232,7 @@ CRCE je komponentové úložiště dlouhodobě vyvíjené a spravované výzkumn
 
 Data, která vzniknou indexací komponenty a případným dalším zpracováním (např. porovnáním) jsou uložena do souboru metadat a představují klíčový element systému CRCE. Návrh struktury  těchto metadat, který je naznačen na obrázku \ref{fig:crce-resource-uml}, vychází z konceptu OBR\footnote{OSGi bundle repository} jehož základními entitami jsou mimo jiné \textit{Resource}, \textit{requirements} a \textit{capabilities}\cite{brada2015repository}. 
 
-Entita \textit{Resource} reprezentuje uloženou komponentu, \textit{requirements} a \textit{capabilities} jsou množiny vlastností popisující co komponenta ke své správné funkci vyžaduje, respektive co naopak poskytuje. Model také umožňuje přidání key-value atributů k vlastnostem.
+Entita \textit{Resource} reprezentuje uloženou komponentu, \textit{requirements} a \textit{capabilities} jsou množiny vlastností popisující co komponenta ke své správné funkci vyžaduje, respektive co naopak poskytuje. Model také umožňuje přidání key-value atributů k jednotlivým vlastnostem a jejím detailům.
  
  \begin{figure}[h]
  	\centering
@@ -243,7 +243,7 @@ Entita \textit{Resource} reprezentuje uloženou komponentu, \textit{requirements
 
 V mé práci jsem pracoval především s poskytovanými vlastnostmi (množina \textit{capabilities}) a proto zde popíši hlavně jejich strukturu. Každá konkrétní vlastnost je reprezentována elementem \textit{Capability} a od ostatních je odlišena identifikátorem \textit{namespace}. Detaily konkrétní vlastnosti jsou popsány elementy \textit{Property} a \textit{Attribute}, kde \textit{Property} reprezentuje logický celek několika atributů. Atributy pak představují páry klíč-hodnota, které nesou konkrétní informace jako např. jméno endpointu, nebo datový typ parametru.
 
-Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \textit{Capability}, čehož je využito ke skládání jednodušších vlastností do složitějších celků. Vznikne tím stromová struktura, která je vhodná k modelování dat hierarchické povahy mezi něž patří například popisy webových služeb. V případě takto komplexních vlastností je ke komponentně (\textit{Resource}) přiřazena pouze jedna, tzv. kořenová, capabilita, která reprezentuje celou vlastnost.
+Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \textit{Capability}, čehož je využito ke skládání jednodušších vlastností do složitějších celků. Vznikne tím stromová struktura, která je vhodná k modelování dat hierarchické povahy mezi něž patří například popisy webových služeb. V případě takto komplexních vlastností je ke komponentně (\textit{Resource}) přiřazena pouze jedna, tzv. kořenová, \textit{Capability}, která reprezentuje celou vlastnost.
 
 %Metadata v CRCE mají hierachickou strukturu:
 %- Resource + Capability + Properties + Atributy
@@ -260,9 +260,9 @@ Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \te
 %- Lze tak modelovat různé vlastnosti indexovaného objektu (viz \cite{brada2015repository}, tam je to dobře popsaný)
 %- hierarchická struktura metadat je vhodná pro reprezentaci webových API, která jsou rovněž hierarchická
 
-\subsection{Komponenta v CRCE a její životní cyklus}
+\subsection{Životní cyklus komponenty v CRCE}
 
-Úložiště bylo primárně navrženo pro ukládání OSGi, nicméně indexovat lze jakýkoliv soubor. Komponenta je v CRCE popsána již zmíněnými metadaty a prochází vlastním životním cyklem naznačeným na obrázku \ref{fig:crce-comp-lc}.
+Úložiště bylo primárně navrženo pro ukládání OSGi komponent, nicméně indexovat lze jakýkoliv soubor. Komponenta je v CRCE popsána již zmíněnými metadaty a prochází vlastním životním cyklem naznačeným na obrázku \ref{fig:crce-comp-lc}.
 
 \begin{figure}[h]
 	\centering
@@ -271,7 +271,7 @@ Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \te
 	\label{fig:crce-comp-lc}
 \end{figure} 
 
-Dvě hlavní části: buffer a store. V obou probíhá analýza, buffer: sběr informací o komponentě, store: operace a analýza sebraných dat. Pro mou práci jsou relevantní obě části, protože v bufferu dochází k převodu popisu API na metadata, ve store pak plugin, který je výsledkem mé práce počítá vzájemnou kompatibilitu API. Indexace komponent je popsána v následující sekci.
+Životní cyklus má dvě hlavní fáze, jimiž jsou \textit{Buffer} a \textit{Store}. V obou fázích jsou nad komponentou prováděny operace z nichž \textit{analyze} je nejvíce relevantní mé práci, protože právě během této operace dochází ke sběru metadat (fáze \textit{Buffer}) a dalším výpočtům nad nimi (fáze \textit{Store}). Modul s rozšířením, který je předmětem mé práce bude zařazen mezi výpočty prováděné nad metadaty během \textit{analyze}, kde bude vyhodnocovat vzájemnou kompatibilitu webových služeb. Způsoby sběru těchto metadat, ke kterým dochází ve fázi \textit{Store}, jsou popsány v následující sekci. 
 
 %
 %- primárně komponenta = OSGI bundle, ale může být cokoliv (např i pouhý textový soubor)
@@ -288,7 +288,7 @@ Dvě hlavní části: buffer a store. V obou probíhá analýza, buffer: sběr i
 %
 %- jednotlivé fáze mají callbacky, na které je možné v modulu navěsit vlastní funkcionalitu (\textit{BeforeUploadToBuffer}, \textit{AfterUploadToBuffer}, \textit{BeforeCommit}, ...)
 
-\section{Indexování API}
+\section{Indexování webových služeb}
 \label{sec:api-index}
 
 V této podkapitole je krátce popsán obecný způsob indexace komponent v CRCE. Následně je podrobněji rozebráno indexování API konkrétními moduly a reprezentace popisu API metadaty v CRCE. Na závěr jsou také uvedeny limity indexování.
@@ -298,7 +298,7 @@ V této podkapitole je krátce popsán obecný způsob indexace komponent v CRCE
 
 Indexace komponenty a související sběr metadat je proveden ve fázi \textit{Buffer} k tomu určenými moduly. Ty jsou vzájemně nezávislé a obecně platí, že každý nich je zaměřen na sběr nějaké logicky ucelené části dat jako například informace o OSGi bundlu, koordináty maven artefaktu, nebo popis webových služeb. Vlastní data komponenty zůstavájí během sběru dat nezměněná což v kombinaci s řetězením indexerů zaručuje mimo snadnou rozšiřitelnost také transparentní přístup ke komponentě každému z nich. 
 
-\subsection{Indexace API}
+\subsection{Indexace komponenty s webovou službou}
 
 Soubor obsahující implementaci, nebo popis API je v CRCE vnímán jako komponenta a prochází tedy zmíněným životním cyklem včetně výše popsané indexace. Z důvodů existence mnoha různých způsobů popisu webových služeb je není možné všechny analyzovat jedním indexerem a je nutné zaměřit se pouze na část z nich. 
 
@@ -314,16 +314,16 @@ V současné době tedy existují dva moduly podporující několik popisných f
 %	\item endpoint: REST, WADL, JSON-WSP
 %\end{itemize}
 
-\subsection{Struktura metadat popisujících API}
-
-Jak již bylo zmíněno v části \ref{subsec:crce-metadata}, hierarchickou strukturu popisu API lze vhodně vyjádřit metadaty CRCE. Během indexování komponenty reprezentující API jsou shromážděny různé typy popisných vlastností. Jedním z těchto typů je i samotný popis webové služby, který je reprezentován stromem metadat a ke komponentě je přiřazen skrze  kořenovou \textit{Capability}.   
-
 \begin{figure}[h]
 	\centering
 	\includegraphics[height=11cm]{indexed-api-example}
 	\caption{Příklad indexované SOAP webové služby pro komix Dilbert }
 	\label{fig:indexed-api-example}
 \end{figure}
+
+\subsection{Struktura metadat popisující webovou službu}
+
+Jak již bylo zmíněno v části \ref{subsec:crce-metadata}, hierarchickou strukturu popisu API lze vhodně vyjádřit metadaty CRCE. Během indexování komponenty reprezentující API jsou shromážděny různé typy popisných vlastností. Jedním z těchto typů je i samotný popis webové služby, který je reprezentován stromem metadat a ke komponentě je přiřazen skrze  kořenovou \textit{Capability}.   
 
 I když jsou různé druhy API indexovány rozdílnými moduly, výsledná metadata mají podobnou strukturu. Příklad metadat API je zobrazen na objektovém diagramu \ref{fig:indexed-api-example}, jedná se o webovou službu, která vrací strip komixu Dilbert pro dnešní den.
 
