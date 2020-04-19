@@ -329,34 +329,83 @@ I když jsou různé druhy API indexovány rozdílnými moduly, výsledná metad
 
 Z uvedeného obrázku je vidět, že klíčové elementy API jako web service, nebo endpoint jsou reprezentovány objektem \textit{Capability}. Detaily těchto elementů jsou popsány objekty \textit{Property}. Jedná se zejména o parametry endpointů, těla requestů a response. Objekt \textit{Attribute} pak představuje konkrétní hodnoty, jež jsou na obrázku naznačeny jen jako "klíč=hodnota". \textit{Attribute} nemusí být vázaný jen na \textit{Property} a lze jej použít i pro popis \textit{Capability}, jak je tomu např. u objektu \textit{WebService1}.
 
-\subsection{Indexování REST API}
+\subsection{Indexování REST služeb}
 
 Modul pro indexování REST API vznikl v rámci diplomové práce Bc. Gabriely Hessové. Princip sběru dat je založen na binární analýze java archivů (JAR) obsahujících implementaci REST služeb pomocí frameworků splňujících specifikaci JAX-RS a frameworku Spring Web MVC. Modul byl testován na frameworcích Jersey verze 2.26, RESTEasy verze 3.0.16 a  Spring Boot verze 1.5.9 \cite{hessova2015rest}.
 
-Z implementace REST služby modul rekonstruuje kolekci endpointů s jejich parametry, tělem requestu, response a případnými parametry response. Každý endpoint je reprezentován elementem \textit{Capability}, všechny další jeho vlastnosti pak elementy \textit{Property}. 
+Z implementace REST služby modul rekonstruuje kolekci endpointů s jejich parametry, tělem requestu, response a případnými parametry response. Každý endpoint je reprezentován elementem \textit{Capability}, všechny další jeho vlastnosti pak elementy \textit{Property}. Výčet všech indexovaných elementů rozhraní je uveden v tabulce \ref{tab:rest-indexed}.
 
-\subsection{Indexování WS}
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l | c | c |}
+		\hline
+		Element API & Entita v metadatech & Vstaženo k\\
+		\hline
+		\hline
+		Endpoint & Capability & - \\
+		\hline
+		Request body & Property & Endpoint \\
+		\hline
+		Request parameter & Property & Request \\
+		\hline
+		Response & Property Endpoint & Endpoint \\
+		\hline
+		Response parameter & Property & Response \\
+		\hline
+	\end{tabular}
+	\caption{Seznam indexovaných elementů REST služby a jejich reprezentací v metadatech}
+	\label{tab:rest-indexed}
+\end{table}
+
+\subsection{Indexování webových služeb podle popisu}
 
 Modul pro indexování webových služeb vznikl v rámci práce Bc. Davida Pejřimovského. Oproti předchozímu modulu pro indexaci REST služeb nepracuje tento s její implementací, ale s pouhým popisem. Podporované formáty popisu služeb jsou WSDL (verze 1.1 i 2.0) pro SOAP webové služby a WADL, Json-WSP pro REST služby\cite{pejrimovsky2015ws}.
 
 Struktura dat vytvořených pro REST služby (tedy z popisu WADL, nebo Json-WSP) je podobná struktuře dat vytvořenou předchozím indexerem. Endpoint je tedy reprezentován elementem \textit{Capability}, parametry endpointu elementy \textit{Capability}. Z popisu Json-WSP je ještě vytvořena reprezentace response pro daný endpoint (element \textit{Property}). Z popisu WADL se žádné další vlastnosti endpointů nezískávají.
 
-Z WSDL popisu je vytvořena reprezentace služeb jež jsou popsány xml elementy \verb|<wsdl:service>| a vnořených endpointů. Endpoint je ve WSDL popsán elementem \verb|<wsdl:port>| a má definované operace (\verb|<wsdl:operation>|), nicméně modul tyto nevnořuje a vytváří zjednodušenou reprezentaci. Model endpointu tedy obsahuje metadata získaná z \verb|<wsdl:operation>| a url definovanou v elementu \verb|<wsdl:port>|. Služby i endpointy jsou v metadatech reprezentovány elementy \textit{Capability}. Oproti REST službám, které mají jednu úroveň vnoření \textit{Capability}, zde vznikají úrovně dvě.
+Z WSDL popisu je vytvořena reprezentace služeb jež jsou popsány xml elementy \verb|<wsdl:service>| a vnořených endpointů. Endpoint je ve WSDL popsán elementem \verb|<wsdl:port>| a má definované operace (\verb|<wsdl:operation>|), nicméně modul tyto nevnořuje a vytváří zjednodušenou reprezentaci. Model endpointu tedy obsahuje metadata získaná z \verb|<wsdl:operation>| a url definovanou v elementu \verb|<wsdl:port>|. Služby i endpointy jsou v metadatech reprezentovány elementy \textit{Capability}. Oproti REST službám, které mají jednu úroveň vnoření \textit{Capability}, zde vznikají úrovně dvě. Výčet elementů API a jejich reprezentace v metadatech je uveden v tabulce \ref{tab:ws-indexed}.
 
-- indexer obsahoval drobné chyby, které jsem v rámci DP opravil
-	- špatná indexace URL v případě WSDL (nebyla podle specifikace)
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l | c | c |}
+		\hline
+		Element API & Entita v metadatech & Vstaženo k \\
+		\hline
+		\hline
+		Service & Capability & - \\
+		\hline
+		Endpoint & Capability & Service \\
+		\hline
+		Endpoint parameter & Property & Endpoint \\
+		\hline
+		Response & Property & Endpoint \\
+		\hline
+		Response parameter & Property & Endpoint \\
+		\hline
+	\end{tabular}
+	\caption{Seznam indexovaných elementů webové služby a jejich reprezentací v metadatech}
+	\label{tab:ws-indexed}
+\end{table}
+
+Logika parsování WSDL souborů (verze 1.1. i 2.0) obsahovala chybu ve čtení adresy endpointu. Ta byla očekávána v atributu \verb|action| elementu \verb|<wsdl:operation>|, který ale není uveden ve specifikaci WSDL 1.1 \cite{wsdl1} ani WSDL 2.0 \cite{wsdl2}. Tuto chybu jsem v rámci mé práce opravil.
 
 \subsection{Limity indexování}
 
- - custom datové typy
- - 2 problémy
-	- rekurzivní typy
-		- jsou způsoby pro jejich rozvoj: \cite{abadi1995subytping} a ukládání
-		- nicméně indexovací logika není implementovaná (ani v jednom ze zmíněných indexerů)
-	- chybějící definice custom typů
-		- v případě např REST jsou uloženy v implementaci (nemusí se jednat ani o stejnou knihovnu) a indexer k nim nemusí mít přístup
-		- tím pádem je jméno datového typu (např. fully qualified name v případě Java třídy) jedinou informací, která je o typu dostupná
- - oba dva moduly používají jiné identifikátory pro stejné elementy (endpoint, parametr, ...) proto nelze vzájemně porovnat REST indexovaný prvním a druhým modulem
+Současný proces indexování webových služeb naráží na dva známé problémy týkající se datových typů. Jedná se o indexování rekurzivních datových typů a absenci samotných definic typů.
+
+První problém se týká zejména indexování webových služeb podle popisných souborů, protože ty definice typů obsahují. Způsoby rozvoje a ukládání datových typů jsou popsány v \cite{abadi1995subytping}, nicméně logika zatím není implementována. Druhý problém se týká binární analýzy REST služeb, protože archiv s implementací služby nemusí nutně obsahovat definice tříd. Ty mohou být například v jiném artefaktu, na který se archiv pouze odkazuje skrze závislost.
+
+Z těchto důvodů je do metadat uložen pouze název datového typu což snižuje možnosti porovnávání služeb.
+
+% - custom datové typy
+% - 2 problémy
+%	- rekurzivní typy
+%		- jsou způsoby pro jejich rozvoj: \cite{abadi1995subytping} a % ukládání
+%		- nicméně indexovací logika není implementovaná (ani v jednom ze zmíněných indexerů)
+%	- chybějící definice custom typů
+%		- v případě např REST jsou uloženy v implementaci (nemusí se jednat ani o stejnou knihovnu) a indexer k nim nemusí mít přístup
+%		- tím pádem je jméno datového typu (např. fully qualified name v případě Java třídy) jedinou informací, která je o typu dostupná
+% - oba dva moduly používají jiné identifikátory pro stejné elementy (endpoint, parametr, ...) proto nelze vzájemně porovnat REST indexovaný prvním a druhým modulem
 
 \chapter{Popis funkce porovnávače (co se jak porovnává pro jaké typy API)}
 
