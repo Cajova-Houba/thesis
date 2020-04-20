@@ -102,7 +102,7 @@
 - use casy
 
 \chapter{Principy webových služeb, techniky}
-
+\label{sec:web-services-principles}
 
 V této kapitole jsou definovány webové služby a související pojmy. Jsou zde představeny strojově čitelné způsoby popisu rozhraní služeb a protokoly sloužící ke komunikaci s webovými službami. Tato kapitola také obsahuje popis REST. 
 
@@ -210,13 +210,11 @@ Pojem 'webová služba' má různé významy pro různé lidi, ale dá se najít
  - subtyping vs. matching (\cite{abadi1995subytping})
 
 
-\chapter{Popis ukládání metadat v CRCE, popis indexování API}
+\chapter{Získávání metadat webových služeb v CRCE}
 
-Cílem této práce je vytvořit rozšíření pro úložiště CRCE\footnote{Component Repository supporting Compatibility Evaluation}, které bude schopno vyhodnocovat kompatibilitu indexovaných webových služeb. Tato kapitola popisuje samotné úložiště, formát a obecný způsob získávání metadat a princip fungování konkrétních rozšíření, která indexují webové služby.
+Cílem této práce je vytvořit rozšíření pro úložiště CRCE\footnote{Component Repository supporting Compatibility Evaluation}, které bude schopno vyhodnocovat vzájemnou kompatibilitu indexovaných webových služeb. Tato kapitola představuje samotné úložiště, formát metadat a obecný způsob jejich získání. Na konci kapitoly je popsán princip fungování konkrétních rozšíření, která indexují webové služby (tzv. indexery).
 
 \section{CRCE}
-
-% TODO: citovat \cite{brada2015repository} ? 
 
 CRCE je komponentové úložiště dlouhodobě vyvíjené a spravované výzkumnou skupinou ReliSA na Katedře Informatiky ZČU, jehož primárním účelem je indexace a následná kontrola vzájemné kompatibility komponent. Úložiště je postaveno na modulární architektuře (viz obrázek \ref{fig:crce-arch}) a je tedy možné přidat rozšíření pro indexaci a zpracování vlastních dat.
 
@@ -232,7 +230,7 @@ CRCE je komponentové úložiště dlouhodobě vyvíjené a spravované výzkumn
 
 Data, která vzniknou indexací komponenty a případným dalším zpracováním (např. porovnáním) jsou uložena do souboru metadat a představují klíčový element systému CRCE. Návrh struktury  těchto metadat, který je naznačen na obrázku \ref{fig:crce-resource-uml}, vychází z konceptu OBR\footnote{OSGi bundle repository} jehož základními entitami jsou mimo jiné \textit{Resource}, \textit{requirements} a \textit{capabilities}\cite{brada2015repository}. 
 
-Entita \textit{Resource} reprezentuje uloženou komponentu, \textit{requirements} a \textit{capabilities} jsou množiny vlastností popisující co komponenta ke své správné funkci vyžaduje, respektive co naopak poskytuje. Model také umožňuje přidání key-value atributů k jednotlivým vlastnostem a jejím detailům.
+Entita \textit{Resource} reprezentuje komponentu uloženou v CRCE, \textit{requirements} a \textit{capabilities} jsou množiny vlastností, popisující co komponenta ke své správné funkci vyžaduje, respektive co naopak poskytuje. Model také umožňuje přidání key-value atributů k jednotlivým vlastnostem a jejich detailům.
  
  \begin{figure}[h]
  	\centering
@@ -241,9 +239,9 @@ Entita \textit{Resource} reprezentuje uloženou komponentu, \textit{requirements
  	\label{fig:crce-resource-uml}
  \end{figure}
 
-V mé práci jsem pracoval především s poskytovanými vlastnostmi (množina \textit{capabilities}) a proto zde popíši hlavně jejich strukturu. Každá konkrétní vlastnost je reprezentována elementem \textit{Capability} a od ostatních je odlišena identifikátorem \textit{namespace}. Detaily konkrétní vlastnosti jsou popsány elementy \textit{Property} a \textit{Attribute}, kde \textit{Property} reprezentuje logický celek několika atributů. Atributy pak představují páry klíč-hodnota, které nesou konkrétní informace jako např. jméno endpointu, nebo datový typ parametru.
+V mé práci jsem pracoval především s poskytovanými vlastnostmi (množina \textit{capabilities}) a proto zde popíši hlavně jejich strukturu. Každá konkrétní vlastnost je reprezentována elementem \textit{Capability} a od ostatních je odlišena identifikátorem \textit{namespace}. Detaily konkrétní vlastnosti jsou popsány elementy \textit{Property} a \textit{Attribute}, kde \textit{Property} reprezentuje logický celek několika atributů. Například parametr endpointu REST služby shlukuje atributy popisující jeho jméno, datový typ atp. \textit{Attribute} pak představuje pár klíč-hodnota, který nese konkrétní informace jako např. jméno endpointu, nebo datový typ parametru.
 
-Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \textit{Capability}, čehož je využito ke skládání jednodušších vlastností do složitějších celků. Vznikne tím stromová struktura, která je vhodná k modelování dat hierarchické povahy mezi něž patří například popisy webových služeb. V případě takto komplexních vlastností je ke komponentně (\textit{Resource}) přiřazena pouze jedna, tzv. kořenová, \textit{Capability}, která reprezentuje celou vlastnost.
+Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \textit{Capability}, čehož je využito ke skládání jednodušších vlastností do složitějších celků. Vznikne tím stromová struktura, která je vhodná k modelování hierarchických dat mezi něž patří například popisy webových služeb. V případě takto komplexních vlastností je ke komponentně (\textit{Resource}) přiřazena pouze jedna, tzv. kořenová, \textit{Capability}, která reprezentuje celou vlastnost.
 
 %Metadata v CRCE mají hierachickou strukturu:
 %- Resource + Capability + Properties + Atributy
@@ -291,16 +289,16 @@ Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \te
 \section{Indexování webových služeb}
 \label{sec:api-index}
 
-V této podkapitole je krátce popsán obecný způsob indexace komponent v CRCE. Následně je podrobněji rozebráno indexování API konkrétními moduly a reprezentace popisu API metadaty v CRCE. Na závěr jsou také uvedeny limity indexování.
+V této podkapitole je krátce popsán obecný způsob indexace komponent v CRCE. Následně je podrobněji rozebráno indexování webových služeb konkrétními moduly a reprezentace popisu API metadaty v CRCE. Na závěr jsou také uvedeny limity indexování.
 
 
 \subsection{Obecná indexace komponenty}
 
-Indexace komponenty a související sběr metadat je proveden ve fázi \textit{Buffer} k tomu určenými moduly. Ty jsou vzájemně nezávislé a obecně platí, že každý nich je zaměřen na sběr nějaké logicky ucelené části dat jako například informace o OSGi bundlu, koordináty maven artefaktu, nebo popis webových služeb. Vlastní data komponenty zůstavájí během sběru dat nezměněná což v kombinaci s řetězením indexerů zaručuje mimo snadnou rozšiřitelnost také transparentní přístup ke komponentě každému z nich. 
+Indexace komponenty a související sběr metadat je proveden ve fázi \textit{Buffer} k tomu určenými moduly. Ty jsou vzájemně nezávislé a obecně platí, že každý nich je zaměřen na sběr nějaké logicky ucelené části dat jako například informace o OSGi bundlu, maven koordináty, nebo popis webových služeb. Vlastní data komponenty zůstávají během tohoto procesu nezměněná což v kombinaci s řetězením indexerů zaručuje mimo snadnou rozšiřitelnost také transparentní přístup ke komponentě každému z nich. 
 
 \subsection{Indexace komponenty s webovou službou}
 
-Soubor obsahující implementaci, nebo popis API je v CRCE vnímán jako komponenta a prochází tedy zmíněným životním cyklem včetně výše popsané indexace. Z důvodů existence mnoha různých způsobů popisu webových služeb je není možné všechny analyzovat jedním indexerem a je nutné zaměřit se pouze na část z nich. 
+Soubor obsahující implementaci, nebo popis API je v CRCE vnímán jako komponenta a prochází tedy zmíněným životním cyklem včetně výše popsané indexace. Pro popis webových služeb existuje mnoho standardních i nestandardních způsobů, jak již bylo zmíněno v kapitole \ref{sec:web-services-principles}. Z tohoto důvodu je není možné všechny analyzovat jedním indexerem a je nutné zaměřit se pouze na část z nich. 
 
 V současné době tedy existují dva moduly podporující několik popisných formátů a implementací. Konkrétně se jedná o modul pro indexaci webových služeb založených na architektonickém stylu REST\cite{hessova2015rest} a o modul pro indexaci webových služeb s popisem ve formátu WSDL, WADL, nebo Json-WSP \cite{pejrimovsky2015ws}. Oba dva vznikly v rámci diplomových prací a jsou stručně popsány v následujících sekcích.
 
@@ -327,13 +325,13 @@ Jak již bylo zmíněno v části \ref{subsec:crce-metadata}, hierarchickou stru
 
 I když jsou různé druhy API indexovány rozdílnými moduly, výsledná metadata mají podobnou strukturu. Příklad metadat API je zobrazen na objektovém diagramu \ref{fig:indexed-api-example}, jedná se o webovou službu, která vrací strip komixu Dilbert pro dnešní den.
 
-Z uvedeného obrázku je vidět, že klíčové elementy API jako web service, nebo endpoint jsou reprezentovány objektem \textit{Capability}. Detaily těchto elementů jsou popsány objekty \textit{Property}. Jedná se zejména o parametry endpointů, těla requestů a response. Objekt \textit{Attribute} pak představuje konkrétní hodnoty, jež jsou na obrázku naznačeny jen jako "klíč=hodnota". \textit{Attribute} nemusí být vázaný jen na \textit{Property} a lze jej použít i pro popis \textit{Capability}, jak je tomu např. u objektu \textit{WebService1}.
+Z uvedeného obrázku je vidět, že klíčové elementy API jako web service, nebo endpoint jsou reprezentovány objektem \textit{Capability}. Detaily těchto elementů jsou popsány objekty \textit{Property}. Jedná se zejména o parametry endpointů, těla requestů a response. Objekt \textit{Attribute} pak představuje konkrétní hodnoty, jež jsou na obrázku naznačeny jen jako páry "klíč=hodnota". \textit{Attribute} nemusí být vázaný jen na \textit{Property} a lze jej použít i pro popis \textit{Capability}, jak je tomu např. u objektu \textit{WebService1}.
 
 \subsection{Indexování REST služeb}
 
 Modul pro indexování REST API vznikl v rámci diplomové práce Bc. Gabriely Hessové. Princip sběru dat je založen na binární analýze java archivů (JAR) obsahujících implementaci REST služeb pomocí frameworků splňujících specifikaci JAX-RS a frameworku Spring Web MVC. Modul byl testován na frameworcích Jersey verze 2.26, RESTEasy verze 3.0.16 a  Spring Boot verze 1.5.9 \cite{hessova2015rest}.
 
-Z implementace REST služby modul rekonstruuje kolekci endpointů s jejich parametry, tělem requestu, response a případnými parametry response. Každý endpoint je reprezentován elementem \textit{Capability}, všechny další jeho vlastnosti pak elementy \textit{Property}. Výčet všech indexovaných elementů rozhraní je uveden v tabulce \ref{tab:rest-indexed}.
+Z implementace REST služby modul rekonstruuje kolekci endpointů s jejich parametry, tělem requestu, response a případnými parametry response. Každý endpoint je reprezentován entitou \textit{Capability}, všechny další jeho vlastnosti pak entitami \textit{Property}. Výčet všech indexovaných elementů rozhraní je uveden v tabulce \ref{tab:rest-indexed}.
 
 \begin{table}[h]
 	\centering
@@ -357,13 +355,13 @@ Z implementace REST služby modul rekonstruuje kolekci endpointů s jejich param
 	\label{tab:rest-indexed}
 \end{table}
 
-\subsection{Indexování webových služeb podle popisu}
+\subsection{Indexování webových služeb na základě popisu}
 
-Modul pro indexování webových služeb vznikl v rámci práce Bc. Davida Pejřimovského. Oproti předchozímu modulu pro indexaci REST služeb nepracuje tento s její implementací, ale s pouhým popisem. Podporované formáty popisu služeb jsou WSDL (verze 1.1 i 2.0) pro SOAP webové služby a WADL, Json-WSP pro REST služby\cite{pejrimovsky2015ws}.
+Modul pro indexování webových služeb vznikl v rámci práce Bc. Davida Pejřimovského. Oproti předchozímu modulu pro indexaci REST služeb nepracuje tento s její implementací, ale s pouhým popisem. Podporované formáty popisu služeb jsou WSDL (verze 1.1 i 2.0) pro SOAP webové služby, WADL a Json-WSP pro REST služby\cite{pejrimovsky2015ws}.
 
-Struktura dat vytvořených pro REST služby (tedy z popisu WADL, nebo Json-WSP) je podobná struktuře dat vytvořenou předchozím indexerem. Endpoint je tedy reprezentován elementem \textit{Capability}, parametry endpointu elementy \textit{Capability}. Z popisu Json-WSP je ještě vytvořena reprezentace response pro daný endpoint (element \textit{Property}). Z popisu WADL se žádné další vlastnosti endpointů nezískávají.
+Struktura dat vytvořených pro REST služby (tedy z popisu WADL, nebo Json-WSP) je podobná struktuře dat vytvořenou předchozím indexerem. Endpoint je tedy reprezentován entitou \textit{Capability}, jeho parametry entitami \textit{Property}. Z popisu Json-WSP je ještě vytvořena reprezentace response pro daný endpoint (entita \textit{Property}). Z popisu WADL se žádné další vlastnosti endpointů nezískávají.
 
-Z WSDL popisu je vytvořena reprezentace služeb jež jsou popsány xml elementy \verb|<wsdl:service>| a vnořených endpointů. Endpoint je ve WSDL popsán elementem \verb|<wsdl:port>| a má definované operace (\verb|<wsdl:operation>|), nicméně modul tyto nevnořuje a vytváří zjednodušenou reprezentaci. Model endpointu tedy obsahuje metadata získaná z \verb|<wsdl:operation>| a url definovanou v elementu \verb|<wsdl:port>|. Služby i endpointy jsou v metadatech reprezentovány elementy \textit{Capability}. Oproti REST službám, které mají jednu úroveň vnoření \textit{Capability}, zde vznikají úrovně dvě. Výčet elementů API a jejich reprezentace v metadatech je uveden v tabulce \ref{tab:ws-indexed}.
+Z WSDL popisu je vytvořena reprezentace služeb, jež jsou popsány xml elementy \verb|<wsdl:service>| a jejich vnořených endpointů. Endpoint je ve WSDL popsán elementem \verb|<wsdl:port>| a má definované operace (elementy \verb|<wsdl:operation>|), nicméně modul tyto nevnořuje a vytváří zjednodušenou reprezentaci. Model endpointu tedy obsahuje metadata získaná z elementů \verb|<wsdl:operation>| a url definovanou v elementu \verb|<wsdl:port>|. Služby i endpointy jsou v metadatech reprezentovány entitami \textit{Capability}. Oproti REST službám, které mají jednu úroveň vnoření \textit{Capability}, zde vznikají úrovně dvě. Výčet elementů API a jejich reprezentace v metadatech je uveden v tabulce \ref{tab:ws-indexed}.
 
 \begin{table}[h]
 	\centering
