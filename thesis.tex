@@ -479,6 +479,8 @@ Moduly pro indexování webových služeb popsané v předchozí kapitole použ�
 
 \subsection{Popis algoritmu}
 
+Vstup algoritmu: reprezentace obou webových služeb v podobě \textit{Resource}. Výstupem algoritmu: objekt \textit{Compatibility}.
+
 Před porovnáváním datových struktur je zkontrolována jejich kompatibilita: typ popisu, \textit{communication pattern}, \textit{identity capability}. Pokud kontrola proběhne úspěšně, je spuštěn samotný algoritmus jehož průběh je naznačen na vývojovém diagramu \ref{fig:apicomp-flow}. V případě porovnání SOAP webových služeb je tento postup obalen ještě porovnáním \textit{services}, které WSDL definuje a které jsou v CRCE reprezentovány jako kolekce endpointů.
 
 \begin{figure}[h]
@@ -488,7 +490,7 @@ Před porovnáváním datových struktur je zkontrolována jejich kompatibilita:
 	\label{fig:apicomp-flow}
 \end{figure}
 
-Mezivýsledky porovnání jsou ukládány v datové struktuře \textit{Diff}, která je detailně popsaná v sekci \ref{sec:diff-info}. Algoritmus postupuje po stromu metadat od kořene směrem k listům. V listech dojde k porovnání konkrétních hodnot. Pokud jsou porovnány všechny potomci uzlu, je vyhodnocena jeho kompatibilita. Takto se postupuje zpět ke kořeni stromu, který na konci algoritmu obsahuje finální údaj o kompatibilitě dvou API.
+Mezivýsledky porovnání jsou ukládány v datové struktuře \textit{Diff}, která je detailně popsaná v sekci \ref{sec:diff-info}. Algoritmus postupuje po stromu metadat od kořene směrem k listům. V listech dojde k porovnání konkrétních hodnot. Pokud jsou porovnány všechny potomci uzlu, je vyhodnocena jeho kompatibilita. Takto se postupuje zpět ke kořeni stromu, který na konci algoritmu obsahuje finální údaj o kompatibilitě dvou API. Jednotlivé fáze porovnání jsou popsány v následujících odstavcích.
 
 \paragraph{Výběr endpointu vhodného k porovnání}
 
@@ -496,68 +498,25 @@ Protože nelze předpokládat pořadí endpointů v metadatech, je nutné před 
 
 O porovnatelnosti dvou \textit{services} (v případě SOAP) je rozhodnuto na základě úplné shody jejich jmen.
 
+\paragraph{Porovnání dvou services}
+Asi jen název.
+
 \paragraph{Porovnání dvou endpointů}
 Po výběru vhodné dvojice endpointů dojde k jejich porovnání. Postupně se porovnají (pokud jsou pro daný typ webové služby definovány) parametry, response a request. 
 
+\paragraph{Porovnání parametrů endpointů}
+Je porovnáváno: jméno, pořadí, datový typ, případně povinnost. V případě GEN/SPE u datového typu parametru je použita kontravariance a výsledná hodnota je opačná.
 
-\subsection{Problémy při porovnávání}	
+\subsection{Porovnání datových typů}
+V současnosti jsou největším omezením porovnávacího algoritmu datové typy. Jako již bylo zmíněno v kapitole \ref{sec:api-index}, jméno datového typu je jedinou dostupnou informací a tedy také jediným kritériem, podle kterého je lze porovnávat. To je dostatečné v případě vestavěných typů jako například třídy z balíku \verb|java.lang|, nebo typy definované v xsd. 
 
-TODO: rozepsat v patřičných subsections
-\begin{enumerate}
-	\item jak vybrat který endpoint/ws porovnat s kterým
-	\item MOV - pick the best
-	\item datové typy (java built-in, xsd, custom)
-	\item verze v URL u REST API (taky vede na MOV)
-\end{enumerate}
+Nad těmito lze provádět plnohodnotné porovnání včetně kontroly generalizace. U vestavěných typů Javy je generalizace určena na základě dědičnosti a lze například určit, že typ s názvem \verb|java.lang.Number| je generalizací typu s názvem \verb|java.lang.Long|, protože třída \textit{Number} je rodičem třídy \textit{Long}. Obdobně je tomu i u vestavěných typů definovaných v xsd, kde je generalizace $a <: b$ definována v případě, že typ $b$ je dost velký na pojmutí typu $a$. Například typ \verb|xsd:long| dokáže reprezentovat číslo typu \verb|xsd:int| a proto platí, že $xsd:int <: xsd:long$. 
+
+Porovnání vestavěných typů je založeno na podmínce správně zaindexovaného jména datového typu. V případě analýzy byte kódu je tato podmínka splněna, nicméně u metadat získaných čtením popisných XML souborů tomu tak vždy nemusí být. Problém spočívá v  předponě datového typu, která je součástí jeho jména a porovnávací algoritmus očekává její určitou hodnotu (konkrétně \verb|xs|). Hodnota předpony je však určena definicí namespace v XML popisu a ta se může od očekávané lišit. Tato definice není indexerem ukládána a není proto možné ji během porovnání přesně určit.
+
+Pro uživatelsky definované typy je porovnání omezeno pouze na úplnou shodu, protože na základě pouhého jména datového typu nejde s jistotou usoudit nic dalšího.
 	
-\subsubsection{Výběr endpointu/ws vhodného k porovnání}
-
-Metadata:
-\begin{itemize}
-	\item kvůli MOV se teoreticky nelze spoléhat na jméno endpointu
-	\item kvůli verzi v cestě k endpointu (popsáno dále v \ref{sec:api-path-version}) se nelze spoléhat na cestu k endpointu
-\end{itemize}
-
-Počet parametrů
-\begin{itemize}
-	\item některé mohou být nepovinné
-\end{itemize}
- 
-\subsubsection{Porovnávání datových typů}
-Custom datové typy: nejsou indexované a lze tedy porovnávat pouze podle jména (např fully qualified name v případě Java tříd).
- 
-Built-in datové typy (java, xsd)
-
-\begin{itemize}
-	\item Java: podpora typů z \verb|java.lang| + dědičnost
-	\item xsd: podpora built-in typů xsd (musí být správná předpona) + dědičnost ve smyslu 'vejde se do'
-\end{itemize}
-
-	
-\subsubsection{Verze REST API v cestě k endpointu}	
-\label{sec:api-path-version}
-
-Proč: 
-
-\begin{itemize}
-	\item klient může chtít volat novou verzi API a je tedy žádané zjistit, jak moc je API kompatibilní (např. se mohla změnit jen implementace, takže signatura je stále stejná)
-	
-	\item Normálně by algoritmus skončil MUT, protože by kvůli rozdílným cestám k endpointům vyhodnotil endpointy z API 1 jako DEL a endpointy z API 2 jako INS
-	
-	\item to není žádané, takže algoritmus je schopný detekovat verzi v cestě k endpointu a při výběru endpointů k porovnání ji ignorovat
-\end{itemize}
-
-Podporovaný formát:
-\begin{itemize}
-	\item \verb|v<major>[.minor[.micro]]|
-	\item lowecase i uppercase
-	\item oddělovač může být '.', nebo '-'
-	\item regex: \verb|\/[vV][0-9]+(?:[.-][0-9]+){0,2}\/|
-\end{itemize}
-
-Detekci verze je možno vypnout. Pokud je detekce zapnutá, algoritmus se před porovnáním cest pokusí najít verzi a pokud ji najde, z cesty ji vyřadí a porovná cesty bez verze
-	
-\subsection{MOV flag}	
+\section{MOV flag}	
 \label{subsec:mov}
 Popis MOV
 
@@ -586,6 +545,29 @@ Algorimuts (nemusí vždy fungovat správně):
 	\item $h \land pe \land !o$
 	\item TODO
 \end{itemize}
+
+\subsection{Verze REST API v cestě k endpointu}	
+\label{sec:api-path-version}
+
+Proč: 
+
+\begin{itemize}
+	\item klient může chtít volat novou verzi API a je tedy žádané zjistit, jak moc je API kompatibilní (např. se mohla změnit jen implementace, takže signatura je stále stejná)
+	
+	\item Normálně by algoritmus skončil MUT, protože by kvůli rozdílným cestám k endpointům vyhodnotil endpointy z API 1 jako DEL a endpointy z API 2 jako INS
+	
+	\item to není žádané, takže algoritmus je schopný detekovat verzi v cestě k endpointu a při výběru endpointů k porovnání ji ignorovat
+\end{itemize}
+
+Podporovaný formát:
+\begin{itemize}
+	\item \verb|v<major>[.minor[.micro]]|
+	\item lowecase i uppercase
+	\item oddělovač může být '.', nebo '-'
+	\item regex: \verb|\/[vV][0-9]+(?:[.-][0-9]+){0,2}\/|
+\end{itemize}
+
+Detekci verze je možno vypnout. Pokud je detekce zapnutá, algoritmus se před porovnáním cest pokusí najít verzi a pokud ji najde, z cesty ji vyřadí a porovná cesty bez verze
 
 \section{Vyhodnocení výsledků}
 
