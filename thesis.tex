@@ -405,40 +405,100 @@ Z těchto důvodů je do metadat uložen pouze název datového typu což snižu
 %		- tím pádem je jméno datového typu (např. fully qualified name v případě Java třídy) jedinou informací, která je o typu dostupná
 % - oba dva moduly používají jiné identifikátory pro stejné elementy (endpoint, parametr, ...) proto nelze vzájemně porovnat REST indexovaný prvním a druhým modulem
 
-\chapter{Popis funkce porovnávače (co se jak porovnává pro jaké typy API)}
+\chapter{Modul pro porovnávání webových služeb}
 
-V této kapitole je detailně popsána funkce porovnávacího algoritmu společně s daty, nad kterými je možné porovnávač použít. Zároveň je zde popsán způsob vyhodnocení výsledků porovnání a formát takto získaných dat.
+V této kapitole je detailně popsána funkce porovnávacího algoritmu společně s daty, nad kterými je možné porovnávač použít. Zároveň je zde popsán způsob vyhodnocení výsledků porovnání a formát uložení takto získaných dat.
 
-\section{Popis porovnávacího algoritmu}
+\section{Reprezentace rozdílů a kompatibility}
+\label{sec:diff-info}
+Datové struktury použité pro reprezentaci rozdílů dvou entit a jejich vzájemné kompatibility se nazývají \textit{Diff} a \textit{Compatiblity}. Byly navrženy v rámci zkoumání možností určení kompatibility komponent na základě relace subtypingu \cite{brada2006diff}. Článek na komponentu nahlíží skrze její rozhraní, jako na rozhraní datového typu. Stejně tak se dá nahlížet i na rozhraní webové služby a proto jsem tento systém použil k reprezentaci výsledků v mé práci.  
 
-Porovnávací algoritmus pracuje s výše zmíněnými metadaty, reprezentovanými stromovou strukturou, jejíž uzly tvoří instance tříd \verb|Capability|, \verb|Properties| a \verb|Attributes|. Algoritmus pracuje pouze s daty, která byla vytvořena indexery popsanými v části \ref{sec:api-index}. Ostatní metadata, jež mohou být případně navěšená na \verb|Resource| reprezentující API zůstanou nedotčena. V současné době je možné porovnat pouze API, jejichž metadata byla vytvořena stejným indexerem. Není tedy možné porovnat například metadata REST API získaná binární analýzou jar s metadaty získanými čtením JSON-WSP dokumentu.
+\textit{Diff} je definován jako rekurzivní typ, který uchovává jak konkrétní informace o rozdílu skrze podřazené \textit{Diff} tak i úroveň odlišnosti zvanou \textit{Difference}. Tyto úrovně jsou popsány tabulkou \ref{tab:diffs} a v citovaném článku tvoří obor hodnot funkce $diff(a,b): Type \times Type \rightarrow Difference$. Třída \textit{Compatibility} uchovává informace o kompatibilitě dvou komponent, reprezentovány \textit{Resource}, společně s detaily jejich rozdílů, jež jsou reprezentovány stromem \textit{Diff}.
 
-- zmínit taky omezení, která plynou z indexovaných dat
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název úrovně & Zkratka & Popis \\
+		\hline
+		\hline
+		None & NON & $a = b$ \\
+		\hline
+		Insertion & INS & $a$ není definováno, ale $b$ ano \\
+		\hline
+		Specialization & SPE & $b$ je subtyp $a$ ($b <: a$) \\
+		\hline
+		Deletion & DEL & $a$ je definováno, ale $b$ ne \\
+		\hline
+		Generalization & GEN & $a$ je subtyp $b$ ($a <: b$) \\
+		\hline
+		Mutation & MUT & kombinace \textit{INS}/\textit{SPE} a \textit{DEL}/\textit{GEN} \\
+		\hline
+		Unknown & UNK & $a$ nelze porovnat s $b$ \\
+		\hline
+	\end{tabular}
+	\caption{popis úrovní rozdílů}
+	\label{tab:diffs}
+\end{table} 
+
+Způsob vyhodnocení rozdílů dvou webových služeb a význam jednotlivých úrovní \textit{Difference} pro klienta je popsán na konci této kapitoly. 
+
+%Popis výsledné datové struktury
+%\begin{itemize}
+%	\item Diff, Compatibility
+%	\item vychází z \cite{brada2006diff}
+%	\item stromová struktura rozdílů mezi jednotlivými uzly stromu metadat
+%	\item obrázek \ref{fig:diff-construction} hezky popisuje jak to vznikne
+%	\item výsledné hodnoty diffu a jejich významy pro klienta v tabulce \ref{tab:diff-level}
+%	\item SPE/GEN může vzniknout jen z daových typů parametrů/response -> lze spolehlivě použít kontravarianci a výsledek obrátit
+%	\item pokud tedy vyjde SPE, znamená to např generalizovaný parametr a tedy je to pro klienta bezpečné
+%\end{itemize}
+
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics{diff-construction}
+%	\caption{Vytvoření diffů}
+%	\label{fig:diff-construction}
+%\end{figure}
+
+\section{Algoritmus porovnání}
+
+Porovnávací algoritmus pracuje s metadaty popsanými v části \ref{subsec:crce-metadata}. Jedná se o stromovou strukturou, jejíž uzly tvoří instance tříd \textit{Capability}, \textit{Property} a \textit{Attribute}, kde objekty \textit{Attributes} jsou listy této struktury . Soubor metadat může obsahovat další vlastnosti komponenty, která představuje webovou službu, ta však zůstanou nedotčena, protože algoritmus pracuje pouze s daty, která byla vytvořena indexery popsanými v části \ref{sec:api-index}.
+
+Moduly pro indexování webových služeb popsané v předchozí kapitole používají dvě různé množiny \textit{namespace} identifikátorů po pojmenování entit (\textit{Capability}, \textit{Property}, \textit{Attribute}). Do budoucna je zároveň plánované rozšíření těchto modulů o funkcionalitu pro indexování datových typů a datová struktura metadat je tedy předmětem změny. Z těchto důvodů je algoritmus schopen porovnat pouze metadata z jednoho indexeru. Není tedy možné vzájemně porovnat například metadata REST služby získaná binární analýzou JAR s metadaty získanými čtením JSON-WSP dokumentu i když by se mohlo jednat o jednu službu.
+
+%- zmínit taky omezení, která plynou z indexovaných dat
 
 \subsection{Složitost algoritmu}
 
-- v nejhorším případě:
+\begin{itemize}
+	\item REST služby: $O(n^2)$ kde $n$ je počet endpointů
+	\item WADL, JSON-WSP: $O(n^2)$ kde $n$ je počet endpointů
+	\item WSDL: $O(m\cdot n^2)$ kde $m$ je počet WS a $n$ je počet endpointů ve WS
+\end{itemize}
 
-	- WSDL: $O(n^3)$ (ws endpointy ve ws)
-	
-	- ostatní $O(n^2)$ (endpointy1 x endpointy 2)
+\subsection{Popis algoritmu}
 
-\subsection{Obecný algoritmus porovnání}
+Před porovnáváním datových struktur je zkontrolována jejich kompatibilita: typ popisu, \textit{communication pattern}, \textit{identity capability}. Pokud kontrola proběhne úspěšně, je spuštěn samotný algoritmus jehož průběh je naznačen na vývojovém diagramu \ref{fig:apicomp-flow}. V případě porovnání SOAP webových služeb je tento postup obalen ještě porovnáním \textit{services}, které WSDL definuje a které jsou v CRCE reprezentovány jako kolekce endpointů.
 
-TODO: obecný popis, formulovat lépe
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=10cm]{apicomp-flow}
+	\caption{Vývojový diagram porovnávacího algoritmu}
+	\label{fig:apicomp-flow}
+\end{figure}
 
-Algoritmus pro vše krom WSDL obecně (WSDL má navíc výběr a porovnání webservice):
-\begin{enumerate}
-	\item Vstupem jsou endpointy obou API: \verb|endpoints1|, \verb|endpoints2|
-	\item Vyber endpoint \verb|e1| z \verb|endpoints1|
-	\item Vyber endpoint \verb|e2| z \verb|endpoints2|, který je vhodný k porovnání s \verb|e1|
-	\item Pokud neexistuje vhodný \verb|e2|, ulož mezivýsledek reprezentující přebývající endpoint a jdi zpět na 2
-	\item Postupně porovnej metadata, parametry, tělo request, tělo response obou endpointů
-	\item Ulož objekt reprezentující mezivýsledek porovnání
-	\item Pokud není \verb|endpoints1| prázdné, jdi na krok 2, jinak pokračuj dále
-	\item Pro všechny zbývající endpointy \verb|endpoints2| ulož mezivýsledek reprezentující chybějící endpoint
-	\item Z mezivýsledků sestav finální objekt reprezentující výsledek porovnání dvou API
-\end{enumerate}
+Mezivýsledky porovnání jsou ukládány v datové struktuře \textit{Diff}, která je detailně popsaná v sekci \ref{sec:diff-info}. Algoritmus postupuje po stromu metadat od kořene směrem k listům. V listech dojde k porovnání konkrétních hodnot. Pokud jsou porovnány všechny potomci uzlu, je vyhodnocena jeho kompatibilita. Takto se postupuje zpět ke kořeni stromu, který na konci algoritmu obsahuje finální údaj o kompatibilitě dvou API.
+
+\paragraph{Výběr endpointu vhodného k porovnání}
+
+Protože nelze předpokládat pořadí endpointů v metadatech, je nutné před samotným porovnáním nejprve vybrat dvojici endpointů k tomu vhodnou. Endpoint z první webové služby (\textit{e1}) je vybrán sekvenčně (jak je naznačeno na \ref{fig:apicomp-flow}). Druhý endpoint (\textit{e2}) je pak vybrán na základě určité shody s metadaty endpointu \textit{e1}, konkrétně se jedná o počet povinných parametrů, jméno a URL na které jsou endpointy dostupné. URL nemusí být shodné úplně, pokud tak nastane, je nastavena vlajka MOV, která je detailně popsána v sekci \ref{subsec:mov}.
+
+O porovnatelnosti dvou \textit{services} (v případě SOAP) je rozhodnuto na základě úplné shody jejich jmen.
+
+\paragraph{Porovnání dvou endpointů}
+Po výběru vhodné dvojice endpointů dojde k jejich porovnání. Postupně se porovnají (pokud jsou pro daný typ webové služby definovány) parametry, response a request. 
+
 
 \subsection{Problémy při porovnávání}	
 
@@ -498,7 +558,7 @@ Podporovaný formát:
 Detekci verze je možno vypnout. Pokud je detekce zapnutá, algoritmus se před porovnáním cest pokusí najít verzi a pokud ji najde, z cesty ji vyřadí a porovná cesty bez verze
 	
 \subsection{MOV flag}	
-
+\label{subsec:mov}
 Popis MOV
 
 Co: Příznak označující, že API/endpoint má (částečně) shodnou implementaci, ale nachází se na jiné adrese
@@ -526,28 +586,8 @@ Algorimuts (nemusí vždy fungovat správně):
 	\item $h \land pe \land !o$
 	\item TODO
 \end{itemize}
-	
-	
-\section{Výsledek porovnání - Diff}	
-Popis výsledné datové struktury
-\begin{itemize}
-	\item Diff, Compatibility
-	\item vychází z \cite{brada2006diff}
-	\item stromová struktura rozdílů mezi jednotlivými uzly stromu metadat
-	\item obrázek \ref{fig:diff-construction} hezky popisuje jak to vznikne
-	\item výsledné hodnoty diffu a jejich významy pro klienta v tabulce \ref{tab:diff-level}
-	\item SPE/GEN může vzniknout jen z daových typů parametrů/response -> lze spolehlivě použít kontravarianci a výsledek obrátit
-	\item pokud tedy vyjde SPE, znamená to např generalizovaný parametr a tedy je to pro klienta bezpečné
-\end{itemize}
-	
-\begin{figure}[h]
-	\centering
-	\includegraphics{diff-construction}
-	\caption{Vytvoření diffů}
-	\label{fig:diff-construction}
-\end{figure}
 
-\subsection{Vyhodnocení výsledku}
+\section{Vyhodnocení výsledků}
 
 - jak probíhá vyhodnocení (nejdříve se určí hodnoty listů, z nich se pak počítá dál nahoru)
 
@@ -559,18 +599,27 @@ Popis výsledné datové struktury
 
 \begin{table}[h!]
 	\centering
-	\begin{tabular}{c|c}
-		Difference type & Impact on client  \\
+	\begin{tabular}{|l|c|}
 		\hline
-		None (NON) & safe \\
-		Specialization (SPE) & safe  \\
-		Insertion (INS) & safe \\
-		Deletion (DEL) & potentially dangerous \\
-		Generalization (GEN) & potentially dangerous \\
-		Mutation (MUT) & dangerous \\
-		Unkown (UNK) & dangerous
+		Difference & Dopad na klienta  \\
+		\hline
+		\hline
+		None (NON) & bezpečné \\
+		\hline
+		Specialization (SPE) & bezpečné  \\
+		\hline
+		Insertion (INS) & bezpečné \\
+		\hline
+		Deletion (DEL) & potenciálně nebezpečné \\
+		\hline
+		Generalization (GEN) & potenciálně nebezpečné \\
+		\hline
+		Mutation (MUT) & nebezpečné \\
+		\hline
+		Unkown (UNK) & nebezpečné \\
+		\hline
 	\end{tabular}
-	\caption{Types of differences between two nodes }
+	\caption{Dopad jednotlivých úrovní rozdílu na klienta }
 	\label{tab:diff-level}
 \end{table}
 
