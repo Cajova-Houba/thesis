@@ -25,7 +25,7 @@
 %\declarationfemale
 
 % Název práce
-\title{Určování nahraditelnosti a\\kompatibility webových služeba}
+\title{Určování nahraditelnosti a\\kompatibility webových služeb}
 
 % 
 % Texty abstraktů (anglicky, česky)
@@ -84,6 +84,14 @@
 % na seznam zktratek
 \usepackage{longtable}
 \newcommand\nomenclature[2]{#1 & #2 \\}
+
+% víceřádkové buňky v tabulce
+\usepackage{makecell}
+
+\renewcommand\theadalign{bc}
+\renewcommand\theadfont{\bfseries}
+\renewcommand\theadgape{\Gape[4pt]}
+\renewcommand\cellgape{\Gape[4pt]}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -516,60 +524,79 @@ Porovnání vestavěných typů je založeno na podmínce správně zaindexovan�
 
 Pro uživatelsky definované typy je porovnání omezeno pouze na úplnou shodu, protože na základě pouhého jména datového typu nejde s jistotou usoudit nic dalšího.
 	
-\section{MOV flag}	
+\section{Migrace webových služeb}	
 \label{subsec:mov}
-Popis MOV
+V popisu porovnání metadat endpointů bylo zmíněno použití URL endpointu jako identifikátoru. Tento přístup naráží na problém, pokud poskytovatel webovou službu přesune, nebo provede změny v cestě k danému endpointu. Na obrázku \ref{fig:mov-example} je uveden příklad dvou shodných endpointů, jež se liší pouze v URL. Aplikujeme-li výše popsaný algoritmus na tato data, skončí negativním výsledkem, i přes to, že endpointy mají totožné rozhraní a klient by k nim mohl bez obtíží přistoupit. 
 
-Co: Příznak označující, že API/endpoint má (částečně) shodnou implementaci, ale nachází se na jiné adrese
+Podobným příkladem je i verze API v cestě k endpointu. Klient může mít požadavek na zjištění kompatibility API dvou různých verzí, ale algoritmus vrátí rozdíl \textit{MUT}, protože endpointy z prvního API vyhodnotí jako chybějící v API druhém a naopak, právě kvůli rozdílným cestám. Tím vznikne kombinace rozdílů \textit{DEL} a \textit{INS}, která vede na \textit{MUT}. Takové chování není žádané a je potřeba těmto problémům předcházet, proto je nutné případné změny v URL detekovat a brát je při porovnávání v potaz.
 
-Proč: endpointy v API mohou mít jiné url/jména, ale implementačně mohou být shodné -> potřeba detekovat
+\begin{figure}[h]
+	\centering
+	\caption{Příklad shodných endpointů s rozdílnou URL}
+	\label{fig:mov-example}
+\end{figure}
 
-Jak: na základě ostatních metadat (počet parametrů, počet endpointů ve WS)
+Jako řešení popsaného problému byl zaveden příznak "MOV", který je ortogonální k úrovni změny (\textit{Difference}) popsané v předchozích sekcích a je součástí objektu \textit{Diff}. Díky ortogonalitě je možné stále určit méně nebezpečné rozdíly jako například vložený endpoint (INS), nebo generalizaci v příznaku parametru (SPE) a zároveň předat klientovi informaci o změně v URL. 
 
-Mov se také nastaví pokud je zaplé ignorování verzi REST API v endpoint path a pokud: 
-\begin{itemize}
-	\item cesty s verzí nejsou stejné
-	\item cesty bez verze jsou stejné
-\end{itemize}
+Příznak MOV má smysl brát v úvahu jen u případů porovnání jejichž úroveň změny je v podmnožině ${NON, GEN, SPE}$, která je v rámci této sekce označována jako bezpečná. Všechny ostatní úrovně představují v kontextu migrace příliš velkou změnu. Je tedy  například nesmyslné nastavit příznak MOV u rozdílu dvou endpointů s úrovní změny \textit{DEL}, protože samotná úroveň změny říká, že endpoint nebyl v druhé webové službě nalezen a proto nelze ani určit zda byl přemístěn.  
 
-Algorimuts (nemusí vždy fungovat správně):
-\begin{itemize}
-	\item  obecná detekce před samotným porovnáním -> MovDetectionResult
-	\item  3x diff: host, path to endpoint, operace
-	\item  MovDetectionResult se pak použije při výběru endpointu k porovnání a při samotném porovnání (pickBest)
-\end{itemize}
-	
-- kombinace které vedou na mov: 
-\begin{itemize}
-	\item $h \land !pe \land !o$
-	\item $h \land pe \land !o$
-	\item TODO
-\end{itemize}
+\subsection{Detekce změn v URL}
+
+Součástí URL endpointu je také jeho název, změny v URL se tedy dají detekovat na třech místech. Prvním z nich je doména (včetně protokolu), druhým je cesta k endpointu a třetím jeho jméno. TODO co a jak se detekuje. 
+
+\begin{figure}[h]
+	\centering
+	\caption{Třída nesoucí výsledek detekce změn v URL}
+	\label{fig:mov-detect-res}
+\end{figure}
+
+Výsledek detekce změn v URL, jež je zachycen třídou \textit{MovDetectionResult} znázorněnou na obrázku \ref{fig:mov-detect-res}, nese tři příznaky, kde každý z nich určuje, zda byla v dané části URL detekována změna. Vzhledem k tomu, že algoritmus detekce pracuje pouze s URL a jmény endpointů, dojde k pozitivnímu výsledku i v případě, že jsou porovnávány dvě odlišné web služby. Aby se redukoval počet false-positives, je potřeba určit, které kombinace příznaků změny mohou vést na MOV a které představují příliš velké odchýlení. Tyto kombinace jsou uvedeny v tabulce \ref{tab:mov-explanation}, kde proměnné \textit{h}, \textit{p}, \textit{n} označují změnu v doméně, cestě a jménu endpointu.
+
+\begin{table}[h]
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Kombinace & MOV & Zdůvodnění \\
+		\hline
+		\hline
+		$!h \land !p \land !o$ & ne & Nebyla detekována žádná změna. \\
+		\hline
+		$h \land !p \land !o$ & ano & \makecell{Změna v doméně, může se \\jednat o migraci webové služby.} \\
+		\hline
+		$!h \land p \land !o$ & ano & \makecell{Změna v cestě k endpointům, může se \\ jednat o restrukturalizaci služby.} \\
+		\hline
+		$h \land p \land !o$ & ano & Může se jednat o kombinaci obou předchozích. \\
+		\hline
+		všechny ostatní & ne & Změna je příliš velká. \\
+		\hline
+	\end{tabular}
+	\label{tab:mov-explanation}
+\end{table}
+
+Z tabulky je vidět, že změna ve jménech endpointů vždy vede na záporný výsledek. Důvodem je fakt, že jméno endpointu je druhé kritérium pro výběr vhodného páru endpointů (prvním je URL) a bez něj by algoritmus zdegradoval na porovnání "každý s každým" což by značně snížilo efektivitu.   
+
+\subsection{Výběr entit k porovnání s příznakem MOV}
+
+Protože jedním z kritérií pro výběr vhodného páru endpointů je i URL, je potřeba upravit logiku výběru tak, aby byly brány v potaz výsledky detekce popsané v předchozí sekci. Při porovnávání URL dvou endpointů je podle kombinace změn daná část URL ignorována a pracuje se pouze s nezměněnou částí u které je vyžadována striktní rovnost.
+
+Tento způsob může vést na případy, kdy je dvojce endpointů vyhodnocena jako potencionálně vhodná k porovnání (s nastaveným příznakem MOV), nicméně porovnání skončí negativním výsledkem, například \textit{UNK}. Pouhá akceptace takového výsledku a pokračování algoritmu by mohlo zapříčinit negativní vyhodnocení kompatibility webových služeb v případech, kdy skutečný rozdíl není tak silný. TODO: příklad 
+
+\subsubsection{Algoritmus 'pick best'}
+Řešením zmíněného problému je algoritmus 'pick  best', který postupně porovnává dvojice endpointů (k tomu předem vybrané) a jako výsledek vrátí dvojici s nejlepším rozdílem. Vstupem algoritmu je tedy endpoint z první webové služby \textit{e1} a množina endpointů druhé webové služby \textit{endpoints2}. 
+
+Algoritmus postupně vybírá elementy \textit{e2} z \textit{endpoints2} a pokud je pár $e1,e2$ vyhodnocen jako porovnatelný, dojde k detailnímu porovnání. V případě výsledku spadajícího do bezpečné množiny (${NON, GEN, SPE}$) je pár $e1,e2$ vrácen a porovnání pro endpoint \textit{e1} je ukončeno. V opačném případě je negativní výsledek uložen a z množiny \textit{endpoints2} jsou vybírány další porovnatelné endpointy dokud algoritmus nedojde ke dvojici, jejíž rozdíl spadá do bezpečné množiny, nebo dokud není \textit{endpoints2} vyčerpána. Pokud je množina \textit{endpoint2} vyprázdněna, znamená to (alespoň částečnou) nekompatibilitu obou webových služeb a je vrácen první porovnávaný pár $e1,e2$.
 
 \subsection{Verze REST API v cestě k endpointu}	
 \label{sec:api-path-version}
 
-Proč: 
+TODO: citate, že verze API v cestě je common practice
 
-\begin{itemize}
-	\item klient může chtít volat novou verzi API a je tedy žádané zjistit, jak moc je API kompatibilní (např. se mohla změnit jen implementace, takže signatura je stále stejná)
-	
-	\item Normálně by algoritmus skončil MUT, protože by kvůli rozdílným cestám k endpointům vyhodnotil endpointy z API 1 jako DEL a endpointy z API 2 jako INS
-	
-	\item to není žádané, takže algoritmus je schopný detekovat verzi v cestě k endpointu a při výběru endpointů k porovnání ji ignorovat
-\end{itemize}
+Jednou ze speciálních změn detekovatelných v cestě k endpointu je verze API. Tato praktika je běžná [todo: cite] a k jejímu zpracování lze použít jednodušší přístup, než byl dosud popsán. Část cesty, která obsahuje verzi lze jednoduše vypustit a porovnat URL bez verze, což případě stejného API (s odlišností verze) znamená porovnání dvou identických URL. Příznak MOV je potom nastaven pokud jsou URL s verzemi rozdílné a URL bez verzí stejné.
 
-Podporovaný formát:
-\begin{itemize}
-	\item \verb|v<major>[.minor[.micro]]|
-	\item lowecase i uppercase
-	\item oddělovač může být '.', nebo '-'
-	\item regex: \verb|\/[vV][0-9]+(?:[.-][0-9]+){0,2}\/|
-\end{itemize}
-
-Detekci verze je možno vypnout. Pokud je detekce zapnutá, algoritmus se před porovnáním cest pokusí najít verzi a pokud ji najde, z cesty ji vyřadí a porovná cesty bez verze
+Algoritmus podporuje standardní formát verze \verb|vmajor.minor.micro|, který je vyjádřen regulárním výrazem: \verb|/[vV][0-9]+(?:[.-][0-9]+){0,2}/|.
 
 \section{Vyhodnocení výsledků}
+
+Mezivýsledky porovnání jednotlivých elementů stromu metadat jsou ukládány do hierarchické struktury \textit{Diff} a vždy po vyhodnocení všech rozdílů potomku uzlu, dojde na základě těchto i vyhodnocení rozdílu uzlu samotného. Každá z úrovní rozdílů \textit{Difference} popsaných v tabulce \ref{tab:diffs} má určitou prioritu a uzel od svých potomků přejímá \textit{Difference} s nejvyšší prioritou. Pokud tedy například dojde k rozdílu \textit{UNK} (maximální priorita) při porovnání dvou atributů parametru endpointu, postupným vyhodnocováním se tato \textit{Difference} dostane až ke kořenovému uzlu a výsledná kompatibilita bude mít hodnotu \textit{UNK}. Hodnoty jsou v tabulce \ref{tab:diffs} seřazeny od nejnižší priority po nejvyšší.
 
 - jak probíhá vyhodnocení (nejdříve se určí hodnoty listů, z nich se pak počítá dál nahoru)
 
