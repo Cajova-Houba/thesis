@@ -165,6 +165,10 @@ Pojem 'webová služba' má různé významy pro různé lidi, ale dá se najít
 
 - odkaz konkrétně na request methods, mohlo by se hodit, protože ty jsou indexovány, tak alespoň na citaci
 
+- verzování API: https://www.xmatters.com/blog/devops/blog-four-rest-api-versioning-strategies/
+
+- další verzování: https://www.troyhunt.com/your-api-versioning-is-wrong-which-is/
+
 \subsection{Technologie použité k realizaci webových služeb}
 
 - zmínit: RPC, SOAP
@@ -421,37 +425,39 @@ V této kapitole je detailně popsána funkce porovnávacího algoritmu společn
 
 \section{Reprezentace rozdílů a kompatibility}
 \label{sec:diff-info}
-Datové struktury použité pro reprezentaci rozdílů dvou entit a jejich vzájemné kompatibility se nazývají \textit{Diff} a \textit{Compatiblity}. Byly navrženy v rámci zkoumání možností určení kompatibility komponent na základě relace subtypingu \cite{brada2006diff}. Článek na komponentu nahlíží skrze její rozhraní, jako na rozhraní datového typu. Stejně tak se dá nahlížet i na rozhraní webové služby a proto jsem tento systém použil k reprezentaci výsledků v mé práci.  
+Rozdíl webových služeb se nedá vyjádřit stejné/nestejné. Proč? Pro klienta to nemusí být dostatečná informace (může ho zajímat co přesně není stejné), navíc i webové služby, které nejsou stejné mohou být z pohledu klienta kompatibilní. Proto je potřeba rozdíly mezi službami reprezentovat něčím trochu chytřejším než např boolean hodnotou.
 
-\textit{Diff} je definován jako rekurzivní typ, který uchovává jak konkrétní informace o rozdílu skrze podřazené \textit{Diff} tak i úroveň odlišnosti zvanou \textit{Difference}. Tyto úrovně jsou popsány tabulkou \ref{tab:diffs} a v citovaném článku tvoří obor hodnot funkce $diff(a,b): Type \times Type \rightarrow Difference$. Třída \textit{Compatibility} uchovává informace o kompatibilitě dvou komponent, reprezentovány \textit{Resource}, společně s detaily jejich rozdílů, jež jsou reprezentovány stromem \textit{Diff}.
+Článek \cite{brada2006diff} zabývající se možnostmi evaluace kompatibility komponent na základě relace subtypingu, nahlíží na komponentu skrze její rozhraní jako na datový typ a popisuje odlišnosti v různých úrovních kontraktu (metoda, parametr, ...). Na základě těchto odlišností (a relace subtypingu) je pak určena míra kompatibility dvou komponent. Protože je webová služba v CRCE reprezentována komponentou a na její rozhraní se dá také nahlížet jako na kontrakt datového typu, použil jsem tento přístup k reprezentaci výsledků porovnání v mé práci.  
+
+Datové struktury použité pro reprezentaci rozdílů dvou entit a jejich vzájemné kompatibility navržené v rámci citovaného článku se nazývají \textit{Diff} a \textit{Compatiblity}. \textit{Diff} je definován jako rekurzivní typ, který uchovává jak konkrétní informace o rozdílu skrze podřazené \textit{Diff} tak i úroveň odlišnosti zvanou \textit{Difference}. Tyto úrovně jsou popsány tabulkou \ref{tab:diffs} a v citovaném článku tvoří obor hodnot funkce $diff(a,b): Type \times Type \rightarrow Difference$. Třída \textit{Compatibility} uchovává informace o kompatibilitě dvou komponent, reprezentovány \textit{Resource}, společně s detaily jejich rozdílů, jež jsou reprezentovány stromem \textit{Diff}.
 
 \begin{table}[h]
 	\centering
-	\begin{tabular}{|l|c|c|}
+	\begin{tabular}{|l|c|c|c|}
 		\hline
-		Název úrovně & Zkratka & Popis \\
+		Název úrovně & Váha & Priorita & Popis \\
 		\hline
 		\hline
-		None & NON & $a = b$ \\
+		None & NON & 1 & $a = b$ \\
 		\hline
-		Insertion & INS & $a$ není definováno, ale $b$ ano \\
+		Insertion & INS & 2 & $a$ není definováno, ale $b$ ano \\
 		\hline
-		Specialization & SPE & $b$ je subtyp $a$ ($b <: a$) \\
+		Deletion & DEL & 2 & $a$ je definováno, ale $b$ ne \\
 		\hline
-		Deletion & DEL & $a$ je definováno, ale $b$ ne \\
+		Specialization & SPE & 3 & $b$ je subtyp $a$ ($b <: a$) \\
 		\hline
-		Generalization & GEN & $a$ je subtyp $b$ ($a <: b$) \\
+		Generalization & GEN & 3& $a$ je subtyp $b$ ($a <: b$) \\
 		\hline
-		Mutation & MUT & kombinace \textit{INS}/\textit{SPE} a \textit{DEL}/\textit{GEN} \\
+		Mutation & MUT & 4 & kombinace \textit{INS}/\textit{SPE} a \textit{DEL}/\textit{GEN} \\
 		\hline
-		Unknown & UNK & $a$ nelze porovnat s $b$ \\
+		Unknown & UNK & 5 & $a$ nelze porovnat s $b$ \\
 		\hline
 	\end{tabular}
-	\caption{popis úrovní rozdílů}
+	\caption{Popis úrovní rozdílů}
 	\label{tab:diffs}
 \end{table} 
 
-Způsob vyhodnocení rozdílů dvou webových služeb a význam jednotlivých úrovní \textit{Difference} pro klienta je popsán na konci této kapitoly. 
+Způsob vyhodnocení rozdílů dvou webových služeb společně s významem jednotlivých úrovní \textit{Difference} a jejich vah pro klienta je popsán na konci této kapitoly. 
 
 %Popis výsledné datové struktury
 %\begin{itemize}
@@ -590,23 +596,31 @@ Algoritmus postupně vybírá elementy \textit{e2} z \textit{endpoints2} a pokud
 \subsection{Verze REST API v cestě k endpointu}	
 \label{sec:api-path-version}
 
-TODO: citate, že verze API v cestě je common practice
+Jednou ze speciálních změn detekovatelných v cestě k endpointu je verze API. Jedná se o běžnou praktiku \cite{restApiVersion} a k jejímu zpracování lze použít jednodušší přístup, než byl dosud popsán. Část cesty, která obsahuje verzi lze jednoduše vypustit a porovnat URL bez verze, což případě stejného API (s odlišností verze) znamená porovnání dvou identických URL. Příznak MOV je potom nastaven pokud jsou URL s verzemi rozdílné a URL bez verzí stejné.
 
-Jednou ze speciálních změn detekovatelných v cestě k endpointu je verze API. Tato praktika je běžná [todo: cite] a k jejímu zpracování lze použít jednodušší přístup, než byl dosud popsán. Část cesty, která obsahuje verzi lze jednoduše vypustit a porovnat URL bez verze, což případě stejného API (s odlišností verze) znamená porovnání dvou identických URL. Příznak MOV je potom nastaven pokud jsou URL s verzemi rozdílné a URL bez verzí stejné.
-
-Algoritmus podporuje standardní formát verze \verb|vmajor.minor.micro|, který je vyjádřen regulárním výrazem: \verb|/[vV][0-9]+(?:[.-][0-9]+){0,2}/|.
+Algoritmus podporuje standardní verzovací formát \verb|major.minor.micro|, který je vyjádřen regulárním výrazem: \verb|/[vV][0-9]+(?:[.-][0-9]+){0,2}/|.
 
 \section{Vyhodnocení výsledků}
 
-Mezivýsledky porovnání jednotlivých elementů stromu metadat jsou ukládány do hierarchické struktury \textit{Diff} a vždy po vyhodnocení všech rozdílů potomku uzlu, dojde na základě těchto i vyhodnocení rozdílu uzlu samotného. Každá z úrovní rozdílů \textit{Difference} popsaných v tabulce \ref{tab:diffs} má určitou prioritu a uzel od svých potomků přejímá \textit{Difference} s nejvyšší prioritou. Pokud tedy například dojde k rozdílu \textit{UNK} (maximální priorita) při porovnání dvou atributů parametru endpointu, postupným vyhodnocováním se tato \textit{Difference} dostane až ke kořenovému uzlu a výsledná kompatibilita bude mít hodnotu \textit{UNK}. Hodnoty jsou v tabulce \ref{tab:diffs} seřazeny od nejnižší priority po nejvyšší.
+Mezivýsledky porovnání jednotlivých elementů stromu metadat jsou ukládány do hierarchické struktury \textit{Diff} a vždy po vyhodnocení všech rozdílů potomků dvou uzlů, dojde na základě těchto i k vyhodnocení rozdílů uzlů samotných. Úroveň rozdílu jež určuje finální kompatibilitu webových služeb je dána úrovní kořenového \textit{Diff}, který drží celou strukturu popisující detailní rozdíly mezi službami. 
 
-- jak probíhá vyhodnocení (nejdříve se určí hodnoty listů, z nich se pak počítá dál nahoru)
+Příklad tvorby \textit{Diff} při porovnání dvou operací je znázorněn na obrázku \ref{fig:compatibility-creation}. Nejdříve dojde k vyhodnocení rozdílů listů, tedy atributů \textit{name} a \textit{type} parametrů obou operací, čímž vzniknou \textit{type diff} a \textit{name diff}. Na základě těchto se určí rozdíl mezi parametry samotnými (\textit{parameter diff}) a po porovnání metadat operací (\textit{metadata diff}) je vyhodnocen i výsledný rozdíl obou operací jež je reprezentován objektem \textit{endpoint diff}.
 
-- kontravariance
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=6.5cm]{compatibility-construction}
+	\caption{Tvorba rozdílů mezi dvěma endpointy}
+	\label{fig:compatibility-creation}
+\end{figure}
 
-	- není to úplně problém, ale při vyhodnocování finálního Diffu pro endpoint je potřeba brát v potaz 
-	
-	- GEN/SPE může vzniknout jen z datových typů parametrů/response endpointu, takže je to poměrně přímočaré
+Vyhodnocení úrovně rozdílu \textit{Diff} na základě jeho potomků je řízeno prioritou. Každá z úrovní rozdílů \textit{Difference} popsaných v tabulce \ref{tab:diffs} má určitou prioritu, která reprezentuje závažnost rozdílu a uzel od svých potomků vždy přejímá \textit{Difference} s nejvyšší prioritou. Tím je zaručeno, že se rozdíly narušující kompatibilitu projeví na finálním verdiktu.
+
+Pokud tedy například dojde k rozdílu \textit{UNK} (maximální priorita) při porovnání dvou atributů parametru endpointu, postupným vyhodnocováním se tato \textit{Difference} dostane až ke kořenovému uzlu a výsledná kompatibilita bude mít hodnotu \textit{UNK}. Hodnoty jsou v tabulce \ref{tab:diffs} seřazeny od nejnižší priority po nejvyšší.
+
+
+\subsection{Dopad na klienta}
+
+Výše popsané úrovně \textit{Difference} mají rozdílný dopad na klienta. Ten se dá rozdělit do skupin bezpečné, potenciálně nebezpečné a nebezpečné, tak jak je tomu v tabulce \ref{tab:diff-level}. Následující odstavce popisují dopad na klienta pro jednotlivé úrovně a zdůvodňují jejich zařazení do dané skupiny.
 
 \begin{table}[h!]
 	\centering
@@ -633,6 +647,25 @@ Mezivýsledky porovnání jednotlivých elementů stromu metadat jsou ukládány
 	\caption{Dopad jednotlivých úrovní rozdílu na klienta }
 	\label{tab:diff-level}
 \end{table}
+
+\subsubsection{Bezpečné rozdíly}
+
+Pokud je rozdíl mezi službami v bezpečné skupině, může klient transparentně volat obě služby, aniž by došlo k jakékoliv chybě v rámci kontraktu. Úroveň \textit{SPE} sice označuje specializaci, nicméně změny \textit{SPE} a \textit{GEN} mohou nastat pouze v případě neshody datových typů parametrů, nebo odpovědi operace. V takovém případě je aplikován princip kontravariance \cite{abadi1995subytping} podle kterého platí, že $F'(a') <: F(a) <=> a <: a'$ a \textit{SPE} tedy znamená bezpečnou změnu \textit{GEN} u parametrů, nebo odpovědi operace. 
+
+Změna \textit{INS} nastává v případě, že druhá webová služba obsahuje operace, které nejsou v první definované. Vzhledem k tomu, že klient nemohl volat a nemůže tak dojít k porušení kontraktu webové služby, je tato změna brána jako bezpečná.
+
+\subsubsection{Potenciálně nebezpečné rozdíly}
+
+Změny v této skupině mohou mít nebezpečný dopad na klienta ve smyslu volání operace webové služby s neplatným kontraktem, nicméně nejsou tak závažné jako změny nebezpečné. Posouzení reálného rizika změny provádí klient na základě vráceného objektu popisujícího kompatibilitu služeb.
+
+Úroveň \textit{DEL} označuje element definovaný v první službě, ale chybějící v druhé. Může se jednat například o parametr operace, nebo operaci samotnou. Úroveň \textit{GEN} je získána, stejně jako \textit{SPE}, na základě principu kontravariance a označuje změnu v datovém typu (parametru, odpovědi operace, ...), například z \textit{long} na \textit{int}. 
+
+\subsubsection{Nebezpečné rozdíly}
+
+Změny v této skupině představují buď kombinace několika méně závažných změn (\textit{MUT}), nebo neporovnatelnost obou webových služeb (\textit{UNK}). Stejně jako u předchozí skupiny, i zde může klient použít výsledky porovnání a sám rozhodnout o míře nekompatibility. Úroveň \textit{MUT} může například nastat i kombinací rozdílů endpointů, které klient nepoužívá a druhá webová služba tak pro něj může být stále kompatibilní.
+
+Úroveň \textit{UNK} označuje neporovnatelnost metadat a v takovém případě nelze o kompatibilitě jednoznačně rozhodnout.
+
 
 \chapter{Implementační detaily (jen stručně)}
 
