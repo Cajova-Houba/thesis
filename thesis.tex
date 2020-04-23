@@ -268,7 +268,7 @@ Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \te
 
 \subsection{Životní cyklus komponenty v CRCE}
 
-Úložiště bylo primárně navrženo pro ukládání OSGi komponent, nicméně indexovat lze jakýkoliv soubor. Komponenta je v CRCE popsána již zmíněnými metadaty a prochází vlastním životním cyklem naznačeným na obrázku \ref{fig:crce-comp-lc}.
+Úložiště bylo původně navrženo pro ukládání OSGi komponent, nicméně indexovat lze jakoukoliv komponentu. Komponenta je v CRCE popsána již zmíněnými metadaty a prochází vlastním životním cyklem naznačeným na obrázku \ref{fig:crce-comp-lc}.
 
 \begin{figure}[h]
 	\centering
@@ -277,7 +277,9 @@ Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \te
 	\label{fig:crce-comp-lc}
 \end{figure} 
 
-Životní cyklus má dvě hlavní fáze, jimiž jsou \textit{Buffer} a \textit{Store}. V obou fázích jsou nad komponentou prováděny operace z nichž \textit{analyze} je nejvíce relevantní mé práci, protože právě během této operace dochází ke sběru metadat (fáze \textit{Buffer}) a dalším výpočtům nad nimi (fáze \textit{Store}). Modul s rozšířením, který je předmětem mé práce bude zařazen mezi výpočty prováděné nad metadaty během \textit{analyze}, kde bude vyhodnocovat vzájemnou kompatibilitu webových služeb. Způsoby sběru těchto metadat, ke kterým dochází ve fázi \textit{Store}, jsou popsány v následující sekci. 
+Životní cyklus má dvě hlavní fáze, jimiž jsou \textit{Buffer} a \textit{Store}. Komponenta po nahrání do úložiště nejprve prochází fází \textit{Buffer}, v níž dojde k indexaci obsahu, kontrole vnitřní konzistence a kompatibility komponenty. Pokud touto fází projde bez chyb, je komponenta nahrána do trvalého úložiště (operace \textit{commit}) a přechází do fáze \textit{Store}.
+
+V obou fázích jsou nad komponentou prováděny operace z nichž \textit{analyze} je nejvíce relevantní mé práci, protože právě během této operace dochází ke sběru metadat (fáze \textit{Buffer}) a dalším výpočtům nad nimi (fáze \textit{Store}). Modul s rozšířením, který je předmětem mé práce bude zařazen mezi výpočty prováděné nad metadaty během \textit{analyze}, kde bude vyhodnocovat vzájemnou kompatibilitu webových služeb. Způsoby sběru těchto metadat, ke kterým dochází ve fázi \textit{Store}, jsou popsány v následující sekci. 
 
 %
 %- primárně komponenta = OSGI bundle, ale může být cokoliv (např i pouhý textový soubor)
@@ -365,7 +367,7 @@ Z implementace REST služby modul rekonstruuje kolekci endpointů s jejich param
 
 \subsection{Indexování webových služeb na základě popisu}
 
-Modul pro indexování webových služeb vznikl v rámci práce Bc. Davida Pejřimovského. Oproti předchozímu modulu pro indexaci REST služeb nepracuje tento s její implementací, ale s pouhým popisem. Podporované formáty popisu služeb jsou WSDL (verze 1.1 i 2.0) pro SOAP webové služby, WADL a Json-WSP pro REST služby\cite{pejrimovsky2015ws}.
+Modul pro indexování webových služeb vznikl v rámci práce Bc. Davida Pejřimovského. Oproti předchozímu modulu pro indexaci REST služeb nepracuje tento s její implementací, ale s popisným souborem služby, tak jak bylo uvedeno v kapitole \ref{sec:web-services-principles}. Podporované formáty popisu služeb jsou WSDL (verze 1.1 i 2.0) pro SOAP webové služby, WADL a Json-WSP pro REST služby\cite{pejrimovsky2015ws}.
 
 Struktura dat vytvořených pro REST služby (tedy z popisu WADL, nebo Json-WSP) je podobná struktuře dat vytvořenou předchozím indexerem. Endpoint je tedy reprezentován entitou \textit{Capability}, jeho parametry entitami \textit{Property}. Z popisu Json-WSP je ještě vytvořena reprezentace response pro daný endpoint (entita \textit{Property}). Z popisu WADL se žádné další vlastnosti endpointů nezískávají.
 
@@ -754,5 +756,9 @@ TODO
 	\nomenclature{XML}{Extensible Markup Language}
 	\nomenclature{XSD}{XML Schema Definition}
 \end{longtable}
+
+\chapter*{Příloha A - WSDL webové služby pro komix Dilbert}
+\addcontentsline{toc}{chapter}{Příloha A - WSDL webové služby pro komix Dilbert}
+Tady bude WSDL
 
 \end{document}
