@@ -425,17 +425,17 @@ V této kapitole je detailně popsána funkce porovnávacího algoritmu společn
 
 \section{Reprezentace rozdílů a kompatibility}
 \label{sec:diff-info}
-Rozdíl webových služeb se nedá vyjádřit stejné/nestejné. Proč? Pro klienta to nemusí být dostatečná informace (může ho zajímat co přesně není stejné), navíc i webové služby, které nejsou stejné mohou být z pohledu klienta kompatibilní. Proto je potřeba rozdíly mezi službami reprezentovat něčím trochu chytřejším než např boolean hodnotou.
+Webové služby jsou popsány komplexní strukturou metadat, která byla uvedena v předchozí kapitole. Rozdíl mezi těmito strukturami lze vyjádřit pouhou pravdivostní hodnotou (stejné, nebo nestejné), nicméně takový přístup skrývá před klientem většinu informací, na základě kterých by se mohl rozhodnout o dalším postupu a tím značně snižuje použitelnost aplikace. Mimo to, samotná skutečnost, že metadata webových služeb se neshodují nemusí nutně z pohledu klienta znamenat nekompatibilitu. Z těchto důvodů je k reprezentaci rozdílů mezi službami třeba použít vhodnější metodu.
 
-Článek \cite{brada2006diff} zabývající se možnostmi evaluace kompatibility komponent na základě relace subtypingu, nahlíží na komponentu skrze její rozhraní jako na datový typ a popisuje odlišnosti v různých úrovních kontraktu (metoda, parametr, ...). Na základě těchto odlišností (a relace subtypingu) je pak určena míra kompatibility dvou komponent. Protože je webová služba v CRCE reprezentována komponentou a na její rozhraní se dá také nahlížet jako na kontrakt datového typu, použil jsem tento přístup k reprezentaci výsledků porovnání v mé práci.  
+Článek \cite{brada2006diff} zabývající se možnostmi evaluace kompatibility komponent na základě relace subtypingu, nahlíží na komponentu skrze její rozhraní jako na datový typ a popisuje odlišnosti v různých úrovních kontraktu (metoda, parametr, ...). Na základě těchto odlišností (a relace subtypingu) je pak určena míra kompatibility dvou komponent. Protože je webová služba v CRCE reprezentována komponentou a na její rozhraní se dá také nahlížet jako na kontrakt datového typu, je tento přístup vhodný k reprezentaci výsledků porovnání webových služeb. Oproti pouhé pravdivostní hodnotě je navíc klientovi poskytnuta detailní informace o konkrétních rozdílech mezi službami. Na základě výše zmíněných důvodů jsem se rozhodl použít tento způsob reprezentace rozdílů v mé práci. 
 
-Datové struktury použité pro reprezentaci rozdílů dvou entit a jejich vzájemné kompatibility navržené v rámci citovaného článku se nazývají \textit{Diff} a \textit{Compatiblity}. \textit{Diff} je definován jako rekurzivní typ, který uchovává jak konkrétní informace o rozdílu skrze podřazené \textit{Diff} tak i úroveň odlišnosti zvanou \textit{Difference}. Tyto úrovně jsou popsány tabulkou \ref{tab:diffs} a v citovaném článku tvoří obor hodnot funkce $diff(a,b): Type \times Type \rightarrow Difference$. Třída \textit{Compatibility} uchovává informace o kompatibilitě dvou komponent, reprezentovány \textit{Resource}, společně s detaily jejich rozdílů, jež jsou reprezentovány stromem \textit{Diff}.
+Datové struktury použité pro reprezentaci rozdílů dvou entit a jejich vzájemné kompatibility navržené v rámci citovaného článku se nazývají \textit{Diff} a \textit{Compatiblity}. \textit{Diff} je definován jako rekurzivní typ, který uchovává jak konkrétní informace o rozdílu skrze podřazené \textit{Diff} tak i úroveň odlišnosti zvanou \textit{Difference}. Tyto úrovně jsou popsány tabulkou \ref{tab:diffs} a v citovaném článku tvoří obor hodnot funkce $diff(a,b): Type \times Type \rightarrow Difference$. Třída \textit{Compatibility} uchovává informace o kompatibilitě dvou komponent (reprezentovány entitami \textit{Resource}) společně s detaily jejich rozdílů, jež jsou reprezentovány stromem \textit{Diff}.
 
 \begin{table}[h]
 	\centering
 	\begin{tabular}{|l|c|c|c|}
 		\hline
-		Název úrovně & Váha & Priorita & Popis \\
+		Název úrovně & Zkratka & Váha & Popis \\
 		\hline
 		\hline
 		None & NON & 1 & $a = b$ \\
@@ -457,7 +457,7 @@ Datové struktury použité pro reprezentaci rozdílů dvou entit a jejich vzáj
 	\label{tab:diffs}
 \end{table} 
 
-Způsob vyhodnocení rozdílů dvou webových služeb společně s významem jednotlivých úrovní \textit{Difference} a jejich vah pro klienta je popsán na konci této kapitoly. 
+Způsob vyhodnocení rozdílů dvou webových služeb společně s významem jednotlivých úrovní \textit{Difference} a jejich vah pro klienta je popsán na konci této kapitoly. Pro přehlednost jsou jednotlivé úrovně rozdílů v průběhu kapitoly nazývané jejich zkratkami. 
 
 %Popis výsledné datové struktury
 %\begin{itemize}
@@ -481,60 +481,186 @@ Způsob vyhodnocení rozdílů dvou webových služeb společně s významem jed
 
 Porovnávací algoritmus pracuje s metadaty popsanými v části \ref{subsec:crce-metadata}. Jedná se o stromovou strukturou, jejíž uzly tvoří instance tříd \textit{Capability}, \textit{Property} a \textit{Attribute}, kde objekty \textit{Attributes} jsou listy této struktury . Soubor metadat může obsahovat další vlastnosti komponenty, která představuje webovou službu, ta však zůstanou nedotčena, protože algoritmus pracuje pouze s daty, která byla vytvořena indexery popsanými v části \ref{sec:api-index}.
 
-Moduly pro indexování webových služeb popsané v předchozí kapitole používají dvě různé množiny \textit{namespace} identifikátorů po pojmenování entit (\textit{Capability}, \textit{Property}, \textit{Attribute}). Do budoucna je zároveň plánované rozšíření těchto modulů o funkcionalitu pro indexování datových typů a datová struktura metadat je tedy předmětem změny. Z těchto důvodů je algoritmus schopen porovnat pouze metadata z jednoho indexeru. Není tedy možné vzájemně porovnat například metadata REST služby získaná binární analýzou JAR s metadaty získanými čtením JSON-WSP dokumentu i když by se mohlo jednat o jednu službu.
-
-%- zmínit taky omezení, která plynou z indexovaných dat
-
-\subsection{Složitost algoritmu}
-
-\begin{itemize}
-	\item REST služby: $O(n^2)$ kde $n$ je počet endpointů
-	\item WADL, JSON-WSP: $O(n^2)$ kde $n$ je počet endpointů
-	\item WSDL: $O(m\cdot n^2)$ kde $m$ je počet WS a $n$ je počet endpointů ve WS
-\end{itemize}
+Moduly pro indexování webových služeb popsané v předchozí kapitole používají dvě různé množiny \textit{namespace} identifikátorů po pojmenování entit \textit{Capability}, \textit{Property} a \textit{Attribute}. Do budoucna je zároveň plánované rozšíření těchto modulů o funkcionalitu pro indexování datových typů a datová struktura metadat je tedy předmětem změny. Z těchto důvodů je algoritmus schopen porovnat pouze metadata vytvořená stejným indexerem a používající stejné \textit{namespace} identifikátory. Není tedy možné vzájemně porovnat například metadata REST služby získaná binární analýzou JAR s metadaty získanými čtením JSON-WSP dokumentu i když by se mohlo jednat o jednu službu.
 
 \subsection{Popis algoritmu}
 
-Vstup algoritmu: reprezentace obou webových služeb v podobě \textit{Resource}. Výstupem algoritmu: objekt \textit{Compatibility}.
+Vstupem algoritmu jsou reprezentace obou webových služeb v podobě objektů \textit{Resource}, z kterých jsou následně k porovnání vybrány kolekce endpointů, případě kolekce \textit{service} obsahující endpointy. Výstupem algoritmu je objekt \textit{Compatibility}, jež obsahuje detailní popis rozdílů mezi webovými službami ve formátu popsaném v sekci \ref{sec:diff-info}.
 
-Před porovnáváním datových struktur je zkontrolována jejich kompatibilita: typ popisu, \textit{communication pattern}, \textit{identity capability}. Pokud kontrola proběhne úspěšně, je spuštěn samotný algoritmus jehož průběh je naznačen na vývojovém diagramu \ref{fig:apicomp-flow}. V případě porovnání SOAP webových služeb je tento postup obalen ještě porovnáním \textit{services}, které WSDL definuje a které jsou v CRCE reprezentovány jako kolekce endpointů.
+Před porovnáváním datových struktur je zkontrolována jejich kompatibilita. Ta je dána následujícími vlastnostmi:
+
+\begin{itemize}
+	\item typ popisu: z čeho byla metadata získána (implementace, formát popisného souboru),
+	\item typ komunikace: jakým způsobem lze službu volat,
+	\item \textit{identity capability}: obsahuje informace o identitě komponenty v CRCE.
+\end{itemize}
+
+Pokud kontrola proběhne úspěšně, je spuštěn samotný algoritmus jehož průběh je naznačen na vývojovém diagramu \ref{fig:apicomp-flow}. V případě porovnání SOAP webových služeb je tento postup obalen ještě porovnáním \textit{services}, které WSDL definuje a které jsou v CRCE reprezentovány jako kolekce endpointů.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=10cm]{apicomp-flow}
+	\includegraphics[width=9.5cm]{apicomp-flow}
 	\caption{Vývojový diagram porovnávacího algoritmu}
 	\label{fig:apicomp-flow}
 \end{figure}
 
-Mezivýsledky porovnání jsou ukládány v datové struktuře \textit{Diff}, která je detailně popsaná v sekci \ref{sec:diff-info}. Algoritmus postupuje po stromu metadat od kořene směrem k listům. V listech dojde k porovnání konkrétních hodnot. Pokud jsou porovnány všechny potomci uzlu, je vyhodnocena jeho kompatibilita. Takto se postupuje zpět ke kořeni stromu, který na konci algoritmu obsahuje finální údaj o kompatibilitě dvou API. Jednotlivé fáze porovnání jsou popsány v následujících odstavcích.
+Mezivýsledky porovnání jsou ukládány v datové struktuře \textit{Diff}, která je detailně popsaná v sekci \ref{sec:diff-info}. Algoritmus postupuje po stromu metadat od kořene směrem k listům. V listech dojde k porovnání konkrétních hodnot. Rozdíl mezi dvěma uzly je vyhodnocen až po porovnání všech jejich potomků. Algoritmus tedy postupuje zpět ke kořeni stromu, který na konci algoritmu obsahuje finální údaj o rozdílu obou služeb. Jednotlivé fáze porovnání jsou popsány v následujících odstavcích.
 
-\paragraph{Výběr endpointu vhodného k porovnání}
+\subsubsection{Výběr entit vhodných k porovnání}
 
-Protože nelze předpokládat pořadí endpointů v metadatech, je nutné před samotným porovnáním nejprve vybrat dvojici endpointů k tomu vhodnou. Endpoint z první webové služby (\textit{e1}) je vybrán sekvenčně (jak je naznačeno na \ref{fig:apicomp-flow}). Druhý endpoint (\textit{e2}) je pak vybrán na základě určité shody s metadaty endpointu \textit{e1}, konkrétně se jedná o počet povinných parametrů, jméno a URL na které jsou endpointy dostupné. URL nemusí být shodné úplně, pokud tak nastane, je nastavena vlajka MOV, která je detailně popsána v sekci \ref{subsec:mov}.
+Tento odstavec se týká endpointů a \textit{service}, protože tyto nejsou na pořadí závislé (na rozdíl např. od parametrů operace) a jejich pořadí v metadatech nelze ani předpokládat. Proto je nutné před samotným porovnáním nejprve vybrat dvojici entit k tomu vhodnou. Endpoint (\textit{service}) z první webové služby \textit{e1} (\textit{s1}) je vybrán sekvenčně (jak je naznačeno na \ref{fig:apicomp-flow}). Druhý endpoint \textit{e2} (\textit{s2}) je pak vybrán na základě určité shody s metadaty endpointu \textit{e1}, respektive \textit{service s2}. V přípdě endpointů se konkrétně jedná o počet povinných parametrů, jméno a URL na které je daný endpoint dostupný. URL nemusí být shodné úplně. Pokud tak nastane, je nastavena vlajka MOV, která je detailně popsána v sekci \ref{subsec:mov}.
 
-O porovnatelnosti dvou \textit{services} (v případě SOAP) je rozhodnuto na základě úplné shody jejich jmen.
+O porovnatelnosti a rozdílu dvou \textit{services} je rozhodnuto na základě úplné shody jejich jmen a typu (současně je používán pouze typ "\verb|rpc/messaging|").
 
-\paragraph{Porovnání dvou services}
-Asi jen název.
+\subsubsection{Porovnání dvou endpointů}
+Po výběru vhodné dvojice endpointů dojde k jejich porovnání. Postupně se porovnají (pokud jsou pro daný typ webové služby definovány) parametry, response a těla request. Způsob porovnání parametrů a response je rozveden v následujících odstavcích. Metadata těla request jsou dostupná pouze v případě REST služeb indexovaných na základě implementace a detail jejich porovnání je znázorněn v tabulce \ref{tab:req-body-cmp}. U atributu \textit{isOptional} může dojít ke změně \textit{GEN} pokud se povinný atribut stane nepovinným. V opačném případě se jedná o změnu \textit{SPE}.
 
-\paragraph{Porovnání dvou endpointů}
-Po výběru vhodné dvojice endpointů dojde k jejich porovnání. Postupně se porovnají (pokud jsou pro daný typ webové služby definovány) parametry, response a request. 
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Název atributu  & Možné výsledky \\
+		\hline
+		\hline
+		\textit{isArray} & \textit{NON}, \textit{UNK} \\
+		\hline
+		\textit{isOptional} & \textit{NON}, \textit{GEN}, \textit{SPE} \\
+		\hline
+		\textit{dataType} & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
+		\hline
+	\end{tabular}
+	\caption{Porovnání atributů těl requestů endpointů}
+	\label{tab:req-body-cmp}
+\end{table}
 
-\paragraph{Porovnání parametrů endpointů}
-Je porovnáváno: jméno, pořadí, datový typ, případně povinnost. V případě GEN/SPE u datového typu parametru je použita kontravariance a výsledná hodnota je opačná.
+\subsubsection{Porovnání response dvou endpointů}
+
+Element response je definovaný ve všech případech kromě služeb popsaných WADL. V případě REST služeb indexovaných na základě implementace jsou navíc definovány i parametry response a může také existovat více elementů response pro jeden endpoint. Detail porovnání response (včetně parametrů) REST služeb je uveden v tabulce \ref{tab:resp-rest-cmp}, tabulka \ref{tab:resp-ws-cmp} pak obsahuje detail porovnání response ostatních služeb.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Název atributu & Možné výsledky \\
+		\hline
+		\hline
+		\textit{isArray} & \textit{NON}, \textit{UNK} \\
+		\hline
+		\textit{dataType} &  \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
+		\hline
+		\textit{status} &  \textit{NON}, \textit{UNK} \\
+		\hline
+		\textit{parameterName} & \textit{NON}, \textit{UNK} \\
+		\hline
+		\textit{parameterCategory} & \textit{NON}, \textit{UNK} \\
+		\hline
+		\textit{parameterIsArray} &  \textit{NON}, \textit{UNK} \\
+		\hline
+		\textit{parameterDataType} & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
+		\hline
+	\end{tabular}
+	\caption{Porovnání atributů response a parametrů response endpointů REST služby}
+	\label{tab:resp-rest-cmp}
+\end{table}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Název atributu & Možné výsledky \\
+		\hline
+		\hline
+		\textit{isArray} (pouze JSON-WSP) & \textit{NON}, \textit{UNK} \\
+		\hline
+		\textit{dataType} & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
+		\hline
+	\end{tabular}
+	\caption{Porovnání atributů response ostatních služeb}
+	\label{tab:resp-ws-cmp}
+\end{table}
+
+\subsubsection{Porovnání parametrů endpointů}
+
+Množiny atributů porovnávaných v případě parametrů endpointů jsou mezi službami navzájem různé, ale je tu průnik. Detaily v tabulce \ref{tab:param-cmp}.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název atributu & Typ metadat služby & Možné výsledky \\
+		\hline
+		\hline
+		\textit{name} & všechny & \textit{NON}, \textit{UNK} \\
+		\hline 
+		\textit{dataType} & všechny & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
+		\hline
+		\textit{order} & všechny krom WADL & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
+		\hline
+		\textit{isOptional} & všechny krom WSDL & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
+		\hline
+		\textit{isArray} & REST a JSON-WSP & \textit{NON}, \textit{UNK} \\
+		\hline
+		\textit{category} & REST & \textit{NON}, \textit{UNK} \\
+		\hline
+	\end{tabular}
+	\caption{Porovnání atributů response ostatních služeb}
+	\label{tab:param-cmp}
+\end{table}
+
 
 \subsection{Porovnání datových typů}
-V současnosti jsou největším omezením porovnávacího algoritmu datové typy. Jako již bylo zmíněno v kapitole \ref{sec:api-index}, jméno datového typu je jedinou dostupnou informací a tedy také jediným kritériem, podle kterého je lze porovnávat. To je dostatečné v případě vestavěných typů jako například třídy z balíku \verb|java.lang|, nebo typy definované v xsd. 
+V současnosti jsou největším omezením porovnávacího algoritmu datové typy. Jak již bylo zmíněno v kapitole \ref{sec:api-index}, jméno datového typu je jedinou dostupnou informací a tedy také jediným kritériem, podle kterého je lze porovnávat. To je dostatečné v případě vestavěných typů jako například třídy z balíku \verb|java.lang|, nebo typy definované v xsd. 
 
-Nad těmito lze provádět plnohodnotné porovnání včetně kontroly generalizace. U vestavěných typů Javy je generalizace určena na základě dědičnosti a lze například určit, že typ s názvem \verb|java.lang.Number| je generalizací typu s názvem \verb|java.lang.Long|, protože třída \textit{Number} je rodičem třídy \textit{Long}. Obdobně je tomu i u vestavěných typů definovaných v xsd, kde je generalizace $a <: b$ definována v případě, že typ $b$ je dost velký na pojmutí typu $a$. Například typ \verb|xsd:long| dokáže reprezentovat číslo typu \verb|xsd:int| a proto platí, že $xsd:int <: xsd:long$. 
+Nad těmito lze provádět plnohodnotné porovnání včetně kontroly generalizace (změny \textit{GEN}, \textit{SPE}). U vestavěných typů Javy je generalizace určena na základě dědičnosti a lze například určit, že datový typ s názvem \verb|java.lang.Number| je generalizací typu s názvem \verb|java.lang.Long|, protože třída \textit{Number} je rodičem třídy \textit{Long}. Obdobně je tomu i u vestavěných typů definovaných v xsd, kde je generalizace $a <: b$ definována v případě, že typ $b$ je dost velký na pojmutí typu $a$. Například typ \verb|xsd:long| dokáže reprezentovat číslo typu \verb|xsd:int| a proto platí, že $xsd:int <: xsd:long$. 
 
 Porovnání vestavěných typů je založeno na podmínce správně zaindexovaného jména datového typu. V případě analýzy byte kódu je tato podmínka splněna, nicméně u metadat získaných čtením popisných XML souborů tomu tak vždy nemusí být. Problém spočívá v  předponě datového typu, která je součástí jeho jména a porovnávací algoritmus očekává její určitou hodnotu (konkrétně \verb|xs|). Hodnota předpony je však určena definicí namespace v XML popisu a ta se může od očekávané lišit. Tato definice není indexerem ukládána a není proto možné ji během porovnání přesně určit.
 
-Pro uživatelsky definované typy je porovnání omezeno pouze na úplnou shodu, protože na základě pouhého jména datového typu nejde s jistotou usoudit nic dalšího.
+Pro uživatelsky definované typy je porovnání omezeno pouze na úplnou shodu, protože na základě pouhého jména datového typu nejde s jistotou usoudit nic dalšího. Změny pro jednotlivé rozdíly mezi datovými typy jsou uvedeny v tabulce \ref{tab:type-cmp}.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Vztah typů & Výsledek \\
+		\hline
+		\hline
+		$ A = B$ & \textit{NON} \\
+		\hline
+		$ A <: B$ & \textit{GEN} \\
+		\hline
+		$ B <: A$ & \textit{SPE} \\
+		\hline
+		$ A != B$ & \textit{UNK} \\
+		\hline
+	\end{tabular}
+	\caption{Rozdíly mezi datovými typy A a B}
+	\label{tab:type-cmp}
+\end{table}
+
+
+\subsection{Složitost algoritmu}
+
+Algoritmus v zásadě porovnává kolekce endpointů webových služeb a jejich počet je tedy hlavní parametr, od kterého se odvíjí výpočetní složitost. V případě SOAP webových služeb jsou operace definované v rámci \textit{service} a je tedy třeba brát v úvahu i jejich počet. Nárůst složitosti je ovlivněn výběrem vhodných párů entit k porovnání, konkrétní hodnoty pro nejlepší a nejhorší případy jsou uvedeny v tabulce \ref{tab:alg-complexity}.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Typ služby & Složitost \\
+		\hline
+		\hline
+		REST, WADL, JSON-WSP & $\Omega(n)$, $O(n^2)$ kde $n$ je počet endpointů \\
+		\hline
+		WSDL & \makecell{$\Omega(mn)$, $O((mn)^2)$ kde $m$ je počet \textit{service}\\ a $n$ je počet endpointů} \\
+		\hline
+	\end{tabular}
+	\caption{Složitost algoritmu}
+	\label{tab:alg-complexity}
+\end{table}
 	
 \section{Migrace webových služeb}	
 \label{subsec:mov}
-V popisu porovnání metadat endpointů bylo zmíněno použití URL endpointu jako identifikátoru. Tento přístup naráží na problém, pokud poskytovatel webovou službu přesune, nebo provede změny v cestě k danému endpointu. Na obrázku \ref{fig:mov-example} je uveden příklad dvou shodných endpointů, jež se liší pouze v URL. Aplikujeme-li výše popsaný algoritmus na tato data, skončí negativním výsledkem, i přes to, že endpointy mají totožné rozhraní a klient by k nim mohl bez obtíží přistoupit. 
+V popisu porovnání metadat endpointů bylo zmíněno použití URL endpointu jako identifikátoru. Tento přístup naráží na problém, pokud poskytovatel webovou službu přesune, nebo provede změny v cestě k danému endpointu. Na obrázku \ref{fig:mov-example} je uveden příklad dvou shodných endpointů, jež se liší pouze v URL. Aplikujeme-li výše popsaný algoritmus na tato data, skončí negativním výsledkem i přes to, že endpointy mají totožné rozhraní a klient by k nim mohl bez obtíží přistoupit. 
 
 Podobným příkladem je i verze API v cestě k endpointu. Klient může mít požadavek na zjištění kompatibility API dvou různých verzí, ale algoritmus vrátí rozdíl \textit{MUT}, protože endpointy z prvního API vyhodnotí jako chybějící v API druhém a naopak, právě kvůli rozdílným cestám. Tím vznikne kombinace rozdílů \textit{DEL} a \textit{INS}, která vede na \textit{MUT}. Takové chování není žádané a je potřeba těmto problémům předcházet, proto je nutné případné změny v URL detekovat a brát je při porovnávání v potaz.
 
