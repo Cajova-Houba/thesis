@@ -581,6 +581,7 @@ Element response je definovaný ve všech případech kromě služeb popsaných 
 
 \subsubsection{Porovnání parametrů endpointů}
 
+TODO: formulace
 Množiny atributů porovnávaných v případě parametrů endpointů jsou mezi službami navzájem různé, ale je tu průnik. Detaily v tabulce \ref{tab:param-cmp}.
 
 \begin{table}[h]
@@ -603,7 +604,7 @@ Množiny atributů porovnávaných v případě parametrů endpointů jsou mezi 
 		\textit{category} & REST & \textit{NON}, \textit{UNK} \\
 		\hline
 	\end{tabular}
-	\caption{Porovnání atributů response ostatních služeb}
+	\caption{Porovnání parametrů endpointů }
 	\label{tab:param-cmp}
 \end{table}
 
@@ -662,13 +663,14 @@ Algoritmus v zásadě porovnává kolekce endpointů webových služeb a jejich 
 \label{subsec:mov}
 V popisu porovnání metadat endpointů bylo zmíněno použití URL endpointu jako identifikátoru. Tento přístup naráží na problém, pokud poskytovatel webovou službu přesune, nebo provede změny v cestě k danému endpointu. Na obrázku \ref{fig:mov-example} je uveden příklad dvou shodných endpointů, jež se liší pouze v URL. Aplikujeme-li výše popsaný algoritmus na tato data, skončí negativním výsledkem i přes to, že endpointy mají totožné rozhraní a klient by k nim mohl bez obtíží přistoupit. 
 
-Podobným příkladem je i verze API v cestě k endpointu. Klient může mít požadavek na zjištění kompatibility API dvou různých verzí, ale algoritmus vrátí rozdíl \textit{MUT}, protože endpointy z prvního API vyhodnotí jako chybějící v API druhém a naopak, právě kvůli rozdílným cestám. Tím vznikne kombinace rozdílů \textit{DEL} a \textit{INS}, která vede na \textit{MUT}. Takové chování není žádané a je potřeba těmto problémům předcházet, proto je nutné případné změny v URL detekovat a brát je při porovnávání v potaz.
-
 \begin{figure}[h]
 	\centering
+	\includegraphics[width=8.5cm]{same-end-diff-url}
 	\caption{Příklad shodných endpointů s rozdílnou URL}
 	\label{fig:mov-example}
 \end{figure}
+
+Podobným příkladem je i verze API v cestě k endpointu. Klient může mít požadavek na zjištění kompatibility API dvou různých verzí, ale algoritmus vrátí rozdíl \textit{MUT}, protože endpointy z prvního API vyhodnotí jako chybějící v API druhém a naopak, právě kvůli rozdílným cestám. Tím vznikne kombinace rozdílů \textit{DEL} a \textit{INS}, která vede na \textit{MUT}. Takové chování není žádané a je potřeba těmto problémům předcházet, proto je nutné případné změny v URL detekovat a brát je při porovnávání v potaz.
 
 Jako řešení popsaného problému byl zaveden příznak "MOV", který je ortogonální k úrovni změny (\textit{Difference}) popsané v předchozích sekcích a je součástí objektu \textit{Diff}. Díky ortogonalitě je možné stále určit méně nebezpečné rozdíly jako například vložený endpoint (INS), nebo generalizaci v příznaku parametru (SPE) a zároveň předat klientovi informaci o změně v URL. 
 
@@ -676,15 +678,26 @@ Příznak MOV má smysl brát v úvahu jen u případů porovnání jejichž úr
 
 \subsection{Detekce změn v URL}
 
-Součástí URL endpointu je také jeho název, změny v URL se tedy dají detekovat na třech místech. Prvním z nich je doména (včetně protokolu), druhým je cesta k endpointu a třetím jeho jméno. TODO co a jak se detekuje. 
+Součástí URL endpointu je také jeho název, změny v URL se tedy dají detekovat na třech místech. Prvním z nich je doména (včetně protokolu), druhým je cesta k endpointu a třetím jeho jméno. URL všech endpointů obou webových služeb jsou podle těchto částí rozděleny, čímž vznikne 6 množin (2 pro každou část URL). Pokud platí, že $url_{i,1} \subseteq url_{i,2}$ kde $url_i,j$ je $i$-tá část url $j$-té webové služby, je daná část URL považována za nezměněnou. Příklad rozdělení URL dvou webových služeb vycházející z obrázku \ref{fig:mov-example} je uveden v tabulce \ref{tab:url-diff-example}. V tomto příkladu by byla detekována změna v částech URL "Doména" a "Cesta".
 
-\begin{figure}[h]
-	\centering
-	\caption{Třída nesoucí výsledek detekce změn v URL}
-	\label{fig:mov-detect-res}
-\end{figure}
-
-Výsledek detekce změn v URL, jež je zachycen třídou \textit{MovDetectionResult} znázorněnou na obrázku \ref{fig:mov-detect-res}, nese tři příznaky, kde každý z nich určuje, zda byla v dané části URL detekována změna. Vzhledem k tomu, že algoritmus detekce pracuje pouze s URL a jmény endpointů, dojde k pozitivnímu výsledku i v případě, že jsou porovnávány dvě odlišné web služby. Aby se redukoval počet false-positives, je potřeba určit, které kombinace příznaků změny mohou vést na MOV a které představují příliš velké odchýlení. Tyto kombinace jsou uvedeny v tabulce \ref{tab:mov-explanation}, kde proměnné \textit{h}, \textit{p}, \textit{n} označují změnu v doméně, cestě a jménu endpointu.
+\begin{table}[h]
+	\begin{tabular}{|l|c|c|}
+		\hline
+		$url_{i,j}$ & Služba 1 (j=1) & Služba 2 (j=2) \\
+		\hline
+		\hline
+		Doména (i=1) & $\{http://host1.net\}$ & $\{http://host2.net\}$ \\
+		\hline
+		Cesta (i=2) & $\{webservices/dilbert.asmx\}$ &  $\{services/dilb.asmx\}$ \\
+		\hline
+		Operace (i=3) & $\{TodaysDilbert\}$ & $\{TodaysDilbert\}$ \\
+		\hline
+	\end{tabular}
+	\caption{Příklad rozdělění URL na části podle obrázku \ref{fig:mov-example}}
+	\label{tab:url-diff-example}
+\end{table}
+  
+Výsledek detekce změn v URL nese tři příznaky, kde každý z nich určuje, zda byla v dané části URL detekována změna. Vzhledem k tomu, že algoritmus detekce pracuje pouze s URL a jmény endpointů, může dojde k pozitivnímu výsledku i v případě, že jsou porovnávány dvě odlišné webové služby. Aby se redukoval počet false-positives, je potřeba určit, které kombinace příznaků změny mohou vést na MOV a které představují příliš velké odchýlení. Tyto kombinace jsou uvedeny v tabulce \ref{tab:mov-explanation}, kde proměnné \textit{h}, \textit{p}, \textit{n} označují změnu v doméně, cestě a jménu endpointu.
 
 \begin{table}[h]
 	\begin{tabular}{|l|c|c|}
@@ -712,7 +725,16 @@ Z tabulky je vidět, že změna ve jménech endpointů vždy vede na záporný v
 
 Protože jedním z kritérií pro výběr vhodného páru endpointů je i URL, je potřeba upravit logiku výběru tak, aby byly brány v potaz výsledky detekce popsané v předchozí sekci. Při porovnávání URL dvou endpointů je podle kombinace změn daná část URL ignorována a pracuje se pouze s nezměněnou částí u které je vyžadována striktní rovnost.
 
-Tento způsob může vést na případy, kdy je dvojce endpointů vyhodnocena jako potencionálně vhodná k porovnání (s nastaveným příznakem MOV), nicméně porovnání skončí negativním výsledkem, například \textit{UNK}. Pouhá akceptace takového výsledku a pokračování algoritmu by mohlo zapříčinit negativní vyhodnocení kompatibility webových služeb v případech, kdy skutečný rozdíl není tak silný. TODO: příklad 
+Tento způsob může vést na případy, kdy je dvojce endpointů vyhodnocena jako potencionálně vhodná k porovnání (s nastaveným příznakem MOV), nicméně porovnání skončí negativním výsledkem, například \textit{UNK}. Pouhá akceptace takového výsledku a pokračování algoritmu by mohlo zapříčinit negativní vyhodnocení kompatibility webových služeb v případech, kdy skutečný rozdíl není tak silný. 
+
+Příklad na obrázku \ref{fig:mov-bad-example} tento problém znázorňuje. Oba endpointy mají stejný název a proto by byly vybrány jako vhodné k porovnání s nastavenými MOV příznaky $h=t$, $p=t$, $o=f$. Hlubší porovnání by však skončilo výsledkem \textit{UNK}, protože se neshodují jména a datové typy jejich parametrů. Algoritmus by tedy služby vyhodnotil jako nekompatibilní i přes to, že by mohla existovat kombinace kompatibilních endpointů.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=8.5cm]{mov-example-bad}
+	\caption{Příklad dvou rozdílných endpointů, pro které by byl nastaven příznak MOV}
+	\label{fig:mov-bad-example}
+\end{figure}
 
 \subsubsection{Algoritmus 'pick best'}
 Řešením zmíněného problému je algoritmus 'pick  best', který postupně porovnává dvojice endpointů (k tomu předem vybrané) a jako výsledek vrátí dvojici s nejlepším rozdílem. Vstupem algoritmu je tedy endpoint z první webové služby \textit{e1} a množina endpointů druhé webové služby \textit{endpoints2}. 
@@ -790,7 +812,7 @@ Změny v této skupině mohou mít nebezpečný dopad na klienta ve smyslu volá
 
 Změny v této skupině představují buď kombinace několika méně závažných změn (\textit{MUT}), nebo neporovnatelnost obou webových služeb (\textit{UNK}). Stejně jako u předchozí skupiny, i zde může klient použít výsledky porovnání a sám rozhodnout o míře nekompatibility. Úroveň \textit{MUT} může například nastat i kombinací rozdílů endpointů, které klient nepoužívá a druhá webová služba tak pro něj může být stále kompatibilní.
 
-Úroveň \textit{UNK} označuje neporovnatelnost metadat a v takovém případě nelze o kompatibilitě jednoznačně rozhodnout.
+Úroveň \textit{UNK} označuje buď neporovnatelnost metadat a v takovém případě nelze o kompatibilitě jednoznačně rozhodnout, nebo nerovnost metadat v případě, kde možným výsledkem je pouze 'stejné', nebo 'nestejné'.
 
 
 \chapter{Implementační detaily (jen stručně)}
