@@ -223,6 +223,7 @@ Pojem 'webová služba' má různé významy pro různé lidi, ale dá se najít
 
 
 \chapter{Získávání metadat webových služeb v CRCE}
+\label{sec:crce}
 
 Cílem této práce je vytvořit rozšíření pro úložiště CRCE\footnote{Component Repository supporting Compatibility Evaluation}, které bude schopno vyhodnocovat vzájemnou kompatibilitu indexovaných webových služeb. Tato kapitola představuje samotné úložiště, formát metadat a obecný způsob jejich získání. Na konci kapitoly je popsán princip fungování konkrétních rozšíření, která indexují webové služby (tzv. indexery).
 
@@ -478,6 +479,7 @@ Způsob vyhodnocení rozdílů dvou webových služeb společně s významem jed
 %\end{figure}
 
 \section{Algoritmus porovnání}
+\label{sec:cmp-alg}
 
 Porovnávací algoritmus pracuje s metadaty popsanými v části \ref{subsec:crce-metadata}. Jedná se o stromovou strukturou, jejíž uzly tvoří instance tříd \textit{Capability}, \textit{Property} a \textit{Attribute}, kde objekty \textit{Attributes} jsou listy této struktury . Soubor metadat může obsahovat další vlastnosti komponenty, která představuje webovou službu, ta však zůstanou nedotčena, protože algoritmus pracuje pouze s daty, která byla vytvořena indexery popsanými v části \ref{sec:api-index}.
 
@@ -814,12 +816,31 @@ Změny v této skupině představují buď kombinace několika méně závažný
 Úroveň \textit{UNK} označuje buď neporovnatelnost metadat a v takovém případě nelze o kompatibilitě jednoznačně rozhodnout, nebo nerovnost metadat v případě, kde možným výsledkem je pouze 'stejné', nebo 'nestejné'.
 
 
-\chapter{Implementační detaily (jen stručně)}
+\chapter{Implementace rozšíření CRCE}
 
- - zmínit, proč třídy pro porovnávání REST API a WS nemají společného předka (krom rozhraní)
- 	- důvod: chtěl jsem nechat implementaci obou porovnávačů oddělenou pro případ, že by se změnila funkce indexerů
+Cílem mé práce bylo vytvořit rozšíření CRCE schopné automatické kontroly kompatibility indexovaných webových služeb. Tato kapitola obsahuje stručný popis implementace rozšíření, jež realizuje algoritmus popsaný v předešlé kapitole. Na konci kapitoly je pak popsáno napojení rozšíření na existující REST API.
 
-\chapter{Testování}
+\section{Porovnávač}
+
+V kapitole \ref{sec:crce} bylo zmíněno, že CRCE má modulární architekturu. Moduly, jež jsou nadstavbou jádra jsou umístěny v modulu \verb|crce-modules-reactor|. Zde je umístěno i mé rozšíření.
+
+TODO: formulace
+Z důvodů zmíněných v sekci \ref{sec:cmp-alg} je algoritmus implementován ve dvou verzích. Jedna verze pro služby indexované z implementace, druhá pro služby indexované z popisu. I když je struktura porovnávačů podobná, rozhodl jsem se nedělat žádnou společnou implementaci, protože bych tím do kódu zanesl silnou vazbu, která by v případě změny struktury metadat u jednoho z indexerů přinášela obtíže při následné refaktorizaci. Jediným společným předkem je obecné rozhraní pro porovnávač webových služeb.
+
+% - zmínit, proč třídy pro porovnávání REST API a WS nemají společného předka (krom rozhraní)
+% 	- důvod: chtěl jsem nechat implementaci obou porovnávačů oddělenou pro případ, že by se změnila funkce indexerů
+
+\begin{figure}[h]
+	\centering
+	\caption{Diagram tříd popisující strukturu porovnávače}
+	\label{fig:cmp-uml-class}
+\end{figure}
+
+\section{REST API}
+
+Oproti modulům pro indexaci komponent, není mé rozšíření napojeno na žádnou z částí životního cyklu komponenty a je tedy nutné jej explicitně volat. To je v současné době provedeno skrze volání REST API.
+
+\chapter{Ověření funkčnosti}
 
 - nějaká reálná data
 	- STAG (WSDL)
