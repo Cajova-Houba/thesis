@@ -427,7 +427,7 @@ V této kapitole je detailně popsána funkce porovnávacího algoritmu společn
 \label{sec:diff-info}
 Webové služby jsou popsány komplexní strukturou metadat, která byla uvedena v předchozí kapitole. Rozdíl mezi těmito strukturami lze vyjádřit pouhou pravdivostní hodnotou (stejné, nebo nestejné), nicméně takový přístup skrývá před klientem většinu informací, na základě kterých by se mohl rozhodnout o dalším postupu a tím značně snižuje použitelnost aplikace. Mimo to, samotná skutečnost, že metadata webových služeb se neshodují nemusí nutně z pohledu klienta znamenat nekompatibilitu. Z těchto důvodů je k reprezentaci rozdílů mezi službami třeba použít vhodnější metodu.
 
-Článek \cite{brada2006diff} zabývající se možnostmi evaluace kompatibility komponent na základě relace subtypingu, nahlíží na komponentu skrze její rozhraní jako na datový typ a popisuje odlišnosti v různých úrovních kontraktu (metoda, parametr, ...). Na základě těchto odlišností (a relace subtypingu) je pak určena míra kompatibility dvou komponent. Protože je webová služba v CRCE reprezentována komponentou a na její rozhraní se dá také nahlížet jako na kontrakt datového typu, je tento přístup vhodný k reprezentaci výsledků porovnání webových služeb. Oproti pouhé pravdivostní hodnotě je navíc klientovi poskytnuta detailní informace o konkrétních rozdílech mezi službami. Na základě výše zmíněných důvodů jsem se rozhodl použít tento způsob reprezentace rozdílů v mé práci. 
+Článek \cite{brada2006diff} zabývající se možnostmi evaluace kompatibility komponent na základě relace subtypingu, nahlíží na komponentu skrze její rozhraní jako na datový typ a popisuje odlišnosti v různých úrovních kontraktu (metoda, parametr, ...). Na základě těchto odlišností (a relace subtypingu) je pak určena míra kompatibility dvou komponent. Protože je webová služba v CRCE reprezentována komponentou a na její rozhraní se dá také nahlížet jako na kontrakt datového typu, je tento přístup vhodný k reprezentaci rozdílů mezi webovými. Oproti pouhé pravdivostní hodnotě je navíc klientovi poskytnuta detailní informace o konkrétních rozdílech mezi službami. Z těchto důvodů jsem se rozhodl použít výše zmíněný způsob reprezentace rozdílů v mé práci. 
 
 Datové struktury použité pro reprezentaci rozdílů dvou entit a jejich vzájemné kompatibility navržené v rámci citovaného článku se nazývají \textit{Diff} a \textit{Compatiblity}. \textit{Diff} je definován jako rekurzivní typ, který uchovává jak konkrétní informace o rozdílu skrze podřazené \textit{Diff} tak i úroveň odlišnosti zvanou \textit{Difference}. Tyto úrovně jsou popsány tabulkou \ref{tab:diffs} a v citovaném článku tvoří obor hodnot funkce $diff(a,b): Type \times Type \rightarrow Difference$. Třída \textit{Compatibility} uchovává informace o kompatibilitě dvou komponent (reprezentovány entitami \textit{Resource}) společně s detaily jejich rozdílů, jež jsou reprezentovány stromem \textit{Diff}.
 
@@ -504,11 +504,11 @@ Pokud kontrola proběhne úspěšně, je spuštěn samotný algoritmus jehož pr
 	\label{fig:apicomp-flow}
 \end{figure}
 
-Mezivýsledky porovnání jsou ukládány v datové struktuře \textit{Diff}, která je detailně popsaná v sekci \ref{sec:diff-info}. Algoritmus postupuje po stromu metadat od kořene směrem k listům. V listech dojde k porovnání konkrétních hodnot. Rozdíl mezi dvěma uzly je vyhodnocen až po porovnání všech jejich potomků. Algoritmus tedy postupuje zpět ke kořeni stromu, který na konci algoritmu obsahuje finální údaj o rozdílu obou služeb. Jednotlivé fáze porovnání jsou popsány v následujících odstavcích.
+Mezivýsledky porovnání jsou ukládány v datové struktuře \textit{Diff}, která je detailně popsaná v sekci \ref{sec:diff-info}. Algoritmus postupuje po stromu metadat od kořene směrem k listům, ve kterých dojde k porovnání konkrétních hodnot a vyhodnocení rozdílů mezi nimi. Rozdíl mezi dvěma ne-koncovými uzly je vyhodnocen až po porovnání všech jejich potomků (nezávisle na pořadí). Algoritmus tedy postupuje zpět ke kořeni stromu, který na konci algoritmu obsahuje finální údaj o rozdílu obou služeb. Jednotlivé fáze porovnání jsou popsány v následujících odstavcích.
 
 \subsubsection{Výběr entit vhodných k porovnání}
 
-Tento odstavec se týká endpointů a \textit{service}, protože tyto nejsou na pořadí závislé (na rozdíl např. od parametrů operace) a jejich pořadí v metadatech nelze ani předpokládat. Proto je nutné před samotným porovnáním nejprve vybrat dvojici entit k tomu vhodnou. Endpoint (\textit{service}) z první webové služby \textit{e1} (\textit{s1}) je vybrán sekvenčně (jak je naznačeno na \ref{fig:apicomp-flow}). Druhý endpoint \textit{e2} (\textit{s2}) je pak vybrán na základě určité shody s metadaty endpointu \textit{e1}, respektive \textit{service s2}. V přípdě endpointů se konkrétně jedná o počet povinných parametrů, jméno a URL na které je daný endpoint dostupný. URL nemusí být shodné úplně. Pokud tak nastane, je nastavena vlajka MOV, která je detailně popsána v sekci \ref{subsec:mov}.
+Tento odstavec se týká endpointů a \textit{service}, protože tyto nejsou na pořadí závislé (na rozdíl např. od parametrů operace) a jejich pořadí v metadatech nelze ani předpokládat. Proto je nutné před samotným porovnáním nejprve vybrat dvojici entit k tomu vhodnou. Endpoint \textit{e1} (\textit{service} \textit{s1})  z první webové služby je vybrán sekvenčně, jak je naznačeno na diagramu \ref{fig:apicomp-flow}. Druhý endpoint \textit{e2} (\textit{s2}) je pak vybrán na základě určité shody s metadaty endpointu \textit{e1}, respektive \textit{service s2}. V přípdě endpointů se konkrétně jedná o počet povinných parametrů, jméno a URL na které je daný endpoint dostupný. URL nemusí být shodné úplně. Pokud tak nastane, je nastavena vlajka MOV, která je detailně popsána v sekci \ref{subsec:mov}.
 
 O porovnatelnosti a rozdílu dvou \textit{services} je rozhodnuto na základě úplné shody jejich jmen a typu (současně je používán pouze typ "\verb|rpc/messaging|").
 
@@ -535,7 +535,7 @@ Po výběru vhodné dvojice endpointů dojde k jejich porovnání. Postupně se 
 
 \subsubsection{Porovnání response dvou endpointů}
 
-Element response je definovaný ve všech případech kromě služeb popsaných WADL. V případě REST služeb indexovaných na základě implementace jsou navíc definovány i parametry response a může také existovat více elementů response pro jeden endpoint. Detail porovnání response (včetně parametrů) REST služeb je uveden v tabulce \ref{tab:resp-rest-cmp}, tabulka \ref{tab:resp-ws-cmp} pak obsahuje detail porovnání response ostatních služeb.
+Element response je definovaný ve všech případech kromě služeb popsaných WADL. V případě REST služeb indexovaných na základě implementace jsou navíc definovány i parametry response a může také existovat více elementů response pro jeden endpoint. Ty jsou navzájem odlišeny atributem \textit{id}, jehož hodnotu vytváří indexer. Detail porovnání response (včetně parametrů) REST služeb je uveden v tabulce \ref{tab:resp-rest-cmp}, tabulka \ref{tab:resp-ws-cmp} pak obsahuje detail porovnání response ostatních služeb.
 
 \begin{table}[h]
 	\centering
@@ -581,8 +581,7 @@ Element response je definovaný ve všech případech kromě služeb popsaných 
 
 \subsubsection{Porovnání parametrů endpointů}
 
-TODO: formulace
-Množiny atributů porovnávaných v případě parametrů endpointů jsou mezi službami navzájem různé, ale je tu průnik. Detaily v tabulce \ref{tab:param-cmp}.
+Množiny porovnávaných atributů parametrů se navzájem liší podle typu metadat služby (viz kapitola \ref{sec:api-index}). Kompletní přehled je uveden v tabulce \ref{tab:param-cmp}. Parametry endpointů vhodné k porovnání jsou vybrány na základě jejich jména (atribut \textit{name}). Po výběru dojde k porovnání zbylých atributů a rozdíl mezi parametry je vyhodnocen na základě rozdílů mezi jejich atributy.
 
 \begin{table}[h]
 	\centering
@@ -595,7 +594,7 @@ Množiny atributů porovnávaných v případě parametrů endpointů jsou mezi 
 		\hline 
 		\textit{dataType} & všechny & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
 		\hline
-		\textit{order} & všechny krom WADL & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
+		\textit{order} & všechny krom WADL & \textit{NON}, \textit{UNK} \\
 		\hline
 		\textit{isOptional} & všechny krom WSDL & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
 		\hline
@@ -672,7 +671,7 @@ V popisu porovnání metadat endpointů bylo zmíněno použití URL endpointu j
 
 Podobným příkladem je i verze API v cestě k endpointu. Klient může mít požadavek na zjištění kompatibility API dvou různých verzí, ale algoritmus vrátí rozdíl \textit{MUT}, protože endpointy z prvního API vyhodnotí jako chybějící v API druhém a naopak, právě kvůli rozdílným cestám. Tím vznikne kombinace rozdílů \textit{DEL} a \textit{INS}, která vede na \textit{MUT}. Takové chování není žádané a je potřeba těmto problémům předcházet, proto je nutné případné změny v URL detekovat a brát je při porovnávání v potaz.
 
-Jako řešení popsaného problému byl zaveden příznak "MOV", který je ortogonální k úrovni změny (\textit{Difference}) popsané v předchozích sekcích a je součástí objektu \textit{Diff}. Díky ortogonalitě je možné stále určit méně nebezpečné rozdíly jako například vložený endpoint (INS), nebo generalizaci v příznaku parametru (SPE) a zároveň předat klientovi informaci o změně v URL. 
+Jako řešení popsaného problému byl zaveden příznak "MOV", který je ortogonální k úrovni změny (\textit{Difference}) popsané v předchozích sekcích a je součástí objektu \textit{Diff}. Díky ortogonalitě je možné stále určit méně nebezpečné rozdíly jako generalizaci v příznaku parametru (SPE) a zároveň předat klientovi informaci o změně v URL. 
 
 Příznak MOV má smysl brát v úvahu jen u případů porovnání jejichž úroveň změny je v podmnožině ${NON, GEN, SPE}$, která je v rámci této sekce označována jako bezpečná. Všechny ostatní úrovně představují v kontextu migrace příliš velkou změnu. Je tedy  například nesmyslné nastavit příznak MOV u rozdílu dvou endpointů s úrovní změny \textit{DEL}, protože samotná úroveň změny říká, že endpoint nebyl v druhé webové službě nalezen a proto nelze ani určit zda byl přemístěn.  
 
@@ -697,7 +696,7 @@ Součástí URL endpointu je také jeho název, změny v URL se tedy dají detek
 	\label{tab:url-diff-example}
 \end{table}
   
-Výsledek detekce změn v URL nese tři příznaky, kde každý z nich určuje, zda byla v dané části URL detekována změna. Vzhledem k tomu, že algoritmus detekce pracuje pouze s URL a jmény endpointů, může dojde k pozitivnímu výsledku i v případě, že jsou porovnávány dvě odlišné webové služby. Aby se redukoval počet false-positives, je potřeba určit, které kombinace příznaků změny mohou vést na MOV a které představují příliš velké odchýlení. Tyto kombinace jsou uvedeny v tabulce \ref{tab:mov-explanation}, kde proměnné \textit{h}, \textit{p}, \textit{n} označují změnu v doméně, cestě a jménu endpointu.
+Výsledek detekce změn v URL nese tři příznaky, kde každý z nich určuje, zda byla v dané části URL detekována změna. Vzhledem k tomu, že algoritmus detekce pracuje pouze s URL a jmény endpointů, může dojde k pozitivnímu výsledku i v případě, že jsou porovnávány dvě odlišné webové služby. Aby se redukoval počet false-positives, je potřeba určit, které kombinace příznaků změny mohou vést na MOV a které představují příliš velké odchýlení. Tyto kombinace jsou uvedeny v tabulce \ref{tab:mov-explanation}, kde proměnné \textit{h}, \textit{p}, \textit{n} označují změnu v doméně, cestě a jménu endpointu. Hodnota \textit{true} značí změnu.
 
 \begin{table}[h]
 	\begin{tabular}{|l|c|c|}
@@ -705,13 +704,13 @@ Výsledek detekce změn v URL nese tři příznaky, kde každý z nich určuje, 
 		Kombinace & MOV & Zdůvodnění \\
 		\hline
 		\hline
-		$!h \land !p \land !o$ & ne & Nebyla detekována žádná změna. \\
+		$!h \land !p \land !n$ & ne & Nebyla detekována žádná změna. \\
 		\hline
-		$h \land !p \land !o$ & ano & \makecell{Změna v doméně, může se \\jednat o migraci webové služby.} \\
+		$h \land !p \land !n$ & ano & \makecell{Změna v doméně, může se \\jednat o migraci webové služby.} \\
 		\hline
-		$!h \land p \land !o$ & ano & \makecell{Změna v cestě k endpointům, může se \\ jednat o restrukturalizaci služby.} \\
+		$!h \land p \land !n$ & ano & \makecell{Změna v cestě k endpointům, může se \\ jednat o restrukturalizaci služby.} \\
 		\hline
-		$h \land p \land !o$ & ano & Může se jednat o kombinaci obou předchozích. \\
+		$h \land p \land !n$ & ano & Může se jednat o kombinaci obou předchozích. \\
 		\hline
 		všechny ostatní & ne & Změna je příliš velká. \\
 		\hline
@@ -761,7 +760,7 @@ Příklad tvorby \textit{Diff} při porovnání dvou operací je znázorněn na 
 	\label{fig:compatibility-creation}
 \end{figure}
 
-Vyhodnocení úrovně rozdílu \textit{Diff} na základě jeho potomků je řízeno prioritou. Každá z úrovní rozdílů \textit{Difference} popsaných v tabulce \ref{tab:diffs} má určitou prioritu, která reprezentuje závažnost rozdílu a uzel od svých potomků vždy přejímá \textit{Difference} s nejvyšší prioritou. Tím je zaručeno, že se rozdíly narušující kompatibilitu projeví na finálním verdiktu.
+Vyhodnocení úrovně rozdílu \textit{Diff} na základě jeho potomků je řízeno prioritou. Každá z úrovní rozdílů \textit{Difference} popsaných v tabulce \ref{tab:diffs} má určitou prioritu, která reprezentuje závažnost rozdílu. Uzel od svých potomků vždy přejímá \textit{Difference} s nejvyšší prioritou, čímž je zaručeno, že se rozdíly narušující kompatibilitu projeví na finálním verdiktu.
 
 Pokud tedy například dojde k rozdílu \textit{UNK} (maximální priorita) při porovnání dvou atributů parametru endpointu, postupným vyhodnocováním se tato \textit{Difference} dostane až ke kořenovému uzlu a výsledná kompatibilita bude mít hodnotu \textit{UNK}. Hodnoty jsou v tabulce \ref{tab:diffs} seřazeny od nejnižší priority po nejvyšší.
 
@@ -798,15 +797,15 @@ Výše popsané úrovně \textit{Difference} mají rozdílný dopad na klienta. 
 
 \subsubsection{Bezpečné rozdíly}
 
-Pokud je rozdíl mezi službami v bezpečné skupině, může klient transparentně volat obě služby, aniž by došlo k jakékoliv chybě v rámci kontraktu. Úroveň \textit{SPE} sice označuje specializaci, nicméně změny \textit{SPE} a \textit{GEN} mohou nastat pouze v případě neshody datových typů parametrů, nebo odpovědi operace. V takovém případě je aplikován princip kontravariance \cite{abadi1995subytping} podle kterého platí, že $F'(a') <: F(a) <=> a <: a'$ a \textit{SPE} tedy znamená bezpečnou změnu \textit{GEN} u parametrů, nebo odpovědi operace. 
+Pokud je rozdíl mezi službami v bezpečné skupině, může klient transparentně volat obě služby, aniž by došlo k jakékoliv chybě v rámci kontraktu. Úroveň \textit{SPE} sice označuje specializaci, nicméně změny \textit{SPE} a \textit{GEN} mohou nastat pouze v případě neshody datových typů parametrů, nebo odpovědi operace. V takovém případě je aplikován princip kontravariance \cite{abadi1995subytping} podle kterého platí, že $F'(a') <: F(a) <=> a <: a'$. \textit{SPE} tedy znamená bezpečnou změnu \textit{GEN} u parametrů, nebo odpovědi operace. 
 
-Změna \textit{INS} nastává v případě, že druhá webová služba obsahuje operace, které nejsou v první definované. Vzhledem k tomu, že klient nemohl volat a nemůže tak dojít k porušení kontraktu webové služby, je tato změna brána jako bezpečná.
+Změna \textit{INS} nastává v případě, že druhá webová služba obsahuje operace, které nejsou v první definované. Vzhledem k tomu, že je klient nemohl volat a nemůže tak dojít k porušení kontraktu webové služby, je tato změna brána jako bezpečná.
 
 \subsubsection{Potenciálně nebezpečné rozdíly}
 
 Změny v této skupině mohou mít nebezpečný dopad na klienta ve smyslu volání operace webové služby s neplatným kontraktem, nicméně nejsou tak závažné jako změny nebezpečné. Posouzení reálného rizika změny provádí klient na základě vráceného objektu popisujícího kompatibilitu služeb.
 
-Úroveň \textit{DEL} označuje element definovaný v první službě, ale chybějící v druhé. Může se jednat například o parametr operace, nebo operaci samotnou. Úroveň \textit{GEN} je získána, stejně jako \textit{SPE}, na základě principu kontravariance a označuje změnu v datovém typu (parametru, odpovědi operace, ...), například z \textit{long} na \textit{int}. 
+Úroveň \textit{DEL} označuje element definovaný v první službě, ale chybějící v druhé. Může se jednat například o \textit{service}, nebo operaci služby. Úroveň \textit{GEN} je získána, stejně jako \textit{SPE}, na základě principu kontravariance a označuje změnu v datovém typu (parametru, odpovědi operace, ...), například z \textit{long} na \textit{int}. 
 
 \subsubsection{Nebezpečné rozdíly}
 
