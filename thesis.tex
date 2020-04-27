@@ -611,6 +611,7 @@ Množiny porovnávaných atributů parametrů se navzájem liší podle typu met
 
 
 \subsection{Porovnání datových typů}
+\label{sec:type-cmp}
 V současnosti jsou největším omezením porovnávacího algoritmu datové typy. Jak již bylo zmíněno v kapitole \ref{sec:api-index}, jméno datového typu je jedinou dostupnou informací a tedy také jediným kritériem, podle kterého je lze porovnávat. To je dostatečné v případě vestavěných typů jako například třídy z balíku \verb|java.lang|, nebo typy definované v xsd. 
 
 Nad těmito lze provádět plnohodnotné porovnání včetně kontroly generalizace (změny \textit{GEN}, \textit{SPE}). U vestavěných typů Javy je generalizace určena na základě dědičnosti a lze například určit, že datový typ s názvem \verb|java.lang.Number| je generalizací typu s názvem \verb|java.lang.Long|, protože třída \textit{Number} je rodičem třídy \textit{Long}. Obdobně je tomu i u vestavěných typů definovaných v xsd, kde je generalizace $a <: b$ definována v případě, že typ $b$ je dost velký na pojmutí typu $a$. Například typ \verb|xsd:long| dokáže reprezentovat číslo typu \verb|xsd:int| a proto platí, že $xsd:int <: xsd:long$. 
@@ -822,39 +823,46 @@ Cílem mé práce bylo vytvořit rozšíření CRCE schopné automatické kontro
 
 \section{Porovnávač}
 
-TODO: formulace
+V kapitole \ref{sec:crce} bylo zmíněna modulární architektura CRCE. Moduly představující nadstavbou jádra jsou podřazené modulu \verb|crce-modules-reactor| a zde je umístěno i mé rozšíření. Samotný modul obsahující rozšíření je tvořen maven artefaktem a je implementovaný jako OSGi bundle, což je standardní postup v rámci CRCE.
 
-V kapitole \ref{sec:crce} bylo zmíněno, že CRCE má modulární architekturu. Moduly, jež jsou nadstavbou jádra jsou umístěny v modulu \verb|crce-modules-reactor|. Zde je umístěno i mé rozšíření.
+Veřejná funkcionalita modulu je deklarovaná v rozhraní \textit{ApiCompatibilityCheckerService}, jehož implementace je zpřístupněná formou OSGi služby (anotace \textit{Component}). Zde jsou obsaženy všechny porovnávače webových služeb a implementace sama je schopná vybrat správný porovnávač pro zadanou dvojici \textit{Resource}.
 
-Modul je tvořen maven artefaktem, je implementovaný jako OSGI bundle (jako všechny ostatní moduly).
+\subsection{Struktura tříd porovnávačů}
 
-Veřejná funkcionalita je zbytku CRCE vystavená skrze rozhraní \verb|ApiCompatibilityCheckerService|. Modul obsahuje i implementaci tohoto rozhraní, která je vystavena skrze anotaci \verb|Component|. Tato třída obsahuje všechny porovnávače a je schopná vybrat správný porovnávač pro zadanou dvojici \textit{Resource}.
-
-\subsection{Struktura tříd porovnávače}
-
-TODO: formulace
-Z důvodů zmíněných v sekci \ref{sec:cmp-alg} je algoritmus implementován ve dvou verzích. Jedna verze pro služby indexované z implementace, druhá pro služby indexované z popisu. I když je struktura porovnávačů podobná, rozhodl jsem se nedělat žádnou společnou implementaci, protože bych tím do kódu zanesl silnou vazbu, která by v případě změny struktury metadat u jednoho z indexerů přinášela obtíže při následné refaktorizaci. Jediným společným předkem je obecné rozhraní pro porovnávač webových služeb.
+Diagram \ref{fig:cmp-uml-class} znázorňuje strukturu tříd, jež slouží k porovnávání webových služeb. Každý porovnávač dědí od abstraktní třídy \textit{ApiCompatibilityChecker}, která obsahuje deklaraci metody určené k porovnání služeb (\textit{compareApis()}). Z důvodů zmíněných v sekci \ref{sec:cmp-alg} je algoritmus implementován ve dvou verzích (na obrázku zeleně vyznačené třídy) podle původu metadat. První verze (na obrázku \textit{RestApiCompatibilityChecker}) pracuje s metadaty získanými z implementace, druhá (na obrázku \textit{WebservicesCompatibilityChecker}) pak s metadaty získanými z popisu webové služby.
 
 % - zmínit, proč třídy pro porovnávání REST API a WS nemají společného předka (krom rozhraní)
 % 	- důvod: chtěl jsem nechat implementaci obou porovnávačů oddělenou pro případ, že by se změnila funkce indexerů
 
 \begin{figure}[h]
 	\centering
+		\includegraphics[width=\linewidth]{cmp-uml-class}
 	\caption{Diagram tříd popisující strukturu porovnávače}
 	\label{fig:cmp-uml-class}
 \end{figure}
 
-V případě služeb indexovaných na základě jejich popisu je porovnávací logika téměř stejně (liší se jen WSDL). Porovnávače těchto služeb tedy dědí od jednoho předka a pouze překrývají některé metody, kterými pokrývají své specifické odlišnosti (např. jména atributů, porovnávače endpointů, ...).
+I když je struktura metadat podobná, rozhodl jsem se vytvářet co možná nejméně společné implementace, protože bych tím vytvořil silnou vazbu mezi jinak nezávislými indexery. Ta by v případě změny struktury metadat u jednoho z indexerů přinášela obtíže při následné refaktorizaci porovnávacího modulu. Jediným společným předkem je tedy obecná abstraktní třída pro porovnávač webových služeb.
 
-\subsubsection{Porovnávání metadat endpointů}
+Protože indexer pracující s popisem je schopen indexovat více typů služeb, je pro každý z těchto typů vytvořen zvláštní porovnávač. Na obrázku to jsou třídy dědící od \textit{WebservicesCompatibilityChecker}. Tato obsahuje porovnávací logiku a abstraktní metody pro získání konkrétních detailů jako například jmen některých atributů, identifikátorů \textit{Capability}, nebo instancí porovnávačů metadat, které jsou volané během porovnání. Daná implementace pak tyto metody překrývá čímž poskytuje data specifická danému typu služby.
 
-Z důvodů čistoty kódu a principu jedné odpovědnosti je logika porovnání jednotlivých metadat endpointů rozdělená do zvláštních tříd, s jedním předkem. Ty jsou zobrazeny na diagramu tříd \ref{fig:endpoint-cmp-uml-class}.
+\subsubsection{Porovnávání endpointů}
+
+Jak bylo zmíněno v kapitole \ref{sec:cmp-alg}, porovnávání endpointů služeb je rozděleno na několik částí. Z důvodů čistoty kódu a principu jedné odpovědnosti je logika porovnání každé části umístěna ve zvláštní třídě a pro každé jedno porovnání je vytvořena nová instance této třídy. Obrázek \ref{fig:endpoint-cmp-uml-class} obsahuje diagram těchto tříd společně s abstraktní třídou od které dědí každý z porovnávačů. 
 
 \begin{figure}[h]
 	\centering
-	\caption{Struktura porovnávače metadat endpointů}
+	\includegraphics[width=\linewidth]{endpoint-cmp-uml-class}
+	\caption{Struktura porovnávače vlastností endpointů}
 	\label{fig:endpoint-cmp-uml-class}
 \end{figure}
+
+Abstraktní třída \textit{EndpointFeatureComparator} obsahuje pouze extrakci daných vlastností endpointů z objektů \textit{Capability} a abstraktní metodu \textit{compare()}, kterou volá klientský kód. Tím je dosaženo snadné rozšiřitelnosti v případě nutnosti porovnání dalších vlastností endpointu, například pokud by se rozšířila struktura metadat. 
+
+\subsubsection{Vestavěné datové typy}
+
+Porovnávání vestavěných datových typů je řešeno obalovací třídou, jejíž vstupním parametrem je jméno obalovaného datového typu. Tato třída obsahuje logiku která je schopná vyhodnotit, zda se doopravdy jedná o jméno vestavěného typu a také logiku porovnání dvou vestavěných typů. V současné době je toto porovnání omezena na rovnost a generalizaci (jak bylo uvedeno v sekci \ref{sec:type-cmp}). Konkrétní obalové třídy jsou \textit{JavaTypeWrapper} pro vestavěné typy Javy a \textit{XsdDataType} pro vestavěné typy XML. 
+
+Obalové třídy nepokrývají všechny vestavěné typy, ale pouze jejich podmnožinu. Zejména se jedná o čísla (i s plovoucí desetinnou čárkou) a řetězce.
 
 \section{Integrace modulu}
 TODO: formulace
@@ -870,6 +878,9 @@ Modul interaguje s některými dalšími rozšířeními. Tato interakce je zobr
 \subsection{REST API}
 
 Oproti modulům pro indexaci komponent, není mé rozšíření napojeno na žádnou z částí životního cyklu komponenty a je tedy nutné jej explicitně volat. To je v současné době provedeno skrze volání REST API.
+
+V modulu obsahujícím rest API je skrze dependency injection zpřístupněná OSGi služba pro porovnávání (rozhraní \textit{ApiCompatibilityChecker}).
+
 
 \chapter{Ověření funkčnosti}
 
