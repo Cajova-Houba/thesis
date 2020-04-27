@@ -818,11 +818,19 @@ Změny v této skupině představují buď kombinace několika méně závažný
 
 \chapter{Implementace rozšíření CRCE}
 
-Cílem mé práce bylo vytvořit rozšíření CRCE schopné automatické kontroly kompatibility indexovaných webových služeb. Tato kapitola obsahuje stručný popis implementace rozšíření, jež realizuje algoritmus popsaný v předešlé kapitole. Na konci kapitoly je pak popsáno napojení rozšíření na existující REST API.
+Cílem mé práce bylo vytvořit rozšíření CRCE schopné automatické kontroly kompatibility indexovaných webových služeb. Tato kapitola obsahuje stručný popis implementace rozšíření, jež realizuje algoritmus popsaný v předešlé kapitole. Druhá část kapitoly obsahuje popis integrace rozšíření do systému CRCE.
 
 \section{Porovnávač}
 
+TODO: formulace
+
 V kapitole \ref{sec:crce} bylo zmíněno, že CRCE má modulární architekturu. Moduly, jež jsou nadstavbou jádra jsou umístěny v modulu \verb|crce-modules-reactor|. Zde je umístěno i mé rozšíření.
+
+Modul je tvořen maven artefaktem, je implementovaný jako OSGI bundle (jako všechny ostatní moduly).
+
+Veřejná funkcionalita je zbytku CRCE vystavená skrze rozhraní \verb|ApiCompatibilityCheckerService|. Modul obsahuje i implementaci tohoto rozhraní, která je vystavena skrze anotaci \verb|Component|. Tato třída obsahuje všechny porovnávače a je schopná vybrat správný porovnávač pro zadanou dvojici \textit{Resource}.
+
+\subsection{Struktura tříd porovnávače}
 
 TODO: formulace
 Z důvodů zmíněných v sekci \ref{sec:cmp-alg} je algoritmus implementován ve dvou verzích. Jedna verze pro služby indexované z implementace, druhá pro služby indexované z popisu. I když je struktura porovnávačů podobná, rozhodl jsem se nedělat žádnou společnou implementaci, protože bych tím do kódu zanesl silnou vazbu, která by v případě změny struktury metadat u jednoho z indexerů přinášela obtíže při následné refaktorizaci. Jediným společným předkem je obecné rozhraní pro porovnávač webových služeb.
@@ -836,7 +844,30 @@ Z důvodů zmíněných v sekci \ref{sec:cmp-alg} je algoritmus implementován v
 	\label{fig:cmp-uml-class}
 \end{figure}
 
-\section{REST API}
+V případě služeb indexovaných na základě jejich popisu je porovnávací logika téměř stejně (liší se jen WSDL). Porovnávače těchto služeb tedy dědí od jednoho předka a pouze překrývají některé metody, kterými pokrývají své specifické odlišnosti (např. jména atributů, porovnávače endpointů, ...).
+
+\subsubsection{Porovnávání metadat endpointů}
+
+Z důvodů čistoty kódu a principu jedné odpovědnosti je logika porovnání jednotlivých metadat endpointů rozdělená do zvláštních tříd, s jedním předkem. Ty jsou zobrazeny na diagramu tříd \ref{fig:endpoint-cmp-uml-class}.
+
+\begin{figure}[h]
+	\centering
+	\caption{Struktura porovnávače metadat endpointů}
+	\label{fig:endpoint-cmp-uml-class}
+\end{figure}
+
+\section{Integrace modulu}
+TODO: formulace
+
+Modul interaguje s některými dalšími rozšířeními. Tato interakce je zobrazena na obrázku \ref{fig:apicomp-crce-interaction}. Výsledky porovnání jsou v podobě objektu \textit{Compatibility} ukládány/vybírány do/z CRCE. Aby toto bylo možné, bylo potřeba drobně rozšířit modul \verb|crce-compatibility-dao-api| a \verb|crce-compatibiliy-dao-mongodb| (zkontrolovat název). Konkrétně se jedná o přidání metod pro získání objektu \textit{Compatibility} pro zadanou dvojici objektů \textit{Resource} (možná i pro smazání?). 
+
+\begin{figure}
+	\centering
+	\caption{Interakce rozšíření se zbytkem CRCE}
+	\label{fig:apicomp-crce-interaction}
+\end{figure}
+
+\subsection{REST API}
 
 Oproti modulům pro indexaci komponent, není mé rozšíření napojeno na žádnou z částí životního cyklu komponenty a je tedy nutné jej explicitně volat. To je v současné době provedeno skrze volání REST API.
 
