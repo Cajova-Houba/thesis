@@ -420,7 +420,7 @@ Z těchto důvodů je do metadat uložen pouze název datového typu což snižu
 %		- tím pádem je jméno datového typu (např. fully qualified name v případě Java třídy) jedinou informací, která je o typu dostupná
 % - oba dva moduly používají jiné identifikátory pro stejné elementy (endpoint, parametr, ...) proto nelze vzájemně porovnat REST indexovaný prvním a druhým modulem
 
-\chapter{Modul pro porovnávání webových služeb}
+\chapter{Porovnávání webových služeb}
 
 V této kapitole je detailně popsána funkce porovnávacího algoritmu společně s daty, nad kterými je možné porovnávač použít. Zároveň je zde popsán způsob vyhodnocení výsledků porovnání a formát uložení takto získaných dat.
 
@@ -817,7 +817,7 @@ Změny v této skupině představují buď kombinace několika méně závažný
 Úroveň \textit{UNK} označuje buď neporovnatelnost metadat a v takovém případě nelze o kompatibilitě jednoznačně rozhodnout, nebo nerovnost metadat v případě, kde možným výsledkem je pouze 'stejné', nebo 'nestejné'.
 
 
-\chapter{Implementace rozšíření CRCE}
+\chapter{Implementace rozšíření}
 
 Cílem mé práce bylo vytvořit rozšíření CRCE schopné automatické kontroly kompatibility indexovaných webových služeb. Tato kapitola obsahuje stručný popis implementace rozšíření, jež realizuje algoritmus popsaný v předešlé kapitole. Druhá část kapitoly obsahuje popis integrace rozšíření do systému CRCE.
 
@@ -865,24 +865,44 @@ Porovnávání vestavěných datových typů je řešeno obalovací třídou, je
 Obalové třídy nepokrývají všechny vestavěné typy, ale pouze jejich podmnožinu. Zejména se jedná o čísla (i s plovoucí desetinnou čárkou) a řetězce.
 
 \section{Integrace modulu}
-TODO: formulace
 
-Modul interaguje s některými dalšími rozšířeními. Tato interakce je zobrazena na obrázku \ref{fig:apicomp-crce-interaction}. Výsledky porovnání jsou v podobě objektu \textit{Compatibility} ukládány/vybírány do/z CRCE. Aby toto bylo možné, bylo potřeba drobně rozšířit modul \verb|crce-compatibility-dao-api| a \verb|crce-compatibiliy-dao-mongodb| (zkontrolovat název). Konkrétně se jedná o přidání metod pro získání objektu \textit{Compatibility} pro zadanou dvojici objektů \textit{Resource} (možná i pro smazání?). 
+Modul ke své správné funkčnosti vyžaduje několik dalších komponent, tato závislost je znázorněna na obrázku \ref{fig:apicomp-crce-interaction}. Konkrétně se jedná o moduly \textit{crce-core}, který sdružuje všechny komponenty jádra (takže není nutné definovat závislosti jednotlivě) a \textit{crce-compatibility-dao-api}, který obsahuje rozhraní pro přístup k datovému úložišti objektů \textit{Compatibility}. 
 
-\begin{figure}
+Výsledky porovnání webových služeb jsou ukládány do perzistentního úložiště a není tedy nutné znovu počítat rozdíly pro již porovnané dvojice. Ukládání těchto dat obstarává modul \textit{crce-compatibility-dao-mongodb}, jež implementuje výše  zmíněné rozhraní. V rámci mé práce jsem tyto moduly rozšířil o funkcionalitu pro získání objektu \textit{Compatibility} podle zadané dvojice \textit{Resource} a mazání existujících objektů \textit{Compatibility}.
+
+\begin{figure}[h]
 	\centering
+	\includegraphics[width=10cm]{module-integration}
 	\caption{Interakce rozšíření se zbytkem CRCE}
 	\label{fig:apicomp-crce-interaction}
 \end{figure}
 
 \subsection{REST API}
 
-Oproti modulům pro indexaci komponent, není mé rozšíření napojeno na žádnou z částí životního cyklu komponenty a je tedy nutné jej explicitně volat. To je v současné době provedeno skrze volání REST API.
+Na rozdíl od indexerů zmíněných v kapitole \ref{sec:api-index} není modul pro počítání kompatibility přímo napojen na žádnou z fází životního cyklu komponenty v CRCE a je potřeba jej manuálně spouštět. V současné době je rozšíření zpřístupněno skrze REST API implementovaném v modulu \textit{crce-rest-v2}. Zde je skrze dependency injection zpřístupněná služba \textit{ApiCompatibilityCheckerService}, která na základě předaných vstupních parametrů provede porovnání a vrátí výsledek v podobě objektu \textit{Compatibility}. Ten je pak vrácen klientovi.
 
-V modulu obsahujícím rest API je skrze dependency injection zpřístupněná OSGi služba pro porovnávání (rozhraní \textit{ApiCompatibilityChecker}).
+Modul je dostupný na adrese \verb|/apicomp/compare|. Parametry volání jsou uvedeny v tabulce \ref{tab:rest-cmp-params}. Nepovinný parametr \textit{force}, jehož výchozí hodnota je \textit{false} byl přidán z důvodů nutnosti přepočítání výsledků v případě změny implementace. Pokud tedy dojde například k opravě chyby díky které jsou v databázi uložena špatná data, není nutné je ručně mazat, ale stačí porovnání spustit znovu s nastaveným příznakem \textit{force}.
 
+\begin{table}[h]
+	\centering
+	\begin{tabular} {|l|c|c|}
+		\hline
+		Název & Popis & Povinný \\
+		\hline
+		\hline
+		id1 & ID 1. \textit{Resource} k porovnání & Ano \\
+		\hline
+		id2 & ID 2. \textit{Resource} k porovnání & Ano \\
+		\hline
+		force & Ignorovat existující \textit{Comaptibility} & Ne \\
+		\hline		
+	\end{tabular}
+	\caption{Parametry volání endpointu pro porovnání služeb}
+	\label{tab:rest-cmp-params}
+\end{table}
 
 \chapter{Ověření funkčnosti}
+\label{sec:testing}
 
 - nějaká reálná data
 	- STAG (WSDL)
