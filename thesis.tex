@@ -904,39 +904,86 @@ Modul je dostupný na adrese \verb|/apicomp/compare|. Parametry volání jsou uv
 \chapter{Ověření funkčnosti}
 \label{sec:testing}
 
-- nějaká reálná data
-	- STAG (WSDL)
-	- Fuel Economy
-- i syntetická data
-- algoritmus testován pomocí unit testů
+Rozšíření do systému CRCE, jež bylo předmětem mé práce bylo testováno skrze jednotkové a integrační testy. Tato kapitola se postupně ve třech částech zabývá použitím modulu a ověřením jeho správné funkčnosti. V první části je rozebráno použití modulu od nahrání artefaktů do CRCE až po získání výsledků porovnání. Druhá část této kapitoly obsahuje popis integračních testů, včetně testovacích dat. Ve třetí části je uvedeno shrnutí provedených testů.
 
-\section{Integrační + akceptační testy}
+\section{Použití modulu}
+
+Aby bylo možné modul použít, je nejprve potřeba nahrát testovací data. Tato sekce popisuje proces nahrání dat do CRCE a následného volání porovnávací služby. Pro jednoduchost je nahrán pouze jeden artefakt obsahující implementaci REST služby a následně je porovnán sám se sebou.
+
+\paragraph{Nahrání artefaktu do CRCE}
+Testovací artefakt \textit{jersey-test-1.war} lze do CRCE nahrát skrze uživatelské rozhraní v záložce \textit{File/url} v menu \textit{Upload}, viz obrázek \ref{fig:crce-art-upload}. Po dokončení nahrání se v pravém horním rohu zobrazí zpráva oznamující úspěch.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{crce-art-upload.png}
+	\caption{Nahrání artefaktu s implementací webové služby do CRCE}
+	\label{fig:crce-art-upload}
+\end{figure}
+
+\paragraph{Nahrání artefaktu do Store}
+V tuto chvíli se nahraná komponenta nachází ve fázi \textit{Buffer}. Došlo tedy k sebrání metadat a indexaci artefaktu, nicméně pro porovnání je nutné provést operaci \textit{commit} a tím komponentu posunout do fáze \textit{Store}. To je lze udělat tlačítkem \textit{Push to Store} v záložce \textit{Plugins} pod menu \textit{Repository} tak je znázorněno na obrázku \ref{fig:crce-art-push-to-store}. Tato záložka mimo jiné obsahuje přehled všech komponent nacházejících se ve fázi \textit{Buffer} svého životního cyklu.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{crce-art-push-to-store.png}
+	\caption{Nahrání artefaktu s implementací z Buffer do Store}
+	\label{fig:crce-art-push-to-store}
+\end{figure}
+
+\paragraph{Získání ID artefaktu}
+K porovnání webových služeb je nutné znát ID \textit{Resource}, jež reprezentují nahrané artefakty. To je možné zjistit označením daného artefaktu v uživatelském rozhraní a následným kliknutím na tlačítko \textit{Detail}. Detail nahraného artefaktu je na obrázku \ref{fig:crce-art-detail}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=7cm]{crce-art-detail.png}
+	\caption{Detail nahraného artefaktu}
+	\label{fig:crce-art-detail}
+\end{figure}
+
+\paragraph{Volání porovnávací služby}
+Identifikátor získaný v předchozím kroku lze použít k volání REST služby pro porovnávání. 
+
+\paragraph{Výsledky porovnání}
+TODO: stručně výsledek + rozebrání
+
+\section{Testování}
 
 - testování skrze REST API
-- pomocí Postman (Collection Runner)
-- několik verzí jednoho API -> testování křížem
-- todo: příklad
-	- popsat verze API (čím se liší), případně zdůvodnit očekávaný výsledek
-	- tabulka vzájemného porovnání s výsledky
+- pomocí nástroje Postman (Collection Runner)
+- princip: několik verzí jednoho API -> testování křížem
+- testy byly provedeny pro každý typ služby jež moduly indexují
+- detaily testů jsou rozvedeny v následujících sekcích
 
-\subsection{Syntetický server v Jave}
+\subsection{Server v Jave}
 \begin{itemize}
-	\item postaveno na Jersey
+	\item metadata získaná z implementace
+	\item postaveno na Jersey (todo: verze)
 	\item REST API
 	\item alespoň obrázek/raml api?
 	\item 2 verze otestované křížem
 \end{itemize}
 
-Popis verzí API (rozdíl je vždy popsaný oproti verzi 1):
-\begin{itemize}
-	\item V1: základní verze
-	\item V2: typ parametru změněn z Long na Number
-\end{itemize}
+Celkem jsou testovány dvě verze služby. První z nich obsahuje základní implementaci služby. Druhá verze (odvozená od první) pak mění datový typ parametru u jednoho z endpointů z \textit{Long} na \textit{Number}. V tabulce \ref{tab:jersey-cmp-res} s výsledky jsou tyto verze označovány \textit{v1} a \textit{v2}.
 
-Co se testuje:
-\begin{itemize}
-	\item GEN/SPEC a kontravariance u parametru endpointu
-\end{itemize}	
+Účelem tohoto testovacího scénáře je kromě ověření funkčnosti modulu pro REST služby také ověření správné aplikace principu kontravariance v případě změn datových typů parametrů endpointů. Změna datového typu z \textit{Long} na \textit{Number} je změnou \textit{GEN}. Po použití kotrnavariance by změna na úrovni endpointu měla být \textit{SPE} a protože je to jediný rozdíl mezi službami, měla by tato změna označovat také celkový rozdíl.
+
+Výsledky vrácené voláním porovnávací služby jsou zobrazeny v tabulce \ref{tab:jersey-cmp-res}. Výsledky odpovídají očekávání a princip kontravariance v případě změn \textit{GEN} a \textit{SPE} u datového typu parametru endpointu služby je tedy aplikován správně.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l||c|c|}
+		\hline
+		& v1 & v2 \\
+		\hline
+		\hline
+		v1 & \textit{NON} & \textit{SPEC} \\
+		\hline
+		v2 & \textit{GEN} & \textit{NON} \\
+		\hline
+	\end{tabular}
+	\caption{Výsledky porovnání metadat získaných z implementace}
+	\label{tab:jersey-cmp-res}
+\end{table}
 	
 \subsection{Příklad JSON-WSP z wiki}
 
@@ -947,12 +994,28 @@ Co se testuje:
 \end{itemize}
 
 Popis verzí API (rozdíl je vždy popsaný oproti verzi 1):
-\begin{itemize}
-	\item V1: základní verze
-	\item V2: typ User je jiný
-	\item V3: přidána metoda deleteUser
-	\item v4: metoda listGroups změněna na getUsersInGroup
-\end{itemize}
+V tomto testovacím scénáři jsou použity 4 verze jedné služby. První verze označovaná \textit{v1} je základní a všechny následující verze jsou od této odvozené a pouze ji modifikují. Přehled změn je uveden v tabulce \ref{tab:json-wsp-diffs}, jednotlivé verze jsou v ní označeny \textit{v1} až \textit{v4} a sloupec 'Popis změny' vždy udává rozdíl mezi základní a danou verzí. Datový typ \textit{User}, jež je modifikovaný ve verzi \textit{v2} je definovaný přímo v popisném souboru.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Verze služby & Popis změny \\
+		\hline
+		\hline
+		v1 & Základní verze \\
+		\hline
+		v2 & Modifikace datového typu \textit{User} \\
+		\hline
+		v3 & Přidána operace \textit{deleteUser} \\
+		\hline
+		v4 & Operace \textit{listGroups} změněna na \textit{getUserInGroup} \\
+		\hline
+	\end{tabular}
+	\caption{Přehled změn ve verzích služby}
+	\label{tab:json-wsp-diffs}
+\end{table}
+
 
 Co se testuje:
 \begin{itemize}
@@ -960,6 +1023,26 @@ Co se testuje:
 	\item mutace endpointu
 	\item INS, DEL
 \end{itemize}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l||c|c|c|c|}
+		\hline
+		& v1 & v2 & v3 & v4 \\
+		\hline
+		\hline
+		v1 & \textit{NON} & \textit{NON} & \textit{INS} & \textit{MUT} \\
+		\hline
+		v2 & \textit{NON} & \textit{NON} & \textit{INS} & \textit{MUT} \\
+		\hline
+		v3 & \textit{DEL} & \textit{DEL} & \textit{NON} & \textit{MUT} \\
+		\hline
+		v4 & \textit{MUT} & \textit{MUT} & \textit{MUT} & \textit{NON} \\
+		\hline
+	\end{tabular}
+	\caption{Výsledky porovnání metadat získaných z JSON-WSP popisu}
+	\label{tab:jsonwsp-cmp-res}
+\end{table}
 
 \subsection{FuelEconomy API}
 
@@ -983,7 +1066,8 @@ Co se testuje:
 
 \subsection{Stag WS}
 
-TODO
+\section{Shruntí testů}
+
 
 \chapter{Závěr}	
 
