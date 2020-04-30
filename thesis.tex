@@ -282,7 +282,7 @@ Z obrázku \ref{fig:crce-resource-uml} je vidět rekurzivní povaha elementu \te
 	\label{fig:crce-comp-lc}
 \end{figure} 
 
-Životní cyklus má dvě hlavní fáze, jimiž jsou \textit{Buffer} a \textit{Store}. Komponenta po nahrání do úložiště nejprve prochází fází \textit{Buffer}, v níž dojde k indexaci obsahu, kontrole vnitřní konzistence a kompatibility komponenty. Pokud touto fází projde bez chyb, je komponenta nahrána do trvalého úložiště (operace \textit{commit}) a přechází do fáze \textit{Store}.
+Životní cyklus má dvě hlavní fáze, jimiž jsou \textit{Buffer} a \textit{Store}. Komponenta po nahrání do úložiště nejprve prochází fází \textit{Buffer}, v níž dojde k indexaci obsahu, kontrole vnitřní konzistence a kompatibility komponenty. Pokud touto fází projde bez chyb, může uživatel pomocí operace \textit{commit} komponentu nahrát do trvalého úložiště, čímž dojde k přechodu  do fáze \textit{Store}.
 
 V obou fázích jsou nad komponentou prováděny operace z nichž \textit{analyze} je nejvíce relevantní mé práci, protože právě během této operace dochází ke sběru metadat (fáze \textit{Buffer}) a dalším výpočtům nad nimi (fáze \textit{Store}). Modul s rozšířením, který je předmětem mé práce bude zařazen mezi výpočty prováděné nad metadaty během \textit{analyze}, kde bude vyhodnocovat vzájemnou kompatibilitu webových služeb. Způsoby sběru těchto metadat, ke kterým dochází ve fázi \textit{Store}, jsou popsány v následující sekci. 
 
@@ -374,7 +374,7 @@ Z implementace REST služby modul rekonstruuje kolekci endpointů s jejich param
 
 Modul pro indexování webových služeb vznikl v rámci práce Bc. Davida Pejřimovského. Oproti předchozímu modulu pro indexaci REST služeb nepracuje tento s její implementací, ale s popisným souborem služby, tak jak bylo uvedeno v kapitole \ref{sec:web-services-principles}. Podporované formáty popisu služeb jsou WSDL (verze 1.1 i 2.0) pro SOAP webové služby, WADL a Json-WSP pro REST služby\cite{pejrimovsky2015ws}.
 
-Struktura dat vytvořených pro REST služby (tedy z popisu WADL, nebo Json-WSP) je podobná struktuře dat vytvořenou předchozím indexerem. Endpoint je tedy reprezentován entitou \textit{Capability}, jeho parametry entitami \textit{Property}. Z popisu Json-WSP je ještě vytvořena reprezentace response pro daný endpoint (entita \textit{Property}). Z popisu WADL se žádné další vlastnosti endpointů nezískávají.
+Struktura dat vytvořených pro REST služby (tedy z popisu WADL, nebo JSON-WSP) je podobná struktuře dat vytvořenou předchozím indexerem. Endpoint je tedy reprezentován entitou \textit{Capability}, jeho parametry entitami \textit{Property}. Z popisu Json-WSP je ještě vytvořena reprezentace response pro daný endpoint (entita \textit{Property}). Z popisu WADL se žádné další vlastnosti endpointů nezískávají.
 
 Z WSDL popisu je vytvořena reprezentace služeb, jež jsou popsány xml elementy \verb|<wsdl:service>| a jejich vnořených endpointů. Endpoint je ve WSDL popsán elementem \verb|<wsdl:port>| a má definované operace (elementy \verb|<wsdl:operation>|), nicméně modul tyto nevnořuje a vytváří zjednodušenou reprezentaci. Model endpointu tedy obsahuje metadata získaná z elementů \verb|<wsdl:operation>| a url definovanou v elementu \verb|<wsdl:port>|. Služby i endpointy jsou v metadatech reprezentovány entitami \textit{Capability}. Oproti REST službám, které mají jednu úroveň vnoření \textit{Capability}, zde vznikají úrovně dvě. Výčet elementů API a jejich reprezentace v metadatech je uveden v tabulce \ref{tab:ws-indexed}.
 
@@ -382,7 +382,7 @@ Z WSDL popisu je vytvořena reprezentace služeb, jež jsou popsány xml element
 	\centering
 	\begin{tabular}{|l | c | c |}
 		\hline
-		Element API & Entita v metadatech & Vstaženo k \\
+		Element API & Entita v metadatech & Vztaženo k \\
 		\hline
 		\hline
 		Service & Capability & - \\
@@ -422,13 +422,13 @@ Z těchto důvodů je do metadat uložen pouze název datového typu což snižu
 
 \chapter{Porovnávání webových služeb}
 
-V této kapitole je detailně popsána funkce porovnávacího algoritmu společně s daty, nad kterými je možné porovnávač použít. Zároveň je zde popsán způsob vyhodnocení výsledků porovnání a formát uložení takto získaných dat.
+Cílem této práce je rozšířit systém CRCE o funkcionalitu pro porovnání webových služeb. Tato kapitola detailně rozebírá porovnávací algoritmus společně s daty, nad kterými je možné porovnávač použít. Zároveň je zde popsán způsob vyhodnocení výsledků porovnání a formát uložení takto získaných dat.
 
 \section{Reprezentace rozdílů a kompatibility}
 \label{sec:diff-info}
 Webové služby jsou popsány komplexní strukturou metadat, která byla uvedena v předchozí kapitole. Rozdíl mezi těmito strukturami lze vyjádřit pouhou pravdivostní hodnotou (stejné, nebo nestejné), nicméně takový přístup skrývá před klientem většinu informací, na základě kterých by se mohl rozhodnout o dalším postupu a tím značně snižuje použitelnost aplikace. Mimo to, samotná skutečnost, že metadata webových služeb se neshodují nemusí nutně z pohledu klienta znamenat nekompatibilitu. Z těchto důvodů je k reprezentaci rozdílů mezi službami třeba použít vhodnější metodu.
 
-Článek \cite{brada2006diff} zabývající se možnostmi evaluace kompatibility komponent na základě relace subtypingu, nahlíží na komponentu skrze její rozhraní jako na datový typ a popisuje odlišnosti v různých úrovních kontraktu (metoda, parametr, ...). Na základě těchto odlišností (a relace subtypingu) je pak určena míra kompatibility dvou komponent. Protože je webová služba v CRCE reprezentována komponentou a na její rozhraní se dá také nahlížet jako na kontrakt datového typu, je tento přístup vhodný k reprezentaci rozdílů mezi webovými. Oproti pouhé pravdivostní hodnotě je navíc klientovi poskytnuta detailní informace o konkrétních rozdílech mezi službami. Z těchto důvodů jsem se rozhodl použít výše zmíněný způsob reprezentace rozdílů v mé práci. 
+Článek \cite{brada2006diff} zabývající se možnostmi evaluace kompatibility komponent na základě relace subtypingu, nahlíží na komponentu skrze její rozhraní jako na datový typ a popisuje odlišnosti v různých úrovních stromu metadat (třída, operace, parametr, ...). Na základě těchto odlišností (a relace subtypingu) je pak určena míra kompatibility dvou komponent. Protože je webová služba v CRCE reprezentována komponentou a na její rozhraní se dá také nahlížet jako na kontrakt datového typu, je tento přístup vhodný k reprezentaci rozdílů mezi webovými. Oproti pouhé pravdivostní hodnotě je navíc klientovi poskytnuta detailní informace o konkrétních rozdílech mezi službami. Z těchto důvodů jsem se rozhodl použít výše zmíněný způsob reprezentace rozdílů v mé práci. 
 
 Datové struktury použité pro reprezentaci rozdílů dvou entit a jejich vzájemné kompatibility navržené v rámci citovaného článku se nazývají \textit{Diff} a \textit{Compatiblity}. \textit{Diff} je definován jako rekurzivní typ, který uchovává jak konkrétní informace o rozdílu skrze podřazené \textit{Diff} tak i úroveň odlišnosti zvanou \textit{Difference}. Tyto úrovně jsou popsány tabulkou \ref{tab:diffs} a v citovaném článku tvoří obor hodnot funkce $diff(a,b): Type \times Type \rightarrow Difference$. Třída \textit{Compatibility} uchovává informace o kompatibilitě dvou komponent (reprezentovány entitami \textit{Resource}) společně s detaily jejich rozdílů, jež jsou reprezentovány stromem \textit{Diff}.
 
@@ -497,11 +497,11 @@ Před porovnáváním datových struktur je zkontrolována jejich kompatibilita.
 	\item \textit{identity capability}: obsahuje informace o identitě komponenty v CRCE.
 \end{itemize}
 
-Pokud kontrola proběhne úspěšně, je spuštěn samotný algoritmus jehož průběh je naznačen na vývojovém diagramu \ref{fig:apicomp-flow}. V případě porovnání SOAP webových služeb je tento postup obalen ještě porovnáním \textit{services}, které WSDL definuje a které jsou v CRCE reprezentovány jako kolekce endpointů.
+Pokud kontrola proběhne úspěšně, je spuštěn samotný algoritmus jehož průběh je naznačen na vývojovém diagramu \ref{fig:apicomp-flow}. Tento postup analogicky platí i pro porovnání \textit{service} v případě SOAP webových služeb s tím rozdílem, že krok 'Porovnej endpointy e1,e2 a výsledek ulož do res' by obsahoval porovnání endpointů definovaných v rámci jedné \textit{service}, která je v CRCE reprezentována jako kolekce endpointů.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=9.5cm]{apicomp-flow}
+	\includegraphics[width=\linewidth]{apicomp-flow}
 	\caption{Vývojový diagram porovnávacího algoritmu}
 	\label{fig:apicomp-flow}
 \end{figure}
@@ -510,7 +510,9 @@ Mezivýsledky porovnání jsou ukládány v datové struktuře \textit{Diff}, kt
 
 \subsubsection{Výběr entit vhodných k porovnání}
 
-Tento odstavec se týká endpointů a \textit{service}, protože tyto nejsou na pořadí závislé (na rozdíl např. od parametrů operace) a jejich pořadí v metadatech nelze ani předpokládat. Proto je nutné před samotným porovnáním nejprve vybrat dvojici entit k tomu vhodnou. Endpoint \textit{e1} (\textit{service} \textit{s1})  z první webové služby je vybrán sekvenčně, jak je naznačeno na diagramu \ref{fig:apicomp-flow}. Druhý endpoint \textit{e2} (\textit{s2}) je pak vybrán na základě určité shody s metadaty endpointu \textit{e1}, respektive \textit{service s2}. V přípdě endpointů se konkrétně jedná o počet povinných parametrů, jméno a URL na které je daný endpoint dostupný. URL nemusí být shodné úplně. Pokud tak nastane, je nastavena vlajka MOV, která je detailně popsána v sekci \ref{subsec:mov}.
+Tento odstavec se týká endpointů a \textit{service}, protože tyto nejsou na pořadí závislé (na rozdíl např. od parametrů operace) a jejich pořadí v metadatech nelze ani předpokládat. Proto je nutné před samotným porovnáním nejprve vybrat dvojici entit k tomu vhodnou. V diagramu \ref{fig:apicomp-flow} je zde popsaný výběr reprezentován krokem 'PullMatchingEndpoint()'. 
+
+Endpoint \textit{e1} (\textit{service} \textit{s1})  z první webové služby je vybrán sekvenčně, jak je naznačeno na diagramu \ref{fig:apicomp-flow}. Druhý endpoint \textit{e2} (\textit{s2}) je pak vybrán na základě určité shody s metadaty endpointu \textit{e1}, respektive \textit{service s2}. V přípdě endpointů se konkrétně jedná o počet povinných parametrů, jméno a URL na které je daný endpoint dostupný. URL nemusí být shodné úplně. Pokud tak nastane, je nastavena vlajka MOV, která je detailně popsána v sekci \ref{subsec:mov}.
 
 O porovnatelnosti a rozdílu dvou \textit{services} je rozhodnuto na základě úplné shody jejich jmen a typu (současně je používán pouze typ "\verb|rpc/messaging|").
 
@@ -614,11 +616,11 @@ Množiny porovnávaných atributů parametrů se navzájem liší podle typu met
 \label{sec:type-cmp}
 V současnosti jsou největším omezením porovnávacího algoritmu datové typy. Jak již bylo zmíněno v kapitole \ref{sec:api-index}, jméno datového typu je jedinou dostupnou informací a tedy také jediným kritériem, podle kterého je lze porovnávat. To je dostatečné v případě vestavěných typů jako například třídy z balíku \verb|java.lang|, nebo typy definované v xsd. 
 
-Nad těmito lze provádět plnohodnotné porovnání včetně kontroly generalizace (změny \textit{GEN}, \textit{SPE}). U vestavěných typů Javy je generalizace určena na základě dědičnosti a lze například určit, že datový typ s názvem \verb|java.lang.Number| je generalizací typu s názvem \verb|java.lang.Long|, protože třída \textit{Number} je rodičem třídy \textit{Long}. Obdobně je tomu i u vestavěných typů definovaných v xsd, kde je generalizace $a <: b$ definována v případě, že typ $b$ je dost velký na pojmutí typu $a$. Například typ \verb|xsd:long| dokáže reprezentovat číslo typu \verb|xsd:int| a proto platí, že $xsd:int <: xsd:long$. 
+Nad těmito lze provádět plnohodnotné porovnání včetně kontroly generalizace (změny \textit{GEN}, \textit{SPE}). U vestavěných typů Javy je generalizace určena na základě dědičnosti a lze například určit, že datový typ s názvem \verb|java.lang.Number| je generalizací typu s názvem \verb|java.lang.Long|, protože třída \textit{Number} je rodičem třídy \textit{Long}. Obdobně je tomu i u vestavěných typů definovaných v XSD, kde je generalizace $a <: b$ definována v případě, že typ $b$ je dost velký na pojmutí typu $a$. Například typ \verb|xsd:long| dokáže reprezentovat číslo typu \verb|xsd:int| a proto platí, že \verb|xsd:int| $<:$ \verb|xsd:long|. 
 
 Porovnání vestavěných typů je založeno na podmínce správně zaindexovaného jména datového typu. V případě analýzy byte kódu je tato podmínka splněna, nicméně u metadat získaných čtením popisných XML souborů tomu tak vždy nemusí být. Problém spočívá v  předponě datového typu, která je součástí jeho jména a porovnávací algoritmus očekává její určitou hodnotu (konkrétně \verb|xs|). Hodnota předpony je však určena definicí namespace v XML popisu a ta se může od očekávané lišit. Tato definice není indexerem ukládána a není proto možné ji během porovnání přesně určit.
 
-Pro uživatelsky definované typy je porovnání omezeno pouze na úplnou shodu, protože na základě pouhého jména datového typu nejde s jistotou usoudit nic dalšího. Změny pro jednotlivé rozdíly mezi datovými typy jsou uvedeny v tabulce \ref{tab:type-cmp}.
+Pro uživatelsky definované typy je z těchto důvodů porovnání omezeno pouze na úplnou shodu názvu včetně prefixu, protože na základě pouhého jména datového typu nejde s jistotou usoudit nic dalšího. Změny pro jednotlivé rozdíly mezi datovými typy jsou uvedeny v tabulce \ref{tab:type-cmp}.
 
 \begin{table}[h]
 	\centering
@@ -633,7 +635,7 @@ Pro uživatelsky definované typy je porovnání omezeno pouze na úplnou shodu,
 		\hline
 		$ B <: A$ & \textit{SPE} \\
 		\hline
-		$ A != B$ & \textit{UNK} \\
+		$ A \neq B$ & \textit{UNK} \\
 		\hline
 	\end{tabular}
 	\caption{Rozdíly mezi datovými typy A a B}
@@ -663,11 +665,11 @@ Algoritmus v zásadě porovnává kolekce endpointů webových služeb a jejich 
 	
 \section{Migrace webových služeb}	
 \label{subsec:mov}
-V popisu porovnání metadat endpointů bylo zmíněno použití URL endpointu jako identifikátoru. Tento přístup naráží na problém, pokud poskytovatel webovou službu přesune, nebo provede změny v cestě k danému endpointu. Na obrázku \ref{fig:mov-example} je uveden příklad dvou shodných endpointů, jež se liší pouze v URL. Aplikujeme-li výše popsaný algoritmus na tato data, skončí negativním výsledkem i přes to, že endpointy mají totožné rozhraní a klient by k nim mohl bez obtíží přistoupit. 
+V popisu porovnání metadat endpointů bylo zmíněno použití URL endpointu jako identifikátoru. Tento přístup naráží na problém v případě, že poskytovatel ponechá nezměněnou implementaci a webovou službu přesune, nebo provede změny v cestě k danému endpointu. Na obrázku \ref{fig:mov-example} je uveden příklad dvou shodných endpointů, jež se liší pouze v URL. Aplikujeme-li výše popsaný algoritmus na tato data, skončí negativním výsledkem i přes to, že endpointy mají totožné rozhraní a klient by k nim mohl bez obtíží přistoupit. 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=8.5cm]{same-end-diff-url}
+	\includegraphics[width=\linewidth]{same-end-diff-url}
 	\caption{Příklad shodných endpointů s rozdílnou URL}
 	\label{fig:mov-example}
 \end{figure}
@@ -680,7 +682,7 @@ Příznak MOV má smysl brát v úvahu jen u případů porovnání jejichž úr
 
 \subsection{Detekce změn v URL}
 
-Součástí URL endpointu je také jeho název, změny v URL se tedy dají detekovat na třech místech. Prvním z nich je doména (včetně protokolu), druhým je cesta k endpointu a třetím jeho jméno. URL všech endpointů obou webových služeb jsou podle těchto částí rozděleny, čímž vznikne 6 množin (2 pro každou část URL). Pokud platí, že $url_{i,1} \subseteq url_{i,2}$ kde $url_i,j$ je $i$-tá část url $j$-té webové služby, je daná část URL považována za nezměněnou. Příklad rozdělení URL dvou webových služeb vycházející z obrázku \ref{fig:mov-example} je uveden v tabulce \ref{tab:url-diff-example}. V tomto příkladu by byla detekována změna v částech URL "Doména" a "Cesta".
+Součástí URL endpointu je také jeho název, změny v URL se tedy dají detekovat na třech místech. Prvním z nich je doména (včetně protokolu), druhým je cesta k endpointu a třetím jeho jméno. URL všech endpointů obou webových služeb jsou podle těchto částí rozděleny, čímž vznikne 6 množin (2 pro každou část URL). Pokud platí, že $url_{i,1} \subseteq url_{i,2}$ kde $url_{i,j}$ je $i$-tá část url $j$-té webové služby, je daná část URL považována za nezměněnou. Příklad rozdělení URL dvou webových služeb vycházející z obrázku \ref{fig:mov-example} je uveden v tabulce \ref{tab:url-diff-example}. V tomto příkladu by byla detekována změna v částech URL "Doména" a "Cesta".
 
 \begin{table}[h]
 	\begin{tabular}{|l|c|c|}
@@ -718,22 +720,23 @@ Výsledek detekce změn v URL nese tři příznaky, kde každý z nich určuje, 
 		všechny ostatní & ne & Změna je příliš velká. \\
 		\hline
 	\end{tabular}
+	\caption{Kombinace změn vedoucích na MOV}
 	\label{tab:mov-explanation}
 \end{table}
 
-Z tabulky je vidět, že změna ve jménech endpointů vždy vede na záporný výsledek. Důvodem je fakt, že jméno endpointu je druhé kritérium pro výběr vhodného páru endpointů (prvním je URL) a bez něj by algoritmus zdegradoval na porovnání "každý s každým" což by značně snížilo efektivitu.   
+Z tabulky je vidět, že změna ve jménech endpointů vždy vede na záporný výsledek. Jedním z důvodů je fakt, že změna ve jméně operace je mutací webové služby a jedná se tedy o nekompatibilní změnu, jejíž řešení bylo popsáno v předchozích sekcích. Dalším důvodem je použití jména endpointu jako druhého kritéria pro výběr vhodného páru endpointů (prvním je URL). Bez něj by algoritmus zdegradoval na porovnání "každý s každým",  což by značně snížilo efektivitu.   
 
 \subsection{Výběr entit k porovnání s příznakem MOV}
 
 Protože jedním z kritérií pro výběr vhodného páru endpointů je i URL, je potřeba upravit logiku výběru tak, aby byly brány v potaz výsledky detekce popsané v předchozí sekci. Při porovnávání URL dvou endpointů je podle kombinace změn daná část URL ignorována a pracuje se pouze s nezměněnou částí u které je vyžadována striktní rovnost.
 
-Tento způsob může vést na případy, kdy je dvojce endpointů vyhodnocena jako potencionálně vhodná k porovnání (s nastaveným příznakem MOV), nicméně porovnání skončí negativním výsledkem, například \textit{UNK}. Pouhá akceptace takového výsledku a pokračování algoritmu by mohlo zapříčinit negativní vyhodnocení kompatibility webových služeb v případech, kdy skutečný rozdíl není tak silný. 
+Tento způsob může vést na případy, kdy je dvojce endpointů vyhodnocena jako potencionálně vhodná k porovnání (s nastaveným příznakem MOV), nicméně porovnání skončí negativním výsledkem, například \textit{UNK}. Pouhá akceptace takového výsledku a pokračování algoritmu by mohlo zapříčinit negativní vyhodnocení kompatibility webových služeb v případech, kdy lze mezi službami nají kompatibilní dvojice endpointů.
 
-Příklad na obrázku \ref{fig:mov-bad-example} tento problém znázorňuje. Oba endpointy mají stejný název a proto by byly vybrány jako vhodné k porovnání s nastavenými MOV příznaky $h=t$, $p=t$, $o=f$. Hlubší porovnání by však skončilo výsledkem \textit{UNK}, protože se neshodují jména a datové typy jejich parametrů. Algoritmus by tedy služby vyhodnotil jako nekompatibilní i přes to, že by mohla existovat kombinace kompatibilních endpointů.
+Příklad na obrázku \ref{fig:mov-bad-example} tento problém znázorňuje. Oba endpointy mají stejný název (atribut \textit{name}) a proto by byly vybrány jako vhodné k porovnání s nastavenými MOV příznaky $h=t$, $p=t$, $o=f$. Hlubší porovnání by však skončilo výsledkem \textit{UNK}, protože se neshodují jména a datové typy jejich parametrů a algoritmus by služby správně vyhodnotil jako nekompatibilní. V druhé webové službě by se nicméně mohl nacházet kompatibilní endpoint a je zde tedy možnost získání lepšího výsledku.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=8.5cm]{mov-example-bad}
+	\includegraphics[width=\linewidth]{mov-example-bad}
 	\caption{Příklad dvou rozdílných endpointů, pro které by byl nastaven příznak MOV}
 	\label{fig:mov-bad-example}
 \end{figure}
@@ -941,29 +944,45 @@ K porovnání webových služeb je nutné znát ID \textit{Resource}, jež repre
 \end{figure}
 
 \paragraph{Volání porovnávací služby}
-Identifikátor získaný v předchozím kroku lze použít k volání REST služby pro porovnávání. 
+Identifikátor získaný v předchozím kroku lze použít k volání REST služby pro porovnávání. K tomu jsem pro jednoduchost použil nástroj Postman. Příklad volání služby s danými identifikátory je na obrázku \ref{fig:apicomp-call}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=4cm]{apicomp-call.png}
+	\caption{Volání porovnávací služby}
+	\label{fig:apicomp-call}
+\end{figure}
 
 \paragraph{Výsledky porovnání}
-TODO: stručně výsledek + rozebrání
+Výsledek vrácený porovnávací službou je uveden na obrázku \ref{fig:apicomp-res}. Pro jednoduchost jsou některé části výsledného JSON dokumentu vypuštěny. Ve výsledku je obsažena finální úroveň rozdílu (\textit{diffValue}), příznaky nastavené během porovnání (\textit{additionalInfo}) a také strukturu \textit{diffDetails} tvořenou stromem \textit{Diff} detailně popisující rozdíly mezi službami.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[height=3cm]{apicomp-res.png}
+	\caption{Volání porovnávací služby}
+	\label{fig:apicomp-res}
+\end{figure}
+
+Pokud by během porovnání došlo k nastavení příznaku MOV, byl by tento vrácený v \textit{additionalInfo}.
 
 \section{Testování}
 
-- testování skrze REST API
-- pomocí nástroje Postman (Collection Runner)
-- princip: několik verzí jednoho API -> testování křížem
-- testy byly provedeny pro každý typ služby jež moduly indexují
-- detaily testů jsou rozvedeny v následujících sekcích
+K ověření funkčnosti porovnávacího modulu je připraveno několik testovacích scénářů. Každý z nich je zaměřen na jeden typ indexované služby a všechny s CRCE komunikují skrze REST API, tak jak bylo popsáno v předchozí sekci.
 
-\subsection{Server v Jave}
-\begin{itemize}
-	\item metadata získaná z implementace
-	\item postaveno na Jersey (todo: verze)
-	\item REST API
-	\item alespoň obrázek/raml api?
-	\item 2 verze otestované křížem
-\end{itemize}
+K testování jsem použil nástroj Postman, konkrétně jeho Collection Runner, který umožňuje vybrat šablonu volání REST API a soubor testovacích dat ve formátu csv, jehož každá řádka představuje jeden test v podobě porovnávané dvojice služeb a očekávaného výsledku. Příklad těchto dat je uveden na obrázku \ref{fig:test-data-csv}.
 
-Celkem jsou testovány dvě verze služby. První z nich obsahuje základní implementaci služby. Druhá verze (odvozená od první) pak mění datový typ parametru u jednoho z endpointů z \textit{Long} na \textit{Number}. V tabulce \ref{tab:jersey-cmp-res} s výsledky jsou tyto verze označovány \textit{v1} a \textit{v2}.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{test-data-csv.png}
+	\caption{Příklad testovacích dat pro nástroj Postman}
+	\label{fig:test-data-csv}
+\end{figure}
+
+Princip každého z testovacích scénářů spočívá ve vytvoření několika verzí jedné služby a následném vzájemném porovnání. Tím lze otestovat jak vybrané změny tak i pořadí porovnávaných služeb. Jednotlivé scénáře včetně výsledků jsou detailně popsány v následujících sekcích.
+
+\subsection{REST služba založená na Jersey}
+
+V tomto scénáři jsou testovány dvě verze REST služby. První z nich (\textit{v1}) obsahuje základní implementaci, druhá verze (\textit{v2}) pak mění datový typ parametru u jednoho z endpointů z \textit{Long} na \textit{Number}.
 
 Účelem tohoto testovacího scénáře je kromě ověření funkčnosti modulu pro REST služby také ověření správné aplikace principu kontravariance v případě změn datových typů parametrů endpointů. Změna datového typu z \textit{Long} na \textit{Number} je změnou \textit{GEN}. Po použití kotrnavariance by změna na úrovni endpointu měla být \textit{SPE} a protože je to jediný rozdíl mezi službami, měla by tato změna označovat také celkový rozdíl.
 
@@ -985,16 +1004,9 @@ Výsledky vrácené voláním porovnávací služby jsou zobrazeny v tabulce \re
 	\label{tab:jersey-cmp-res}
 \end{table}
 	
-\subsection{Příklad JSON-WSP z wiki}
+\subsection{Služba popsaná JSON-WSP}
 
-\begin{itemize}
-	\item popsáno JSON-WSP souborem
-	\item https://en.wikipedia.org/wiki/JSON-WSP
-	\item 4 verze otestované křížem
-\end{itemize}
-
-Popis verzí API (rozdíl je vždy popsaný oproti verzi 1):
-V tomto testovacím scénáři jsou použity 4 verze jedné služby. První verze označovaná \textit{v1} je základní a všechny následující verze jsou od této odvozené a pouze ji modifikují. Přehled změn je uveden v tabulce \ref{tab:json-wsp-diffs}, jednotlivé verze jsou v ní označeny \textit{v1} až \textit{v4} a sloupec 'Popis změny' vždy udává rozdíl mezi základní a danou verzí. Datový typ \textit{User}, jež je modifikovaný ve verzi \textit{v2} je definovaný přímo v popisném souboru.
+Testovací scénář je zaměřen na služby popsané formátem JSON-WSP. Data pro testování tvoří čtyři verze uměle vytvořeného rozhraní založeného na příkladu \footnote{https://en.wikipedia.org/wiki/JSON-WSP}. Odlišnosti mezi jednotlivými verzemi, označenými \textit{v1} až \textit{v4}, jsou rozepsány v tabulce \ref{tab:json-wsp-diffs}.
 
 \begin{table}[h]
 	\centering
@@ -1016,13 +1028,9 @@ V tomto testovacím scénáři jsou použity 4 verze jedné služby. První verz
 	\label{tab:json-wsp-diffs}
 \end{table}
 
+Účelem tohoto scénáře je ověřit porovnávání vlastních datových typů a mutací mezi endpointy. Verze služby \textit{v2} mění definici typu \textit{User}, ale ne jeho název. Vzhledem k faktu, že definice typů nejsou indexovány, mělo by porovnání skončit výsledkem \textit{NON}, protože názvy typů se shodují. Verze \textit{v3} a \textit{v4} přidávají endpointy, čímž mutují rozhraní služby. Očekávané výsledky pro tyto verze jsou \textit{INS} pro \textit{v3} (přidaný endpoint) a \textit{MUT} pro \textit{v4} (změna názvu operace).
 
-Co se testuje:
-\begin{itemize}
-	\item ne-indexování custom datových typů (takže v2 = v1)
-	\item mutace endpointu
-	\item INS, DEL
-\end{itemize}
+Tabulka \ref{tab:jsonwsp-cmp-res} obsahuje výsledky vrácené porovnávací službou, které odpovídají předpokladům uvedeným v předchozím odstavci.
 
 \begin{table}[h]
 	\centering
@@ -1044,29 +1052,112 @@ Co se testuje:
 	\label{tab:jsonwsp-cmp-res}
 \end{table}
 
-\subsection{FuelEconomy API}
 
-\begin{itemize}
- \item popsáno WADL souborem
- \item https://www.fueleconomy.gov/ws/rest/application.wadl
- \item 3 verze otestované křížem
-\end{itemize}
+\subsection{Služba FuelEconomy}
 
-Popis verzí API (rozdíl je vždy popsaný oproti verzi 1):
-\begin{itemize}
-	\item V1: základní verze
-	\item V2: odebrán (poslední) resource /labelvehicle
-	\item V3: odebrán (poslední) resource /labelvehicle, přidán resource /somethingDifferent
-\end{itemize}
+Tento scénář je zaměřen na porovnání REST služeb popsaných formátem WADL. Data pro testování tvoří popis služby Fuel Economy\footnote{https://www.fueleconomy.gov/ws/rest/application.wadl} a z něj vycházející tři verze. Popis verzí včetně změn je uveden v tabulce \ref{tab:wadl-diffs}.
 
-Co se testuje:
-\begin{itemize}
-	\item  INS, DEL a MUT
-\end{itemize}
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Verze služby & Popis změny \\
+		\hline
+		\hline
+		v1 & Základní verze \\
+		\hline
+		v2 & Odebrán resource \textit{labelvehicle} \\
+		\hline
+		v3 & \makecell{Odebrán resource \textit{labelvehicle}, \\ přidán resource \textit{somethingDifferent}} \\
+		\hline
+		v4 & \makecell{Změna URL a změna cesty k resource \\ \textit{/fuelprices} na \textit{fuel-prices}}  \\
+		\hline
+	\end{tabular}
+	\caption{Přehled změn ve verzích služby}
+	\label{tab:wadl-diffs}
+\end{table}
 
-\subsection{Stag WS}
+Scénář je zaměřen na mutaci operací a změny v URL na kterých jsou dostupné. Verze \textit{v2} a \textit{v3} testují mutaci, konkrétně přidávání a odebírání operací. Očekávané výsledky jsou \textit{DEL} v případě \textit{v2} a \textit{MUT} V případě \textit{v3}. Verze služby \textit{v4}, kde jedinou změnou je URL a cesta k endpointu \textit{fuelprices}, testuje správné nastavení příznaku \textit{MOV} a očekávaný rozdíl je \textit{NON}
 
-\section{Shruntí testů}
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l||c|c|c|c|}
+		\hline
+		& v1 & v2 & v3 & v4 \\
+		\hline
+		\hline
+		v1 & \textit{NON} & \textit{DEL} & \textit{MUT} & \textit{NON},\textit{MOV} \\
+		\hline
+		v2 & \textit{INS} & \textit{NON} & \textit{INS} & \textit{INS} \\
+		\hline
+		v3 & \textit{MUT} & \textit{DEL} & \textit{NON} & \textit{MUT} \\
+		\hline
+		v4 & \textit{NON},\textit{MOV} & \textit{DEL} & \textit{MUT} & \textit{NON} \\
+		\hline
+	\end{tabular}
+	\caption{Výsledky porovnání metadat získaných z WADL popisu}
+	\label{tab:wadl-cmp-res}
+\end{table} 
+
+Tabulka \ref{tab:wadl-cmp-res} obsahuje výsledky vzájemného porovnání jednotlivých verzí služby. Pro přehlednost je v tabulce uveden příznak MOV pouze v případě, že byl vrácen. Pokud nastaven nebyl, je v tabulce uveden pouze rozdíl služeb. 
+
+\subsection{Služba STAG-Číselníky}
+
+Testovací scénář je zaměřen na SOAP služby popsané formátem WSDL. Základem dat pro testování je popis služby STAG-Číselníky\footnote{https://stag-ws.zcu.cz/ws/services/soap/ciselniky?wsdl} který je rozšířen o operaci \textit{testOperation}. Z této základní podoby jsou vytvořeny další čtyři verze. Celkem je tedy porovnáno pět verzí, jejichž rozdíly jsou popsané v tabulce \ref{tab:wsdl-diffs}.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Verze služby & Popis změny \\
+		\hline
+		\hline
+		v1 & Základní verze s přidanou operací \textit{testOperation} \\
+		\hline
+		v2 & Změna hostname v url operací \\
+		\hline
+		v3 & Změna typu \textit{insertPracoviste} \\
+		\hline
+		v4 & \makecell{Změna názvu \textit{service} z \textit{CiselnikyServiceImplService} na \\ \textit{CiselnikyServiceImplServiceUpdate}}  \\
+		\hline
+		v5 & \makecell{Změna typu parametru operace \textit{testOperation} \\
+		z \textit{xs:int} na \textit{xs:long}} \\ \hline
+	\end{tabular}
+	\caption{Přehled změn ve verzích služby}
+	\label{tab:wsdl-diffs}
+\end{table}
+
+Základní verze \textit{v1} definuje operaci \textit{testOperation}, která má nastavený parametr typovaný na \textit{xs:int}. Porovnání verze \textit{v1} s verzemi \textit{v2} a \textit{v5} je využito k testování principu kontravariance společně se změnami v URL. Verze \textit{v3} mění definici typu \textit{insertPracoviste}. Tato změna by neměla porovnání nijak ovlivnit, protože detaily vlastních datových typů nejsou indexovány. Verze \textit{v4} mění název \textit{service}, což by mělo být vyhodnoceno jako mutace.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l||c|c|c|c|c|}
+		\hline
+		& v1 & v2 & v3 & v4 & v5 \\
+		\hline
+		\hline
+		v1 & \textit{NON} & \textit{NON},\textit{MOV} & \textit{NON} & \textit{MUT} & \textit{SPE} \\
+		\hline
+		v2 & \textit{NON},\textit{MOV} & \textit{NON} & \textit{NON},\textit{MOV} & \textit{MUT} & \textit{SPE},\textit{MOV} \\
+		\hline
+		v3 & \textit{NON} & \textit{NON},\textit{MOV} & \textit{NON} & \textit{MUT} & \textit{SPE} \\
+		\hline
+		v4 & \textit{MUT} & \textit{MUT} & \textit{MUT} & \textit{NON} & \textit{MUT} \\
+		\hline
+		v5 & \textit{GEN} & \textit{GEN},\textit{MOV} & \textit{GEN} & \textit{MUT} & \textit{NON} \\
+		\hline
+	\end{tabular}
+	\caption{Výsledky porovnání metadat získaných z WSDL popisu}
+	\label{tab:stag-wsdl-cmp-res}
+\end{table}
+
+Tabulka \ref{tab:stag-wsdl-cmp-res} obsahuje výsledky vzájemných porovnání všech verzí služby. Tyto výsledky, včetně nastavených příznaků MOV odpovídají předpokladům.
+
+\section{Shrnutí testů}
+
+Testovací scénáře popsané v předchozích sekcích ověřily základní funkčnost porovnávacího modulu na všech typech indexovaných služeb, včetně jeho dostupnosti skrze REST API. V případě testování webové služby STAG-Číselníky byla také ověřena kombinace změn URL a datového typu parametru operace. 
+
+Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům, včetně exportovaných metadat pro jednotlivé verze služeb. Stejně tak jsou přiloženy konfigurace testů pro nástroj Postman.
 
 
 \chapter{Závěr}	
