@@ -112,7 +112,7 @@
 \chapter{Principy webových služeb, techniky}
 \label{sec:web-services-principles}
 
-V této kapitole jsou definovány webové služby a související pojmy. Jsou zde představeny strojově čitelné způsoby popisu rozhraní služeb a protokoly sloužící ke komunikaci s webovými službami. Tato kapitola také obsahuje popis REST. 
+V této kapitole jsou definovány webové služby a související pojmy. Jsou zde představeny strojově čitelné způsoby popisu rozhraní služeb a protokoly sloužící ke komunikaci s webovými službami. Tato kapitola také obsahuje popis architektonického stylu REST. 
 
 %co je v téhle kapitole:
 %
@@ -123,27 +123,109 @@ V této kapitole jsou definovány webové služby a související pojmy. Jsou zd
 % - protokoly skrze které se s WS komunikuje
 % - strojově čitelné formáty popisu ws
 
-\section{Webové služby}
+\section{Webová služba}
+% \cite{w3cWsDesignIssues}
+% v citovaném článku je spousta zajímavých informací o WS, např "The fact that data is exchanged for business purposes and between different social entities means that accountability is required, rather than just reliable transmission. "
 
-Pojem 'webová služba' má různé významy pro různé lidi, ale dá se najít několik společných bodů \cite{w3cWsDesignIssues}:
+
+
+% pojem webová služba má různé významy \cite{w3cWsDesignIssues}
+% je třeba je n v rámci této práce jasně definovat
+% W3C používá jendu difnici \cite{w3cWsDesignIssues}
+
+Pojem 'webová služba' může mít odlišné významy\cite{w3cWsDesignIssues} a existuje pro něj také spousta definic, z nichž některé jsou více či méně vhodné pro tento text. Například konsorcium W3C\footnote{World Wide Web Consorcium} definuje pojem webová služba následovně\cite{w3cWsArch}:
+
+
+ % A Web service is a software system designed to support interoperable machine-to-machine interaction over a network. It has an interface described in a machine-processable format (specifically WSDL). Other systems interact with the Web service in a manner prescribed by its description using SOAP messages, typically conveyed using HTTP with an XML serialization in conjunction with other Web-related standards.
+\begin{quote}
+	Webová služba je softwarový systém navržený pro podporu mezistrojové komunikace po síti. Webová služba má rozhraní, které je popsáno ve strojově čitelném formátu (konkrétně WSDL). Ostatní systémy interagují s webovými službami předepsaným způsobem za použití zpráv protokolu SOAP, které jsou typicky zprostředkované protokolem HTTP s využitím serializace XML a dalších webových standardů.
+\end{quote}
+
+% ta není dobrá protože ... 
+
+Tato definice je pro účely mé práce problematická z několika důvodů. Prvním z nich je omezení formátu popisu služby pouze na WSDL. Strojově čitelný popis rozhraní sice snižuje náročnost vytvoření klienta pro danou službu, nicméně WSDL není jediným takovým formátem a netřeba tedy z definice vyloučit služby používající jiné formáty jako například WADL, nebo JSON-WSP, jež přímo souvisí s mou prací. Závislost na jednom konkrétním formátu také nemusí být výhodná z hlediska budoucího vývoje, protože nezohledňuje možnost příchodu jiného formátu, nebo změny přístupu k webovým službám obecně. WSDL do verze 1.1 například neumožňovalo popis REST služeb, ty byly zohledněny až ve verzi 2.0\cite{restWsdl}.  
+
+Definice dále svazuje implementaci webové služby s použitím konkrétního protokolu pro výměnu dat, v tomto případě SOAP, čímž opět nezahrnuje služby používající jakékoliv jiné protokoly. I zde platí nevýhoda takové vazby v kontextu budoucího vývoje, jež byla zmíněna v předchozím odstavci. Webová služba by například přestala být webovou službou, pokud by došlo k změně protokolu pro výměnu dat ze SOAP na JSON-RPC.
+
+Posledním důvodem je vymáhání použití XML jako jediného formátu pro přenos dat i přes rostoucí popularitu jiných formátů, jako například JSON, nebo v poslední době YAML. Není také výjimkou, že webové služby podporují více formátů pro serializaci dat. 
+
+% a proto je webová služba zadefinována takto
+Z uvedených důvodů je potřeba zavést vhodnější definici s volnějšími kritérii tak, aby webové služby co možná nejméně omezovala. Definici, která služby popisuje primárně skrze komunikační protokol HTTP ve své knize nabízí R. Daigneau \cite{fromObjectsToWs}: 
+
+%	Web services provide the means to integrate disparate systems and expose reusable business functions over HTTP. They either leverage HTTP as a simple transport over which data is carried (e.g., SOAP/WSDL services) or use it as a complete application protocol that defines the semantics for service behavior (e.g., RESTful services).
+\begin{quote}
+	Webové služby poskytují prostředky pro integraci různorodých systémů a zpřístupňují znovupoužitelné business funkce skrze HTTP. HTTP je použito buď jako jednoduchý komunikační protokol, skrze který jsou přenášena data (např. SOAP/WSDL služby), nebo jako kompletní aplikační protokol, jež definuje sémantiku chování služby (např. RESTful služby).
+\end{quote}
+
+Tato definice netrpí výše zmíněnými nedostatky a proto jsem se rozhodl ji využít pro účely mé práce. S webovými službami se váže několik dalších pojmů, které jsou v průběhu textu užívány, a pro úplnost jsou zde taktéž definovány:
+
+% definovat další pojmy jako
+% - pokytovatel služby
+% - konzument služby
+% - endpoint ve službě
+% - operace ve službě
+% - service ve službě
+%	- důvod použití pojmu service: při překladu do češtiny by mohl pojem kolidovat s pojmem 'webová služba', proto je pro element WSDL označující část SOAP služby použit pojem service
+
 \begin{itemize}
-	\item Použití HTML, XML a dalších standardů webové architektury jako stavebních kamenů
-	\item Zaměření na podnikové a vnitropodnikové operace
+	\item \textbf{Poskytovatel služby}: server na kterém je služba dostupná, případě organizace, která ji spravuje,
+	\item \textbf{Konzument služby}: klient využívající službu, typicky se jedná o aplikaci,
+	\item \textbf{Endpoint}: Jedna konkrétní operace služby, případě URI na které je dostupný nějaký zdroj,
+	\item \textbf{Operace}: Operace webové služby, v tomto textu používáno ve stejném významu jako endpoint,
+	\item \textbf{Service}: element \verb|service| v popisu WSDL, při překladu do češtiny (služba) by mohl pojem kolidovat s pojmem 'webová služba', proto je pro element WSDL označující část SOAP služby ponechán anglický tvar service,
+	\item \textbf{API}: Rozhraní webové služby.
 \end{itemize}
 
-% v citovaném článku je spousta zajímavých informací o WS, např "The fact that data is exchanged for business purposes and between different social entities means that accountability is required, rather than just reliable transmission. "
- - pro účely této práce je použita následující definice od W3C \cite{w3cWsArch}:
- "Webová služba je softwarový systém navržený pro podporu mezistrojové komunikace po síti. Webová služba má rozhraní, které je popsáno ve strojově čitelném formátu (konkrétně WSDL). Ostatní systémy interagují s webovými službami předepsaným způsobem za použití zpráv protokolu SOAP, které jsou typicky zprostředkované protokolem HTTP s využitím serializace XML a dalších webových standardů."
- 
- % A Web service is a software system designed to support interoperable machine-to-machine interaction over a network. It has an interface described in a machine-processable format (specifically WSDL). Other systems interact with the Web service in a manner prescribed by its description using SOAP messages, typically conveyed using HTTP with an XML serialization in conjunction with other Web-related standards.
+\subsection{Použití webových služeb}
 
-- poskytovatel služby = server
+Samotný pojem služba z technického pohledu typicky označuje funkcionalitu, jež vykonává nějakou podnikovou operaci, zajišťuje přístup k souborům, nebo obstarává generickou funkcionalitu jako přihlášení do systému. Webové služby umožňují tyto zpřístupnit různorodým klientům jako jsou například webový prohlížeč, nebo mobilní aplikace, nezávisle na technologiích použitých k jejich realizaci.
 
-- konzument služby = klient (typicky nějaká aplikace)
+Ve srovnání s alternativami jako například distribuované objekty jsou webové služby snazší na použití, zejména kvůli jednoduché komunikaci skrze protokol HTTP a standardizované serializaci dat do formátů jako XML, nebo JSON. Díky tomu jsou služby snadno propojitelné a lze je tak skládat do větších celků za účelem realizace komplexních procesů\cite{fromObjectsToWs}.
+
+% \cite{fromObjectsToWs}
+% ws jsou jednoduché na použití, ke komunikaci stačí pouze HTTP, JSON/XML pro výměnu dat a znalost protokolu
+% to nutně neplatilo u předchůdců, například Shared Objects
+% díky tomu jsou služby snadno propojitelné a lze je skládat do větších celků za účelem realizace komplexních operací (funkcionalit)
+
+% služby vytváří/nastolují vrstvu abstrakce mezi samotnou implementací služby a klientem
+% tím je docíleno volné vazby a jak služba tak klient se mohou nezávisle vyvíjet, dokud nedojde ke změnám narušujícím kompatibilitu (to by chtělo rozepsat víc)
+% tady lze zmínit např architekturu microservice
+% z toho by se mohlo dát navázat na problém změny implementace/resp. rozhraní a tím vzniklé nekompatibility mezi službou, kterou očekává klient a službou, kterou server poskytuje
+
+% taky by nebylo špatný popsat kdy dává použití WS smysl
+% tím se zabývá podkapitola Web Service Considerations and Alternatives
+
+\section{Techniky webových služeb}
 
 % zmínit:
 % zmínit RPC, SOAP
 %- popis použitých technologií: XML, SOAP, WSDL
+
+vzory:
+- RPC API
+- Message API
+- Resource API
+
+Faktory ke zvážení při návrhu API\cite{wsApiStyles}: Zapouzdření, Kontrakt služby, Autonomnost 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{ws-tech-stack.png}
+	\caption{Technologie zahrnuté ve webových službách}
+	\label{fig:ws-tech-stack}	
+\end{figure}
+
+\subsection{Protokoly}
+
+- relevantní protokoly: RPC, SOAP, HTTP
+
+- HTTP (na REST a WS obecně)
+
+- protokol aplikační vrstvy SOAP (web service)
+
+- XML pro popis datového modelu
+
+- specifikace SOAP: https://www.w3.org/TR/soap12-part1/\#intro
 
 \section{REST}
 
@@ -165,32 +247,18 @@ Pojem 'webová služba' má různé významy pro různé lidi, ale dá se najít
 
 - odkaz konkrétně na request methods, mohlo by se hodit, protože ty jsou indexovány, tak alespoň na citaci
 
+\subsection{Verzování REST API}
+
+- verze v url =  běžná praktika \cite{restApiVersion}
+
+- existuje několik různých způsobů, každý z nich má své klady a zápory
+
+- má práce se soustřeďuje hlavně na verzování skrze URL, protože je to v mém případě nejvíce relevantní (ostatní způsoby nejsou indexovány)
+
 - verzování API: https://www.xmatters.com/blog/devops/blog-four-rest-api-versioning-strategies/
 
 - další verzování: https://www.troyhunt.com/your-api-versioning-is-wrong-which-is/
 
-\subsection{Technologie použité k realizaci webových služeb}
-
-- zmínit: RPC, SOAP
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{ws-tech-stack.png}
-	\caption{Technologie zahrnuté ve webových službách}
-	\label{fig:ws-tech-stack}	
-\end{figure}
-
-\section{Protokoly}
-
-- relevantní protokoly: RPC, SOAP, HTTP
-
-- HTTP (na REST a WS obecně)
-
-- protokol aplikační vrstvy SOAP (web service)
-
-- XML pro popis datového modelu
-
-- specifikace SOAP: https://www.w3.org/TR/soap12-part1/\#intro
 
 \section{Formální popis webových služeb}
 
@@ -199,27 +267,57 @@ Pojem 'webová služba' má různé významy pro různé lidi, ale dá se najít
 - WSDL 1.1, 2.0, WADL (REST), JSON-WSP
 
 - Swagger, Raml, OpenApi
+	- nicméně těmi se v práci nezabývám, protože zatím neexistují indexery schopné z těchto extrahovat metadata
 
 - v případě REST bohužel není nic formálně nutné (oproti třeba SOAP), takže specifikace API nemusí být kompatibilní, nemusí být úplné, nebo můžou být ad-hoc (např. slovní popis ve Word dokumentu) a tím pádem nemusí existovat univerzální způsob strojového čtení těchto specifikací
 
-- v mé práci se věnuji především formátům WSDL, WADL a JSON-WSP
+- v mé práci se věnuji především formátům WSDL, WADL a JSON-WSP, protože pro tyto v současnosti existují indexery
+
+\subsection{WSDL}
+
+ - xml
+ - pro SOAP
+ - service + operations
+ - příklad znázorněn na obrázku
+ 
+\subsection{WADL}
+
+ - xml
+ - pro REST
+ - resources + operations
+ - příklad znázorněn na obrázku
+ 
+\subsection{JSON-WSP}
+
+ - json
+ - pro REST
+ - metody
+ - příklad znázorněn na obrázku
+ 
  
 \chapter{Datové typy a porovnávání}
 
+TODO: formulace
+
+Tato kapitola rozebírá vlastnosti datových typů se zaměřením na jejich vzájemné porovnání. Vzhledem ke kontextu práce jsou zde popsány typové systémy jazků Java a XSD.
+
+\section{Typové systémy}
+
 - přednášky z FJP
+- něco od taových typech obecně: https://www.cs.cmu.edu/~rwh/introsml/core/datatypes.htm
 - jak jazyky řeší datové typy
 	- rekurzivní vs. nerekurzivní
-- primitivní typy (v xsd)
-- built-in typy (v Jave)
-- tady budu citovat \cite{abadi1995subytping}
-	- subtyping: A <: B <=> A může být použito v kdekoliv kde je očekáváno B
-	- kontravariance: F'(A) <: F(B) <=> B <: A
+	- možná fajn na rekurzivní typy: http://web.mit.edu/6.005/www/sp16/classes/16-recursive-data-types/recursive/
+- built-in typy (xsd, Java)
+- primitivní typy vs. objekty
 
-\subsection{Porovnávání datových typů}
+\section{Porovnávání datových typů}
 
  - jak to funguje
  - problémy při porovnání
  - subtyping vs. matching (\cite{abadi1995subytping})
+ - subtyping: A <: B <=> A může být použito v kdekoliv kde je očekáváno B
+ - kontravariance: F'(A) <: F(B) <=> B <: A
 
 
 \chapter{Získávání metadat webových služeb v CRCE}
@@ -909,6 +1007,12 @@ Modul je dostupný na adrese \verb|/apicomp/compare|. Parametry volání jsou uv
 
 Rozšíření do systému CRCE, jež bylo předmětem mé práce bylo testováno skrze jednotkové a integrační testy. Tato kapitola se postupně ve třech částech zabývá použitím modulu a ověřením jeho správné funkčnosti. V první části je rozebráno použití modulu od nahrání artefaktů do CRCE až po získání výsledků porovnání. Druhá část této kapitoly obsahuje popis integračních testů, včetně testovacích dat. Ve třetí části je uvedeno shrnutí provedených testů.
 
+\section{Sestavení a nasazení modulu}
+
+Jedním z hlavních bodů oborového projektu, který předcházel této diplomové práci bylo zprovoznění automatického sestavení a nasazení CRCE do vývojového prostředí. Toho jsem využil při vývoji porovnávacího modulu zejména k rychlému nasazení nových verzí, které pak bylo možné pohodlně otestovat. Sestavením CRCE na nezávislém stroji jsem zároveň ověřil, že mnou vytvořený kód netrpí chybami typu "funguje na mém stroji".
+
+Kód CRCE je udržován na univerzitním Gitlabu, který kromě podpory verzování nástrojem GIT umožňuje také kontinuální integraci a nasazení pomocí Gitlab Pipelines\footnote{https://docs.gitlab.com/ee/ci/pipelines/index.html}. Vstupem tohoto nástroje je deklarativní konfigurace jednotlivých kroků od překladu až po nasazení. Pipeline se automaticky spustí vždy při nahrání nového commitu do úložiště. Součástí nakonfigurované pipeline je také spuštění unit testů.
+
 \section{Použití modulu}
 
 Aby bylo možné modul použít, je nejprve potřeba nahrát testovací data. Tato sekce popisuje proces nahrání dat do CRCE a následného volání porovnávací služby. Pro jednoduchost je nahrán pouze jeden artefakt obsahující implementaci REST služby a následně je porovnán sám se sebou.
@@ -1193,6 +1297,7 @@ Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům
 	\nomenclature{WSDL}{Web Services Description Language}
 	\nomenclature{XML}{Extensible Markup Language}
 	\nomenclature{XSD}{XML Schema Definition}
+	\nomenclature{YAML}{YAML Ain't Markup Language}
 \end{longtable}
 
 \chapter*{Příloha A - WSDL webové služby pro komix Dilbert}
