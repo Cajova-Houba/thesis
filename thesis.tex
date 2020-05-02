@@ -275,19 +275,47 @@ Faktory ke zvážení při návrhu API\cite{wsApiStyles}: Zapouzdření, Kontrak
 
 \subsection{WSDL}
 
- - xml
- - pro SOAP
- - service + operations
- - příklad znázorněn na obrázku
+Formát WSDL je využíván převážně pro popis webových služeb využívajících protokol SOAP k výměně dat, nicméně od verze 2.0 lze popsat i REST služby. Formát současně existuje ve verzích 1.1 a 2.0. Z důvodů staří verze 1.1, jež byla publikována v roce 2001 je tento popis zaměřen především na verzi 2.0. 
+
+WSDL je formát založený na XML popisující webové služby jako množiny endpointů operujících nad zprávami (\textit{messages}), jež obsahují buď dokumentově, nebo procedurálně orientované informace. Abstraktně popsané operace a zprávy jsou spojeny s konkrétním síťovým protokolem a formátem zpráv, čímž je definován endpoint. Související endpointy jsou sdruženy do \textit{services} \cite{wsdl2}. Tabulka \ref{tab:wsdl-elements} obsahuje popis vybraných elementů použitých ve formátu WSDL 2.0.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Název & Popis \\
+		\hline
+		\hline
+		service & kolekce operací \\
+		\hline
+	\end{tabular}
+	\caption{Výběr elementů pro formát WSDL 2.0}
+	\label{tab:wsdl-elements} 
+\end{table}
  
 \subsection{WADL}
 
- - xml
- - pro REST
- - resources + operations
- - příklad znázorněn na obrázku
+WADL je strojově čitelný formát, jehož hlavním účelem je popis webových služeb založených na HTTP (například REST). Formát vznikl jako pokus o standardizaci popisu webových služeb, které jsou typicky popsané nestandardní, případě vzájemně odlišnou textovou dokumentací\cite{wadlSpec}.
+
+Formát je založený na XML a popisuje webové služby jako kolekce zdrojů, nad kterými definuje operace (\textit{methods}). Zdroje \textit{resource} je možné vnořovat a každý zdroj je identifikován URI sestaveným podle předem daného vzoru. Tabulka \ref{tab:wadl-elements} obsahuje popis několika vybraných elementů, použitých k popisu webové služby.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Název & Popis \\
+		\hline
+		\hline
+		service & kolekce operací \\
+		\hline
+	\end{tabular}
+	\caption{Výběr elementů pro formát WADL}
+	\label{tab:wadl-elements} 
+\end{table}
  
 \subsection{JSON-WSP}
+
+Formát JSON-WSP je založený na JSON vychází z JSON-RPC což je protokol pro vzdálené volání procedur. JSON-WSP popisuje rozhraní webových aplikací a i když měl původně nahradit JSON-RPC, je zatím ve stavu neformálního návrhu a není nijak standardizovaný, ani neexistuje RFC s jeho specifikací, nebo JSON schéma. Neoficiální specifikace je udržována na Wikipedii\cite{jsonWspSpec}.
 
  - json
  - pro REST
@@ -1281,14 +1309,15 @@ Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům
 \addcontentsline{toc}{chapter}{Seznam zkratek}
 
 \begin{longtable}{@{}p{3cm}@{}p{\dimexpr\textwidth-1cm\relax}@{}}
-	\nomenclature{CRCE}{Component Repository supporting Compatibility Evaluation}
 	\nomenclature{API}{Application Programming Interface}
+	\nomenclature{CRCE}{Component Repository supporting Compatibility Evaluation}
 	\nomenclature{HTTP}{Hypertext Transfer Protocol}
 	\nomenclature{JAR}{Java Archive}
 	\nomenclature{JSON}{JavaScript Object Notation}
-	\nomenclature{JSON}{JSON Web-Service Protocol}
+	\nomenclature{JSON-WSP}{JSON Web-Service Protocol}
 	\nomenclature{OSGi}{Open Services Gateway initiative}
 	\nomenclature{REST}{Representational State Transfer}
+	\nomenclature{RPC}{Remote Procedure Call}
 	\nomenclature{SOAP}{Simple Object Access Protocol}
 	\nomenclature{UML}{Unified Modeling Language}
 	\nomenclature{URI}{Uniform Resource Identifier}
