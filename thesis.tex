@@ -234,15 +234,33 @@ Faktory ke zvážení při návrhu API\cite{wsApiStyles}: Zapouzdření, Kontrak
 % - jak se liší od WS definované v předchozí sekci
 % - základní popis elementů použitých v REST
 
+TODO: formulace
+
+Rest je architektonický styl tvorby webových služeb, který ve své disertační práci \cite{fielding2000rest} popsal R. T. Fielding. Od služeb definovaných podle definice konsorcia W3C se liší zejména využitím protokolu HTTP pro sémantiku aplikace a vyznačuje se také bezestavovostí. 
+
+pozn:
+- hypertext = Hypertext is text displayed on a computer display or other electronic devices with references (hyperlinks) to other text that the reader can immediately access.
+
+- hypermédium = Hypermedia, an extension of the term hypertext, is a nonlinear medium of information that includes graphics, audio, video, plain text and hyperlinks.
+
+Výběr constraints, které definují REST:
+\begin{itemize}
+	\item klient-server kvůli separation of concenrs; oddělení klienta od uložení dat umožňuje nezávislý vývoj jednotlivých komponent
+	\item bezestavovost; vše pro zpracování requestu musí být obsaženo v requestu a není možné využít žádný kontext uložený na serveru; tím dojde ke zpřehlednění a zlepšení spolehlivosti (protože je snazší se zotavit z částečných chyb); nevýhodou je možné snížení síťové performance a vzhledem k uložený kontextu na straně klienta je také na straně serveru nutná kontrola jeho konzistence
+	\item cache; cache je na straně klienta, lze cacheovat pouze response, které jsou takto označené; tím lze zvýšit efektivitu
+	\item uniformní rozhraní mezi komponentami; tím je docíleno oddělení služby, kterou komponenta poskytuje od její implementace; nevýhoda je zhoršení efektivity, protože informace jsou přenášeny ve standardním formátu, místo formátu, který by byl nativní aplikaci; 4 omezení rozhraní: identifikace zdrojů, manipulace se zdroji skrze reprezentace, sebe-popisující zprávy a hypermedia jako engine aplikačního stavu
+	\item vrstvený styl; každý vrstva komunikuje pouze se seousendí vrstvou a nevidí vrstvy za nimi; to vede na větší nezávislost
+\end{itemize}
+
 - mohlo by se hodit: https://www.w3.org/TR/2004/NOTE-ws-arch-20040211/\#relwwwrest
 - popisuje vztah REST a WWW
 - REST: založeno na manipulaci s XML reprezentací webových resources skrze stateless operace
 
- - popis architektonického stylu REST: https://www.ics.uci.edu/~fielding/pubs/dissertation/rest\_arch\_style.htm
+\subsection{Elementy REST}
+- popis architektonického stylu REST v disertační práci\cite{fielding2000rest}:
 - popis elementů:
 - data, konektory, komponenty
 - popis view(na modelování)
-
 - RFC na HTTP: https://tools.ietf.org/html/rfc7231\#section-4
 
 - odkaz konkrétně na request methods, mohlo by se hodit, protože ty jsou indexovány, tak alespoň na citaci
@@ -317,10 +335,22 @@ Formát je založený na XML a popisuje webové služby jako kolekce zdrojů, na
 
 Formát JSON-WSP je založený na JSON vychází z JSON-RPC což je protokol pro vzdálené volání procedur. JSON-WSP popisuje rozhraní webových aplikací a i když měl původně nahradit JSON-RPC, je zatím ve stavu neformálního návrhu a není nijak standardizovaný, ani neexistuje RFC s jeho specifikací, nebo JSON schéma. Neoficiální specifikace je udržována na Wikipedii\cite{jsonWspSpec}.
 
- - json
- - pro REST
- - metody
- - příklad znázorněn na obrázku
+
+JSON-WSP definuje službu pomocí objektů \textit{description}, \textit{request}, \textit{response} a \textit{fault}. Objekt \textit{description} popisuje rozhraní služby, obsahuje mimo jiné název služby, URL služby a kolekci metod, které služba dokáže vykonat. Objekty \textit{request}, \textit{response} a \textit{fault} definují podobu dat, které služba přijímá, respektive vrací. Tabulka \ref{tab:jsonwsp-elements} uvádí výběr objektů definovaných v \textit{description} relevantních pro mou práci.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Název & Popis \\
+		\hline
+		\hline
+		service & kolekce operací \\
+		\hline
+	\end{tabular}
+	\caption{Výběr elementů pro formát WADL}
+	\label{tab:jsonwsp-elements} 
+\end{table}
  
  
 \chapter{Datové typy a porovnávání}
