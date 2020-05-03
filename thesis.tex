@@ -220,6 +220,17 @@ Faktory ke zvážení při návrhu API\cite{wsApiStyles}: Zapouzdření, Kontrak
 - relevantní protokoly: RPC, SOAP, HTTP
 
 - HTTP (na REST a WS obecně)
+	- rfc na http 1.1: https://tools.ietf.org/html/rfc2616
+	- HTTP je protokol aplikační vrstvy pro distribuované hypermediální systémy
+	- je obecný, bezestavový
+	- skrze protokol lze dohodnout reprezentaci dat, což systémy vyvíjet nezávisle na datech, která budou přenášena
+	- umožňuje MIME formáty zpráv
+	- hlavičky, pomocí kterých lze určit účel requestů
+	- reference na zdroj, na který má být metoda aplikována skrze URI (uniform resource identifier) jako URL (location), nebo URN (name)
+	- metody bezpečné: GET, HEAD - nevykonají žádnou akci
+	- metody idempotentní: GET, HEAD, PUT, DELETE - výsledek jejich N volání bude stejný jako výsledek 1 volání
+	- výčet metod: OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
+	- odpovědi na základě status kódů
 
 - protokol aplikační vrstvy SOAP (web service)
 
@@ -236,7 +247,7 @@ Faktory ke zvážení při návrhu API\cite{wsApiStyles}: Zapouzdření, Kontrak
 
 TODO: formulace
 
-Rest je architektonický styl tvorby webových služeb, který ve své disertační práci \cite{fielding2000rest} popsal R. T. Fielding. Od služeb definovaných podle definice konsorcia W3C se liší zejména využitím protokolu HTTP pro sémantiku aplikace a vyznačuje se také bezestavovostí. 
+Rest je architektonický styl tvorby webových služeb, který ve své disertační práci \cite{fielding2000rest} popsal R. T. Fielding. Služby tvořené v tomto stylu se od služeb definovaných podle definice konsorcia W3C se liší zejména využitím protokolu HTTP pro sémantiku aplikace a vyznačuje se také bezestavovostí. 
 
 pozn:
 - hypertext = Hypertext is text displayed on a computer display or other electronic devices with references (hyperlinks) to other text that the reader can immediately access.
