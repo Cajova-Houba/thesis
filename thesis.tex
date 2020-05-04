@@ -315,19 +315,11 @@ Předchozí úrovně používají HTTP metody nezávisle na jejich účelu. Endp
 \subsubsection{Hypermediální řízení}
 Poslední úroveň zavádí princip HATEOAS\footnote{Hypertext As The Engine Of Application State}, ve kterém je klientovi s reprezentacemi zdrojů navíc předána informace o další možné manipulaci s nimi. Tím je docíleno většího oddělení klienta od poskytovatele, neboť server může mimo jiné měnit schéma URI zdrojů a nenarušit tím schéma používané klientem.
 
+\subsection{Verzování REST služeb}
 
+Webové služby dodržující poslední úroveň Richardsonova modelu by za předpokladu statických vstupních bodů nemusely svou verzi vystavovat. Nicméně existuje nezanedbatelná část, jež na tuto úroveň nedosahují a tedy udržují statické rozhraní pro každou verzi, protože jakákoliv změna v schématu URI se negativně projeví na straně klienta. Ten totiž díky absenci HATEOAS nemůže tuto změnu dynamicky nijak zjistit je proto odkázaný na rozhraní služby. 
 
-\subsection{Verzování REST API}
-
-- verze v url =  běžná praktika \cite{restApiVersion}
-
-- existuje několik různých způsobů, každý z nich má své klady a zápory
-
-- má práce se soustřeďuje hlavně na verzování skrze URL, protože je to v mém případě nejvíce relevantní (ostatní způsoby nejsou indexovány)
-
-- verzování API: https://www.xmatters.com/blog/devops/blog-four-rest-api-versioning-strategies/
-
-- další verzování: https://www.troyhunt.com/your-api-versioning-is-wrong-which-is/
+Může tedy nastat případ kdy poskytovatel v zájmu udržení zpětné kompatibility udržuje více verzí jedné služby současně. Existují různé způsoby jak vystavit konkrétní verzi, jedním z nich je uvedení verze v URI zdroje. Jedná se o běžnou a snadno implementovatelnou praktiku \cite{restApiVersion}\cite{restfulWebServices}. Dopady použití této praktiky na mou práci jsou rozebrány v částech \ref{sec:api-index} a \ref{sec:api-path-version}.
 
 
 \section{Formální popis rozhraní webových služeb}
