@@ -664,7 +664,9 @@ Před porovnáváním datových struktur je zkontrolována jejich kompatibilita.
 	\item \textit{identity capability}: obsahuje informace o identitě komponenty v CRCE.
 \end{itemize}
 
-Pokud kontrola proběhne úspěšně, je spuštěn samotný algoritmus jehož průběh je naznačen na vývojovém diagramu \ref{fig:apicomp-flow}. Tento postup analogicky platí i pro porovnání \textit{service} v případě SOAP webových služeb s tím rozdílem, že krok 'Porovnej endpointy e1,e2 a výsledek ulož do res' by obsahoval porovnání endpointů definovaných v rámci jedné \textit{service}, která je v CRCE reprezentována jako kolekce endpointů.
+Pokud kontrola proběhne úspěšně, je spuštěn samotný algoritmus jehož průběh je naznačen na vývojovém diagramu \ref{fig:apicomp-flow}. Vstupní data na obrázku označená jako \textit{endpoints1} a \textit{endpoints2} označují množiny endpointů první a druhé webové služby. 
+
+Tento postup analogicky platí i pro porovnání \textit{service} v případě SOAP webových služeb s tím rozdílem, že krok 'Porovnej endpointy e1,e2 a výsledek ulož do res' by obsahoval porovnání endpointů definovaných v rámci jedné \textit{service}, která je v CRCE reprezentována jako kolekce endpointů. V případě porovnávání \textit{services} by množiny vstupních dat byly označené jako \textit{services1} a \textit{services2}.
 
 \begin{figure}[h]
 	\centering
@@ -676,6 +678,7 @@ Pokud kontrola proběhne úspěšně, je spuštěn samotný algoritmus jehož pr
 Mezivýsledky porovnání jsou ukládány v datové struktuře \textit{Diff}, která je detailně popsaná v sekci \ref{sec:diff-info}. Algoritmus postupuje po stromu metadat od kořene směrem k listům, ve kterých dojde k porovnání konkrétních hodnot a vyhodnocení rozdílů mezi nimi. Rozdíl mezi dvěma ne-koncovými uzly je vyhodnocen až po porovnání všech jejich potomků (nezávisle na pořadí). Algoritmus tedy postupuje zpět ke kořeni stromu, který na konci algoritmu obsahuje finální údaj o rozdílu obou služeb. Jednotlivé fáze porovnání jsou popsány v následujících odstavcích.
 
 \subsubsection{Výběr entit vhodných k porovnání}
+\label{sec:pick-matching-entities}
 
 Tento odstavec se týká endpointů a \textit{service}, protože tyto nejsou na pořadí závislé (na rozdíl např. od parametrů operace) a jejich pořadí v metadatech nelze ani předpokládat. Proto je nutné před samotným porovnáním nejprve vybrat dvojici entit k tomu vhodnou. V diagramu \ref{fig:apicomp-flow} je zde popsaný výběr reprezentován krokem 'PullMatchingEndpoint()'. 
 
@@ -810,9 +813,11 @@ Pro uživatelsky definované typy je z těchto důvodů porovnání omezeno pouz
 \end{table}
 
 
-\subsection{Složitost algoritmu}
+\subsection{Časová složitost algoritmu}
 
-Algoritmus v zásadě porovnává kolekce endpointů webových služeb a jejich počet je tedy hlavní parametr, od kterého se odvíjí výpočetní složitost. V případě SOAP webových služeb jsou operace definované v rámci \textit{service} a je tedy třeba brát v úvahu i jejich počet. Nárůst složitosti je ovlivněn výběrem vhodných párů entit k porovnání, konkrétní hodnoty pro nejlepší a nejhorší případy jsou uvedeny v tabulce \ref{tab:alg-complexity}.
+Algoritmus v zásadě porovnává kolekce endpointů webových služeb a jejich počet je tedy hlavní parametr, od kterého se odvíjí časová složitost. V případě SOAP webových služeb jsou operace definované v rámci \textit{service} a je tedy třeba brát v úvahu i jejich počet. Elementární operací algoritmu je výběr vhodného páru entit (\textit{service}, nebo endpoint) a jejich následné porovnání. 
+
+Proces výběru entit k porovnání, jež byl popsán v sekci \ref{sec:pick-matching-entities}, hledá k prvku z množiny první webové služby (\textit{endpoint1}, \textit{services1}) vhodný prvek v množině druhé webové služby (\textit{endpoints2}, \textit{services2}). Z obrázku \ref{fig:apicomp-flow} je vidět, že v případě nevhodného řazení entit bude potřeba zkontrolovat \textit{n} prvků z množiny \textit{endpoints2} (\textit{services2}), než bude nalezen vhodný protějšek k porovnání. Pokud taková situace nastane pro každý prvek z množiny první webové služby, bude potřeba provést $n*n$ výběrů a následných porovnání. V případě vhodného řazení bude naopak potřeba provést pouze $n$ výběrů, protože vhodné protějšky budou v obou množinách na stejném místě a k jejich nalezení bude vždy potřeba pouze jedno porovnání. Časová náročnost algoritmu pro jednotlivé typy služeb je shrnuta v tabulce \ref{tab:alg-complexity}.
 
 \begin{table}[h]
 	\centering
