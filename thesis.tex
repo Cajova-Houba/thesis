@@ -348,8 +348,17 @@ WSDL je formát založený na XML popisující webové služby jako množiny end
 		Název & Popis \\
 		\hline
 		\hline
-		service & kolekce operací \\
+		service & Kolekce endpointů, na kterých je služba dostupná \\
 		\hline
+		endpoint & Detaily endpointu, na kterém je služba dostupná \\
+		\hline
+		binding & Implementační detaily nezbytné k přístupu ke službě \\
+		\hline
+		operation & Implementační detaily konkrétní operace \\
+		\hline
+		types & Definice vlastních typů \\
+		\hline
+		
 	\end{tabular}
 	\caption{Výběr elementů pro formát WSDL 2.0}
 	\label{tab:wsdl-elements} 
@@ -368,7 +377,11 @@ Formát je založený na XML a popisuje webové služby jako kolekce zdrojů, na
 		Název & Popis \\
 		\hline
 		\hline
-		service & kolekce operací \\
+		resources & Kolekce zdrojů poskytovaných službou \\
+		\hline
+		resource & Popis konkrétního zdroje \\
+		\hline
+		method & Popis operace, která může být nad zdrojem provedena \\
 		\hline
 	\end{tabular}
 	\caption{Výběr elementů pro formát WADL}
@@ -389,7 +402,11 @@ JSON-WSP definuje službu pomocí objektů \textit{description}, \textit{request
 		Název & Popis \\
 		\hline
 		\hline
-		service & kolekce operací \\
+		methods & Kolekce metod vykonávaných službou \\
+		\hline
+		method & Popis konkrétní metody včetně parametrů a návratového typu \\
+		\hline
+		types & Definice vlastních typů \\
 		\hline
 	\end{tabular}
 	\caption{Výběr elementů pro formát WADL}
