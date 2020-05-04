@@ -109,7 +109,7 @@
 - co text práce obahuje
 - use casy
 
-\chapter{Principy webových služeb, techniky}
+\chapter{Webové služby}
 \label{sec:web-services-principles}
 
 V této kapitole jsou definovány webové služby a související pojmy. Jsou zde představeny strojově čitelné způsoby popisu rozhraní služeb a protokoly sloužící ke komunikaci s webovými službami. Tato kapitola také obsahuje popis architektonického stylu REST. 
@@ -196,6 +196,7 @@ Ve srovnání s alternativami jako například distribuované objekty jsou webov
 % tím se zabývá podkapitola Web Service Considerations and Alternatives
 
 \section{Techniky webových služeb}
+\label{sec:ws-tech}
 
 % zmínit:
 % zmínit RPC, SOAP
@@ -238,6 +239,12 @@ Faktory ke zvážení při návrhu API\cite{wsApiStyles}: Zapouzdření, Kontrak
 
 - specifikace SOAP: https://www.w3.org/TR/soap12-part1/\#intro
 
+\section{RPC}
+
+ - popsat obecně architekturu RPC
+ - popsat RPC webové služby
+
+
 \section{REST}
 
 %
@@ -267,14 +274,48 @@ Výběr constraints, které definují REST:
 - popisuje vztah REST a WWW
 - REST: založeno na manipulaci s XML reprezentací webových resources skrze stateless operace
 
-\subsection{Elementy REST}
-- popis architektonického stylu REST v disertační práci\cite{fielding2000rest}:
-- popis elementů:
-- data, konektory, komponenty
-- popis view(na modelování)
-- RFC na HTTP: https://tools.ietf.org/html/rfc7231\#section-4
+\subsection{Základní koncepty REST}
+\label{sec:rest-basics}
 
-- odkaz konkrétně na request methods, mohlo by se hodit, protože ty jsou indexovány, tak alespoň na citaci
+Architektonický styl REST ignoruje implementační detaily jednotlivých komponent a zaměřuje se spíše na jejich roli, vzájemnou komunikaci interpretaci důležitých dat. Architektura vycházející z toho stylu se nazývá ROA\footnote{Resource Oriented Architecture} a ve své publikaci\cite{restfulWebServices} ji popsal L. Richardson. Tato sekce popisuje několik základních konceptů REST v návaznosti na ROA.
+
+Klíčovou abstrakcí informace v REST je zdroj \textit{resource}, jež může představovat jakoukoliv pojmenovatelnou informaci jako například dokument, obrázek, webovou službu, nebo  kolekci jiných zdrojů. R. T. Fielding ve své práci\cite{fielding2000rest} definuje zdroj $R$ jako: 
+
+\begin{quote}
+	funkci $M_R(t)$, která pro čas $t$ vrací množinu ekvivalentních entit. Tato množina může být prázdná, nebo obsahovat reprezentace daného \textit{resource}, případně jeho identifikátory
+\end{quote}
+
+Pojem zdroj tedy neoznačuje konkrétní objekt, nebo data, ale abstraktní koncept, který je konkrétním objektem, nebo daty pouze reprezentován. Jako příklad lze uvést systém pro správu verzí, kde identifikátor 'poslední verze' označuje zdroj a samotná verze (0.8, 0.9, ...) jeho reprezentaci, která se s časem mění. Reprezentace různých zdrojů se mohou shodovat. V návaznosti na předchozí příklad by zdroje identifikované 'poslední verze' a 'verze 0.8' mohly být v určitý čas $t$ reprezentovány stejnou verzí '0.8'. 
+
+Každý zdroj má alespoň jeden identifikátor, v případě Webu se jedná o URI. Tento identifikátor by měl být co nejvíce popisný a v rámci jedné služby dodržovat stejný styl\cite{restfulWebServices}. 
+
+S reprezentacemi zdrojů je manipulováno HTTP voláním jejich identifikátorů (tedy URI) s nastavenou HTTP metodou, jež byly popsané v části \ref{sec:ws-tech}.
+
+\subsection{RESTful služba}
+
+Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, které REST dodržují nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby, jež byl představen L. Richardsonem, se nazývá Richardson Maturity Model a ve svém online článku \cite{restfulMaturity} jej rozvedl M. Fowler. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=9cm]{richardsonMaturityModel}
+	\caption{Ilustrace Richardsonova modelu vyspělosti}
+	\label{fig:rmm}
+\end{figure}
+
+
+\subsubsection{0. úroveň}
+Služby v 0. úrovni se vyznačují použitím protokolu HTTP pro komunikaci, ale implementují vlastní sémantiku interakce, jež je typicky podobná stylu RPC. Služba je tedy například tvořena endpointem \textit{bookingService} a na tento jsou směřovány všechny volání obsahující informace o tom, co má služba vykonat. 
+
+\subsubsection{Zdroje}
+1. úroveň zavádí do služby zdroje, tak jak byly popsány v sekci \ref{sec:rest-basics}. Místo volání jednoho univerzálního endpointu služby jsou nyní volány endpointy jednotlivých zdrojů.
+
+\subsubsection{HTTP metody}
+Předchozí úrovně používají HTTP metody nezávisle na jejich účelu. Endpoint každého zdroje z předchozí úrovně by tedy například očekával volání POST i když by pouze vracel data. 2. úroveň tento přístup mění a služby používají HTTP metody tak, jak jsou v HTTP definované. Volání GET endpointu zdroje tedy vrací data, zatímco POST zdroj vytváří, nebo mění. 
+
+\subsubsection{Hypermediální řízení}
+Poslední úroveň zavádí princip HATEOAS\footnote{Hypertext As The Engine Of Application State}, ve kterém je klientovi s reprezentacemi zdrojů navíc předána informace o další možné manipulaci s nimi. Tím je docíleno většího oddělení klienta od poskytovatele, neboť server může mimo jiné měnit schéma URI zdrojů a nenarušit tím schéma používané klientem.
+
+
 
 \subsection{Verzování REST API}
 
@@ -289,7 +330,7 @@ Výběr constraints, které definují REST:
 - další verzování: https://www.troyhunt.com/your-api-versioning-is-wrong-which-is/
 
 
-\section{Formální popis webových služeb}
+\section{Formální popis rozhraní webových služeb}
 
 - existují různé, strojově čitelné, formáty pro popis API
 
@@ -1357,6 +1398,7 @@ Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům
 \begin{longtable}{@{}p{3cm}@{}p{\dimexpr\textwidth-1cm\relax}@{}}
 	\nomenclature{API}{Application Programming Interface}
 	\nomenclature{CRCE}{Component Repository supporting Compatibility Evaluation}
+	\nomenclature{HATEOAS}{Hypertext As The Engine Of Application State}
 	\nomenclature{HTTP}{Hypertext Transfer Protocol}
 	\nomenclature{JAR}{Java Archive}
 	\nomenclature{JSON}{JavaScript Object Notation}
