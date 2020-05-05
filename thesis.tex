@@ -260,6 +260,7 @@ Implementace obsluhy metod sice záleží na konkrétním poskytovateli, nicmén
 
 
 \section{Remote Procedure Call}
+\label{sec:rpc-ws}
 
 % úvod do sekce
 Pojem Remote Procedure Call (dále jen RCP) obecně označuje technologii umožňující předání řízení mezi programy v různých adresních prostorech, které jsou mezi sebou propojeny komunikačním kanálem \cite{rpcThesis}. Tato sekce se zaměřuje na popis RPC zejména ve vztahu k webovým službám a komunikaci s nimi.
@@ -290,6 +291,7 @@ RCP označuje způsob komunikace, kdy klient předá serveru
 
 
 \section{REST}
+\label{sec:rest}
 
 %
 % - co je REST
@@ -304,7 +306,8 @@ R.T Fielding definoval styl REST skrze množinu omezení, jež jsou aplikována 
 kvůli separation of concenrs; oddělení klienta od uložení dat umožňuje nezávislý vývoj jednotlivých komponent
 
 \subsubsection{Absence stavu}
-vše pro zpracování requestu musí být obsaženo v requestu a není možné využít žádný kontext uložený na serveru; tím dojde ke zpřehlednění a zlepšení spolehlivosti (protože je snazší se zotavit z částečných chyb); nevýhodou je možné snížení síťové performance a vzhledem k uložený kontextu na straně klienta je také na straně serveru nutná kontrola jeho konzistence
+
+Toto omezení se týká zejména volání služby, jež musí obsahovat vše nutné pro jeho zpracování a není možné využít kontext uložený na straně serveru. Ten je tedy uložený na straně klienta a je proto nutná kontrola jeho konzistence při zpracování volání. Mezi výhody plynoucí z tohoto omezení patří zlepšení spolehlivosti a zpřehlednění komunikace.
 
 \subsubsection{Cache}
 cache je na straně klienta, lze cacheovat pouze response, které jsou takto označené; tím lze zvýšit efektivitu
@@ -314,15 +317,14 @@ cache je na straně klienta, lze cacheovat pouze response, které jsou takto ozn
 tím je docíleno oddělení služby, kterou komponenta poskytuje od její implementace; nevýhoda je zhoršení efektivity, protože informace jsou přenášeny ve standardním formátu, místo formátu, který by byl nativní aplikaci; 4 omezení rozhraní: identifikace zdrojů, manipulace se zdroji skrze reprezentace, sebe-popisující zprávy a hypermedia jako engine aplikačního stavu
 
 \subsubsection{Vrstvený styl}
-každý vrstva komunikuje pouze se seousendí vrstvou a nevidí vrstvy za nimi; to vede na větší nezávislost
+každý vrstva komunikuje pouze se sousedí vrstvou a nevidí vrstvy za nimi; to vede na větší nezávislost
 
 \subsection{Zdroj a jeho reprezentace}
 \label{sec:rest-basics}
 
-TODO: formulace
-Architektonický styl REST ignoruje implementační detaily jednotlivých komponent a zaměřuje se spíše na jejich roli, vzájemnou komunikaci interpretaci důležitých dat. Architektura vycházející z toho stylu se nazývá ROA\footnote{Resource Oriented Architecture} a ve své publikaci\cite{restfulWebServices} ji popsal L. Richardson. Tato sekce v popisuje význam zdroje a jeho reprezentací v REST.
+Na rozdíl od služeb vycházejících ze RPC, jež jsou koncipovány jako množiny různých operací, jsou REST služby orientovány kolem zdrojů a manipulaci s jejich reprezentacemi. Architektura vycházející z toho stylu se nazývá ROA\footnote{Resource Oriented Architecture} a ve své publikaci\cite{restfulWebServices} ji popsal L. Richardson. Tato sekce v popisuje význam zdroje a jeho reprezentací v REST.
 
-Klíčovou abstrakcí informace v REST je zdroj \textit{resource}, jež může představovat jakoukoliv pojmenovatelnou informaci jako například dokument, obrázek, webovou službu, nebo  kolekci jiných zdrojů. R. T. Fielding ve své práci\cite{fielding2000rest} definuje zdroj $R$ jako: 
+Zdroj (anglicky \textit{resource}) je klíčovou abstrakcí informace v REST a může představovat jakoukoliv pojmenovatelnou informaci jako například dokument, obrázek, webovou službu, nebo  kolekci jiných zdrojů. R. T. Fielding ve své práci\cite{fielding2000rest} definuje zdroj $R$ jako: 
 
 \begin{quote}
 	funkci $M_R(t)$, která pro čas $t$ vrací množinu ekvivalentních entit. Tato množina může být prázdná, nebo obsahovat reprezentace daného \textit{resource}, případně jeho identifikátory
@@ -337,7 +339,7 @@ S reprezentacemi zdrojů je manipulováno HTTP voláním jejich identifikátorů
 \subsection{RESTful služba}
 
 TODO: Formulace
-Jedním z primárních účelů webových služeb založených na stylu REST je manipulace s XML reprezentacemi zdrojů, skrze jednotnou množinu bezestavových operací, jimiž typicky jsou  \textit{create}, \textit{retrieve}, \textit{update} a \textit{delete}\cite{w3cWsArch}. Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, které REST dodržují nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby, jež byl představen L. Richardsonem, se nazývá Richardson Maturity Model a ve svém online článku \cite{restfulMaturity} jej rozvedl M. Fowler. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
+Jedním z primárních účelů webových služeb založených na stylu REST je manipulace s XML reprezentacemi zdrojů, skrze jednotnou množinu bezestavových operací, jimiž typicky jsou  \textit{create}, \textit{retrieve}, \textit{update} a \textit{delete}\cite{w3cWsArch}. Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, jež se REST drží nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby, jež byl představen L. Richardsonem, se nazývá Richardson Maturity Model a ve svém online článku \cite{restfulMaturity} jej rozvedl M. Fowler. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
 
 \begin{figure}[h]
 	\centering
@@ -367,6 +369,9 @@ Může tedy nastat případ kdy poskytovatel v zájmu udržení zpětné kompati
 
 
 \section{Formální popis rozhraní webových služeb}
+
+TODO: citace, formulace
+Aby bylo možné se službami komunikovat, je nutné znát jimi poskytované operace a akceptovaný formát dat. Tyto informace jsou zahrnuté v rozhraní služby, jež může být popsáno různými způsoby. Typy služeb popsané v části \ref{sec:rpc-ws} takové rozhraní poskytují ve strojově čitelné podobě, nicméně v případě REST služeb (část \ref{sec:rest}) je situace složitější, protože univerzální standardizovaná podoba rozhraní neexistuje a to pak může být definováno například Word dokumentem, nebo emailovou konverzací.
 
 - existují různé, strojově čitelné, formáty pro popis API
 
