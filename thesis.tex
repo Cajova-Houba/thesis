@@ -201,6 +201,7 @@ Ve srovnání s alternativami jako například distribuované objekty jsou webov
 % zmínit:
 % zmínit RPC, SOAP
 %- popis použitých technologií: XML, SOAP, WSDL
+% někde zmínit, že se zde zaměřuji hlavně na dva druhy služeb:  RPC a REST 
 
 vzory:
 - RPC API
@@ -216,33 +217,55 @@ Faktory ke zvážení při návrhu API\cite{wsApiStyles}: Zapouzdření, Kontrak
 	\label{fig:ws-tech-stack}	
 \end{figure}
 
-\subsection{Protokoly}
+\subsection{HTTP}
 
-- relevantní protokoly: RPC, SOAP, HTTP
+% úvod do sekce o HTTP
+HTTP\footnote{Hypertext Transfer Protocol} je bezestavový protokol aplikační vrstvy určený pro distribuované hypermediální systémy a tvoří základ informačního systému WWW\footnote{World Wide Web}, který je využívá od 90. let \cite{httpRfc}. Celkem bylo specifikováno pět verzí protokolu: 0.9, 1.0, 1.1, 2.0 a 3.0. Tato sekce se zabývá protokolem HTTP/1.1, neboť právě vlastnosti představené v této verzi jsou relevantní mé práci. Komunikace přes HTTP typicky probíhá skrze TCP/IP spojení na portu 80. 
 
-- HTTP (na REST a WS obecně)
-	- rfc na http 1.1: https://tools.ietf.org/html/rfc2616
-	- HTTP je protokol aplikační vrstvy pro distribuované hypermediální systémy
-	- je obecný, bezestavový
-	- skrze protokol lze dohodnout reprezentaci dat, což systémy vyvíjet nezávisle na datech, která budou přenášena
-	- umožňuje MIME formáty zpráv
-	- hlavičky, pomocí kterých lze určit účel requestů
-	- reference na zdroj, na který má být metoda aplikována skrze URI (uniform resource identifier) jako URL (location), nebo URN (name)
-	- metody bezpečné: GET, HEAD - nevykonají žádnou akci
-	- metody idempotentní: GET, HEAD, PUT, DELETE - výsledek jejich N volání bude stejný jako výsledek 1 volání
-	- výčet metod: OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
-	- odpovědi na základě status kódů
+% princip HTTP
+Protokol je založen na principu volání-odpověď. Klient odešle žádost ve formě metody, identifikátoru a verze protokolu, následovanou tělem žádosti v MIME\footnote{Multipurpose Internet Mail Extensions} formátu. Identifikátor žádosti posílané klientem je tvořen URI\footnote{Uniform Resource Identifier}, což je sekvence znaků, která jasně určuje daný zdroj \cite{uriRfc}. Tělo může obsahovat informace o klientovi, modifikátory žádosti a data pro příjemce. Server odpoví statusem, jež zahrnuje verzi protokolu a kód výsledku žádosti (chyba, nebo úspěch). Ten je následovaný zprávou, rovněž ve formátu MIME, obsahující informace o serveru a případně tělo odpovědi s daty pro klienta \cite{httpRfc}.
 
-- protokol aplikační vrstvy SOAP (web service)
+% metody HTTP
+HTTP definuje množinu metod, jejichž účelem je specifikovat konkrétní operaci, která by měla být provedená na daným zdrojem, identifikovaným volaným URI. Výčet metod společně s popisem je uveden v tabulce \ref{tab:http-methods}.
 
-- XML pro popis datového modelu
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název & Popis užití & Idempotentní \\
+		\hline
+		\hline
+		GET & Získání informace náležící volanému URI & ANO \\
+		\hline
+		HEAD & Identická GET, ale odpověď neobsahuje tělo & ANO \\
+		\hline
+		PUT & \makecell{Vytvoření nové, nebo aktualizace existující \\ entity odpovídající volanému URI }  & ANO \\
+		\hline
+		DELETE & Smazání zdroje identifikovaným volaným URI & ANO \\
+		\hline
+		OPTIONS & Získání informací o možnostech komunikace  & ANO \\
+		\hline
+		TRACE & Příjemce odešle zpět tělo přijaté zprávy & ANO \\
+		\hline
+		POST & \makecell{Vytvoření nových dat vztažených ke \\ zdroji identifikovaným volaným URI} & NE \\
+		\hline
+		CONNECT & Rezervovaný název & NE \\
+		\hline		
+	\end{tabular}
+	\caption{Metody definované v HTTP protokolu}
+	\label{tab:http-methods}
+\end{table}
 
-- specifikace SOAP: https://www.w3.org/TR/soap12-part1/\#intro
-
+Implementace obsluhy metod sice záleží na konkrétním poskytovateli, nicméně HTTP definuje tzv. bezpečné metody, jež by měly označovat pouze operace určené k získání dat. Jedná se o metody GET a HEAD. Protokol u metod také zavádí vlastnost idempotentnosti pokud $N>0$ identických volání způsobí stejné vedlejší efekty jako pouhé jedno volání \cite{httpRfc}.
 \section{RPC}
 
  - popsat obecně architekturu RPC
  - popsat RPC webové služby
+ - popsat SOAP
+ - specifikace SOAP: https://www.w3.org/TR/soap12-part1/\#intro
+ - protokol aplikační vrstvy SOAP (web service)
+ 
+ - XML pro popis datového modelu
 
 
 \section{REST}
