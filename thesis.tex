@@ -257,8 +257,29 @@ HTTP definuje množinu metod, jejichž účelem je specifikovat konkrétní oper
 \end{table}
 
 Implementace obsluhy metod sice záleží na konkrétním poskytovateli, nicméně HTTP definuje tzv. bezpečné metody, jež by měly označovat pouze operace určené k získání dat. Jedná se o metody GET a HEAD. Protokol u metod také zavádí vlastnost idempotentnosti pokud $N>0$ identických volání způsobí stejné vedlejší efekty jako pouhé jedno volání \cite{httpRfc}.
-\section{RPC}
 
+
+\section{Remote Procedure Call}
+
+% úvod do sekce
+Pojem Remote Procedure Call (dále jen RCP) obecně označuje technologii umožňující předání řízení mezi programy v různých adresních prostorech, které jsou mezi sebou propojeny komunikačním kanálem \cite{rpcThesis}. Tato sekce se zaměřuje na popis RPC zejména ve vztahu k webovým službám a komunikaci s nimi.
+
+% stručne o RPC, jak funguje
+Obecně je RPC postaveno na principu volání-odpověď. Klient voláním předá poskytovateli informace o operaci, jež má vykonat, včetně vstupních dat. Příjemce (server) tuto operaci provede a v odpovědi vrátí zpracovaná data. Typickým příkladem použití je přesunutí náročného výpočtu z méně výkonného klienta na výkonný server.
+
+% použití RPC ve webových službách
+V kontextu webových služeb se za 'RPC-like' považují služby založené na definici konsorcia W3C, tedy služby popsané WSDL předávající si data protokolem SOAP v těle HTTP volání a odpovědi. Klient takovou službu vnímá jako množinu operací které může volat, z nichž každá vykonává určitou úlohu \cite{rpcVsRest}. Aby toto bylo možné, musí každá služba definovat jasné rozhraní pomocí kterého klient přistupuje k operacím a zpracovává vrácená data. Příkladem takového rozhraní je popis služby ve formátu WSDL. 
+
+Protože součástí mé práce bylo zpracování metadat služeb popsaných formátem WSDL, jež typicky komunikují skrze SOAP, zabývají se další odstavce právě tímto protokolem. Popisný formát WSDL je detailněji rozveden na konci této kapitoly.
+
+\subsection{SOAP} 
+
+% SOAP
+
+
+RCP označuje způsob komunikace, kdy klient předá serveru 
+
+ - definováno v \cite{rpcThesis}
  - popsat obecně architekturu RPC
  - popsat RPC webové služby
  - popsat SOAP
@@ -275,32 +296,31 @@ Implementace obsluhy metod sice záleží na konkrétním poskytovateli, nicmén
 % - jak se liší od WS definované v předchozí sekci
 % - základní popis elementů použitých v REST
 
-TODO: formulace
+Representational State Transfer (dále jen REST) je architektonický styl tvorby webových služeb, který ve své disertační práci \cite{fielding2000rest} popsal R. T. Fielding. Služby tvořené v tomto stylu se od služeb definovaných podle definice konsorcia W3C se liší zejména využitím protokolu HTTP pro sémantiku aplikace a vyznačuje se také absencí stavu. 
 
-Rest je architektonický styl tvorby webových služeb, který ve své disertační práci \cite{fielding2000rest} popsal R. T. Fielding. Služby tvořené v tomto stylu se od služeb definovaných podle definice konsorcia W3C se liší zejména využitím protokolu HTTP pro sémantiku aplikace a vyznačuje se také bezestavovostí. 
+R.T Fielding definoval styl REST skrze množinu omezení, jež jsou aplikována na systém vzájemně komunikujících komponent, což jsou v rámci této práce webové služby. Vybraná omezení jsou popsána v následujících odstavcích.
 
-pozn:
-- hypertext = Hypertext is text displayed on a computer display or other electronic devices with references (hyperlinks) to other text that the reader can immediately access.
+\subsubsection{Klient-server}
+kvůli separation of concenrs; oddělení klienta od uložení dat umožňuje nezávislý vývoj jednotlivých komponent
 
-- hypermédium = Hypermedia, an extension of the term hypertext, is a nonlinear medium of information that includes graphics, audio, video, plain text and hyperlinks.
+\subsubsection{Absence stavu}
+vše pro zpracování requestu musí být obsaženo v requestu a není možné využít žádný kontext uložený na serveru; tím dojde ke zpřehlednění a zlepšení spolehlivosti (protože je snazší se zotavit z částečných chyb); nevýhodou je možné snížení síťové performance a vzhledem k uložený kontextu na straně klienta je také na straně serveru nutná kontrola jeho konzistence
 
-Výběr constraints, které definují REST:
-\begin{itemize}
-	\item klient-server kvůli separation of concenrs; oddělení klienta od uložení dat umožňuje nezávislý vývoj jednotlivých komponent
-	\item bezestavovost; vše pro zpracování requestu musí být obsaženo v requestu a není možné využít žádný kontext uložený na serveru; tím dojde ke zpřehlednění a zlepšení spolehlivosti (protože je snazší se zotavit z částečných chyb); nevýhodou je možné snížení síťové performance a vzhledem k uložený kontextu na straně klienta je také na straně serveru nutná kontrola jeho konzistence
-	\item cache; cache je na straně klienta, lze cacheovat pouze response, které jsou takto označené; tím lze zvýšit efektivitu
-	\item uniformní rozhraní mezi komponentami; tím je docíleno oddělení služby, kterou komponenta poskytuje od její implementace; nevýhoda je zhoršení efektivity, protože informace jsou přenášeny ve standardním formátu, místo formátu, který by byl nativní aplikaci; 4 omezení rozhraní: identifikace zdrojů, manipulace se zdroji skrze reprezentace, sebe-popisující zprávy a hypermedia jako engine aplikačního stavu
-	\item vrstvený styl; každý vrstva komunikuje pouze se seousendí vrstvou a nevidí vrstvy za nimi; to vede na větší nezávislost
-\end{itemize}
+\subsubsection{Cache}
+cache je na straně klienta, lze cacheovat pouze response, které jsou takto označené; tím lze zvýšit efektivitu
 
-- mohlo by se hodit: https://www.w3.org/TR/2004/NOTE-ws-arch-20040211/\#relwwwrest
-- popisuje vztah REST a WWW
-- REST: založeno na manipulaci s XML reprezentací webových resources skrze stateless operace
+\subsubsection{Uniformní rozhraní}
+(mezi komponentami)
+tím je docíleno oddělení služby, kterou komponenta poskytuje od její implementace; nevýhoda je zhoršení efektivity, protože informace jsou přenášeny ve standardním formátu, místo formátu, který by byl nativní aplikaci; 4 omezení rozhraní: identifikace zdrojů, manipulace se zdroji skrze reprezentace, sebe-popisující zprávy a hypermedia jako engine aplikačního stavu
 
-\subsection{Základní koncepty REST}
+\subsubsection{Vrstvený styl}
+každý vrstva komunikuje pouze se seousendí vrstvou a nevidí vrstvy za nimi; to vede na větší nezávislost
+
+\subsection{Zdroj a jeho reprezentace}
 \label{sec:rest-basics}
 
-Architektonický styl REST ignoruje implementační detaily jednotlivých komponent a zaměřuje se spíše na jejich roli, vzájemnou komunikaci interpretaci důležitých dat. Architektura vycházející z toho stylu se nazývá ROA\footnote{Resource Oriented Architecture} a ve své publikaci\cite{restfulWebServices} ji popsal L. Richardson. Tato sekce popisuje několik základních konceptů REST v návaznosti na ROA.
+TODO: formulace
+Architektonický styl REST ignoruje implementační detaily jednotlivých komponent a zaměřuje se spíše na jejich roli, vzájemnou komunikaci interpretaci důležitých dat. Architektura vycházející z toho stylu se nazývá ROA\footnote{Resource Oriented Architecture} a ve své publikaci\cite{restfulWebServices} ji popsal L. Richardson. Tato sekce v popisuje význam zdroje a jeho reprezentací v REST.
 
 Klíčovou abstrakcí informace v REST je zdroj \textit{resource}, jež může představovat jakoukoliv pojmenovatelnou informaci jako například dokument, obrázek, webovou službu, nebo  kolekci jiných zdrojů. R. T. Fielding ve své práci\cite{fielding2000rest} definuje zdroj $R$ jako: 
 
@@ -316,7 +336,8 @@ S reprezentacemi zdrojů je manipulováno HTTP voláním jejich identifikátorů
 
 \subsection{RESTful služba}
 
-Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, které REST dodržují nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby, jež byl představen L. Richardsonem, se nazývá Richardson Maturity Model a ve svém online článku \cite{restfulMaturity} jej rozvedl M. Fowler. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
+TODO: Formulace
+Jedním z primárních účelů webových služeb založených na stylu REST je manipulace s XML reprezentacemi zdrojů, skrze jednotnou množinu bezestavových operací, jimiž typicky jsou  \textit{create}, \textit{retrieve}, \textit{update} a \textit{delete}\cite{w3cWsArch}. Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, které REST dodržují nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby, jež byl představen L. Richardsonem, se nazývá Richardson Maturity Model a ve svém online článku \cite{restfulMaturity} jej rozvedl M. Fowler. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
 
 \begin{figure}[h]
 	\centering
