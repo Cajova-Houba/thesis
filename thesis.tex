@@ -145,19 +145,19 @@ Pojem 'webová služba' může mít odlišné významy\cite{w3cWsDesignIssues} a
 
 Tato definice je pro účely mé práce problematická z několika důvodů. Prvním z nich je omezení formátu popisu služby pouze na WSDL. Strojově čitelný popis rozhraní sice snižuje náročnost vytvoření klienta pro danou službu, nicméně WSDL není jediným takovým formátem a netřeba tedy z definice vyloučit služby používající jiné formáty jako například WADL, nebo JSON-WSP, jež přímo souvisí s mou prací. Závislost na jednom konkrétním formátu také nemusí být výhodná z hlediska budoucího vývoje, protože nezohledňuje možnost příchodu jiného formátu, nebo změny přístupu k webovým službám obecně. WSDL do verze 1.1 například neumožňovalo popis REST služeb, ty byly zohledněny až ve verzi 2.0\cite{restWsdl}.  
 
-Definice dále svazuje implementaci webové služby s použitím konkrétního protokolu pro výměnu dat, v tomto případě SOAP, čímž opět nezahrnuje služby používající jakékoliv jiné protokoly. I zde platí nevýhoda takové vazby v kontextu budoucího vývoje, jež byla zmíněna v předchozím odstavci. Webová služba by například přestala být webovou službou, pokud by došlo k změně protokolu pro výměnu dat ze SOAP na JSON-RPC.
+Definice dále svazuje implementaci webové služby s použitím konkrétního protokolu pro výměnu dat, v tomto případě SOAP, čímž opět nezahrnuje služby používající jakékoliv jiné protokoly. I zde platí nevýhoda takové vazby v kontextu budoucího vývoje, jež byla zmíněna v předchozím odstavci. Webová služba by například přestala být webovou službou, pokud by došlo k změně protokolu pro výměnu dat ze SOAP na JSON-RPC, což není žádoucí.
 
-Posledním důvodem je vymáhání použití XML jako jediného formátu pro přenos dat i přes rostoucí popularitu jiných formátů, jako například JSON, nebo v poslední době YAML. Není také výjimkou, že webové služby podporují více formátů pro serializaci dat. 
+Posledním důvodem je vymáhání použití XML jako jediného formátu pro přenos dat i přes rostoucí popularitu jiných formátů, jako například JSON, nebo v poslední době YAML. Není také výjimkou, že webové služby podporují více formátů pro serializaci dat a specifikace jednoho konkrétního formátu v definici tedy není nutná. 
 
 % a proto je webová služba zadefinována takto
-Z uvedených důvodů je potřeba zavést vhodnější definici s volnějšími kritérii tak, aby webové služby co možná nejméně omezovala. Definici, která služby popisuje primárně skrze komunikační protokol HTTP ve své knize nabízí R. Daigneau \cite{fromObjectsToWs}: 
+Z uvedených důvodů je potřeba zavést vhodnější definici s volnějšími kritérii tak, aby webové služby co možná nejméně omezovala. Definici, která služby popisuje primárně skrze užití komunikačního protokolu HTTP ve své knize nabízí R. Daigneau \cite{fromObjectsToWs}: 
 
 %	Web services provide the means to integrate disparate systems and expose reusable business functions over HTTP. They either leverage HTTP as a simple transport over which data is carried (e.g., SOAP/WSDL services) or use it as a complete application protocol that defines the semantics for service behavior (e.g., RESTful services).
 \begin{quote}
 	Webové služby poskytují prostředky pro integraci různorodých systémů a zpřístupňují znovupoužitelné business funkce skrze HTTP. HTTP je použito buď jako jednoduchý komunikační protokol, skrze který jsou přenášena data (např. SOAP/WSDL služby), nebo jako kompletní aplikační protokol, jež definuje sémantiku chování služby (např. RESTful služby).
 \end{quote}
 
-Tato definice netrpí výše zmíněnými nedostatky a proto jsem se rozhodl ji využít pro účely mé práce. S webovými službami se váže několik dalších pojmů, které jsou v průběhu textu užívány, a pro úplnost jsou zde taktéž definovány:
+Tato definice netrpí výše zmíněnými nedostatky a zahrnuje webové služby se kterými jsem pracoval. Proto jsem se rozhodl ji využít pro účely mé práce a nebude-li určeno jinak, pojem 'webová služba' v tomto textu odpovídá zmíněné definici. S webovými službami se váže několik dalších pojmů, které jsou v průběhu textu užívány, a pro úplnost jsou zde taktéž definovány:
 
 % definovat další pojmy jako
 % - pokytovatel služby
@@ -170,7 +170,7 @@ Tato definice netrpí výše zmíněnými nedostatky a proto jsem se rozhodl ji 
 \begin{itemize}
 	\item \textbf{Poskytovatel služby}: server na kterém je služba dostupná, případě organizace, která ji spravuje,
 	\item \textbf{Konzument služby}: klient využívající službu, typicky se jedná o aplikaci,
-	\item \textbf{Endpoint}: Jedna konkrétní operace služby, případě URI na které je dostupný nějaký zdroj,
+	\item \textbf{Endpoint}: Jedna konkrétní operace služby, případě URI na které je dostupný nějaký zdroj, nebo celá služba,
 	\item \textbf{Operace}: Operace webové služby, v tomto textu používáno ve stejném významu jako endpoint,
 	\item \textbf{Service}: element \verb|service| v popisu WSDL, při překladu do češtiny (služba) by mohl pojem kolidovat s pojmem 'webová služba', proto je pro element WSDL označující část SOAP služby ponechán anglický tvar service,
 	\item \textbf{API}: Rozhraní webové služby.
@@ -178,25 +178,28 @@ Tato definice netrpí výše zmíněnými nedostatky a proto jsem se rozhodl ji 
 
 \subsection{Použití webových služeb}
 
-Samotný pojem služba z technického pohledu typicky označuje funkcionalitu, jež vykonává nějakou podnikovou operaci, zajišťuje přístup k souborům, nebo obstarává generickou funkcionalitu jako přihlášení do systému. Webové služby umožňují tyto zpřístupnit různorodým klientům jako jsou například webový prohlížeč, nebo mobilní aplikace, nezávisle na technologiích použitých k jejich realizaci.
-
-Ve srovnání s alternativami jako například distribuované objekty jsou webové služby snazší na použití, zejména kvůli jednoduché komunikaci skrze protokol HTTP a standardizované serializaci dat do formátů jako XML, nebo JSON. Díky tomu jsou služby snadno propojitelné a lze je tak skládat do větších celků za účelem realizace komplexních procesů\cite{fromObjectsToWs}.
+Samotný pojem služba z technického pohledu typicky označuje funkcionalitu, jež vykonává nějakou podnikovou operaci, zajišťuje přístup k souborům, nebo obstarává generickou funkcionalitu jako například přihlášení do systému. Webové služby umožňují tyto zpřístupnit různorodým klientům jako jsou například webový prohlížeč, nebo mobilní aplikace, nezávisle na technologiích použitých k jejich realizaci.
 
 % \cite{fromObjectsToWs}
 % ws jsou jednoduché na použití, ke komunikaci stačí pouze HTTP, JSON/XML pro výměnu dat a znalost protokolu
 % to nutně neplatilo u předchůdců, například Shared Objects
 % díky tomu jsou služby snadno propojitelné a lze je skládat do větších celků za účelem realizace komplexních operací (funkcionalit)
+Ve srovnání s alternativami jako například distribuované objekty jsou webové služby snazší na použití, zejména kvůli jednoduché komunikaci skrze protokol HTTP a standardizované serializaci dat do formátů jako XML, nebo JSON. Použitím jednotného komunikačního kanálu (HTTP) je také docíleno oddělení implementace klienta od služby a tím i větší nezávislosti mezi nimi. Díky tomu jsou webové služby snadno propojitelné a lze je tak skládat do větších celků za účelem realizace komplexních procesů\cite{fromObjectsToWs}.
 
 % služby vytváří/nastolují vrstvu abstrakce mezi samotnou implementací služby a klientem
 % tím je docíleno volné vazby a jak služba tak klient se mohou nezávisle vyvíjet, dokud nedojde ke změnám narušujícím kompatibilitu (to by chtělo rozepsat víc)
 % tady lze zmínit např architekturu microservice
 % z toho by se mohlo dát navázat na problém změny implementace/resp. rozhraní a tím vzniklé nekompatibility mezi službou, kterou očekává klient a službou, kterou server poskytuje
+Architektura \textit{Microservices} této skutečnosti využívá a na aplikace nahlíží jako na systém volně propojených služeb, z nichž každá je nezávislá na ostatních a soustředí se na svou přidělenou úlohu. Tou může být například správa uživatelů, nebo analýza dat. Služby v této architektuře se také vyznačují vzájemně nezávislým vývojem \cite{microservices}, což může vést na problémy se vzájemnou kompatibilitou, pokud je například do nové verze služby zanesena změna, jež mutuje její rozhraní. Právě tímto tématem se v kontextu webových služeb zabývá má práce.
+
 
 % taky by nebylo špatný popsat kdy dává použití WS smysl
 % tím se zabývá podkapitola Web Service Considerations and Alternatives
 
 \section{Techniky webových služeb}
 \label{sec:ws-tech}
+
+Tato podkapitola krátce představuje nejzákladnější techniky a protokoly určené k realizaci webových služeb.
 
 % zmínit:
 % zmínit RPC, SOAP
@@ -259,6 +262,10 @@ HTTP definuje množinu metod, jejichž účelem je specifikovat konkrétní oper
 Implementace obsluhy metod sice záleží na konkrétním poskytovateli, nicméně HTTP definuje tzv. bezpečné metody, jež by měly označovat pouze operace určené k získání dat. Jedná se o metody GET a HEAD. Protokol u metod také zavádí vlastnost idempotentnosti pokud $N>0$ identických volání způsobí stejné vedlejší efekty jako pouhé jedno volání \cite{httpRfc}.
 
 
+\subsection{Formáty pro přenos dat}
+
+Krátce uvést XML a JSON v návaznosti na definici webové služby
+
 \section{Remote Procedure Call}
 \label{sec:rpc-ws}
 
@@ -271,23 +278,34 @@ Obecně je RPC postaveno na principu volání-odpověď. Klient voláním před�
 % použití RPC ve webových službách
 V kontextu webových služeb se za 'RPC-like' považují služby založené na definici konsorcia W3C, tedy služby popsané WSDL předávající si data protokolem SOAP v těle HTTP volání a odpovědi. Klient takovou službu vnímá jako množinu operací které může volat, z nichž každá vykonává určitou úlohu \cite{rpcVsRest}. Aby toto bylo možné, musí každá služba definovat jasné rozhraní pomocí kterého klient přistupuje k operacím a zpracovává vrácená data. Příkladem takového rozhraní je popis služby ve formátu WSDL. 
 
-Protože součástí mé práce bylo zpracování metadat služeb popsaných formátem WSDL, jež typicky komunikují skrze SOAP, zabývají se další odstavce právě tímto protokolem. Popisný formát WSDL je detailněji rozveden na konci této kapitoly.
+Protože součástí mé práce bylo zpracování metadat služeb popsaných formátem WSDL, jež typicky používají protokol SOAP pro výměnu dat, zabývají se další odstavce právě tímto protokolem. Popisný formát WSDL je detailněji rozveden na konci této kapitoly.
 
-\subsection{SOAP} 
+\subsection{Simple Object Access Protocol} 
 
 % SOAP
 
+Protokol SOAP, v současné verzi 1.2, je určený pro výměnu strukturovaných dat v decentralizovaném, distribuovaném prostředí. Specifikaci protokolu\cite{soap12}, z níž tato sekce převážně čerpá, spravuje konsorcium W3C. Mezi cíle návrhu protokolu patří zejména jeho nezávislost na konkrétní implementační platformě a komunikačním protokolu\cite{soap12}. Specifikace nijak neomezuje formát, ve kterém jsou data předávána, nicméně primárním způsobem pro jejich popis je XML.
 
-RCP označuje způsob komunikace, kdy klient předá serveru 
+Základní komunikační jednotkou v SOAP je zpráva, která je předávána mezi komunikujícími uzly. Obsah zprávy, který je zapouzdřený v takzvané obálce se skládá z hlaviček a těla zprávy. Obrázek \ref{fig:soap-msg-example} převzatý ze specifikace protokolu znázorňuje příklad SOAP zprávy. V návaznosti na komunikační vzor RPC jsou SOAP zprávy mezi službami typicky používány k předání detailů o proceduře, jež má být vykonána, včetně vstupních parametrů. Výsledky těchto operací jsou vráceny v obdobném formátu.
 
- - definováno v \cite{rpcThesis}
- - popsat obecně architekturu RPC
- - popsat RPC webové služby
- - popsat SOAP
- - specifikace SOAP: https://www.w3.org/TR/soap12-part1/\#intro
- - protokol aplikační vrstvy SOAP (web service)
- 
- - XML pro popis datového modelu
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{soap-msg-example}
+	\caption{Příklad SOAP zprávy}
+	\label{fig:soap-msg-example}
+\end{figure}
+
+% spojení WSDL služeb a SOAP
+Použití protokolu SOAP jako formátu dat nad konkrétním komunikačním protokolem je definováno souborem pravidel, jež se nazývá SOAP Protocol Binding Framework. Tato pravidla popisují především detaily použití komunikačního protokolu pro předávání SOAP zpráv, dodržení kontraktu a zpracování případných chyb. V kontextu mé práce je důležité zejména napojení SOAP na HTTP u služeb popsaných WSDL dokumentem.
+
+SOAP zprávy jsou skrze HTTP, vzhledem ke svému rozsahu, primárně přenášeny metodou POST a v rámci této práce je předpokládáno, že webové služby používající SOAP akceptují volání pouze skrze POST metody. V dokumentu WSDL je propojení SOAP s HTTP definováno v elementu \verb|<binding>| a příklad takového propojení je uveden na obrázku \ref{fig:soap-http-binding}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=11cm]{soap-http-binding}
+	\caption{Propojení SOAP s HTTP v dokumentu WSDL}
+	\label{fig:soap-http-binding}
+\end{figure}
 
 
 \section{REST}
@@ -386,7 +404,7 @@ Aby bylo možné se službami komunikovat, je nutné znát jimi poskytované ope
 
 \subsection{WSDL}
 
-Formát WSDL je využíván převážně pro popis webových služeb využívajících protokol SOAP k výměně dat, nicméně od verze 2.0 lze popsat i REST služby. Formát současně existuje ve verzích 1.1 a 2.0. Z důvodů staří verze 1.1, jež byla publikována v roce 2001 je tento popis zaměřen především na verzi 2.0. 
+Formát WSDL je využíván převážně pro popis webových služeb využívajících protokol SOAP k výměně dat, nicméně od verze 2.0 lze popsat i REST služby. Formát současně existuje ve verzích 1.1 a 2.0. Z důvodů stáří verze 1.1, jež byla publikována v roce 2001 je tento popis zaměřen především na verzi 2.0. 
 
 WSDL je formát založený na XML popisující webové služby jako množiny endpointů operujících nad zprávami (\textit{messages}), jež obsahují buď dokumentově, nebo procedurálně orientované informace. Abstraktně popsané operace a zprávy jsou spojeny s konkrétním síťovým protokolem a formátem zpráv, čímž je definován endpoint. Související endpointy jsou sdruženy do \textit{services} \cite{wsdl2}. Tabulka \ref{tab:wsdl-elements} obsahuje popis vybraných elementů použitých ve formátu WSDL 2.0.
 
@@ -401,9 +419,13 @@ WSDL je formát založený na XML popisující webové služby jako množiny end
 		\hline
 		endpoint & Detaily endpointu, na kterém je služba dostupná \\
 		\hline
-		binding & Implementační detaily nezbytné k přístupu ke službě \\
+		message & Definice dat, jež jsou předmětem komunikace \\
+		\hline
+		portType & Množina operací služby \\		
 		\hline
 		operation & Implementační detaily konkrétní operace \\
+		\hline
+		binding & Implementační detaily nezbytné k přístupu ke službě \\
 		\hline
 		types & Definice vlastních typů \\
 		\hline
