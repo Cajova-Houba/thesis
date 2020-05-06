@@ -1097,13 +1097,13 @@ Cílem mé práce bylo vytvořit rozšíření CRCE schopné automatické kontro
 
 \section{Porovnávač}
 
-V kapitole \ref{sec:crce} bylo zmíněna modulární architektura CRCE. Moduly představující nadstavbou jádra jsou podřazené modulu \verb|crce-modules-reactor| a zde je umístěno i mé rozšíření. Samotný modul obsahující rozšíření je tvořen maven artefaktem a je implementovaný jako OSGi bundle, což je standardní postup v rámci CRCE.
+V kapitole \ref{sec:crce} byla zmíněna modulární architektura CRCE. Moduly představující nadstavbou jádra jsou podřazené modulu \verb|crce-modules-reactor| a zde je umístěno i mnou vytvořené rozšíření. Samotný modul je tvořen maven artefaktem a je implementovaný jako OSGi bundle, což je standardní postup v rámci CRCE.
 
-Veřejná funkcionalita modulu je deklarovaná v rozhraní \textit{ApiCompatibilityCheckerService}, jehož implementace je zpřístupněná formou OSGi služby (anotace \textit{Component}). Zde jsou obsaženy všechny porovnávače webových služeb a implementace sama je schopná vybrat správný porovnávač pro zadanou dvojici \textit{Resource}.
+Veřejná funkcionalita modulu je deklarovaná v rozhraní \textit{ApiCompatibilityCheckerService}, jehož implementace je zpřístupněná formou OSGi služby (anotace \textit{Component}). V této jsou obsaženy všechny porovnávače webových služeb a implementace sama je schopná vybrat správný porovnávač pro zadanou dvojici \textit{Resource}.
 
 \subsection{Struktura tříd porovnávačů}
 
-Diagram \ref{fig:cmp-uml-class} znázorňuje strukturu tříd, jež slouží k porovnávání webových služeb. Každý porovnávač dědí od abstraktní třídy \textit{ApiCompatibilityChecker}, která obsahuje deklaraci metody určené k porovnání služeb (\textit{compareApis()}). Z důvodů zmíněných v sekci \ref{sec:cmp-alg} je algoritmus implementován ve dvou verzích (na obrázku zeleně vyznačené třídy) podle původu metadat. První verze (na obrázku \textit{RestApiCompatibilityChecker}) pracuje s metadaty získanými z implementace, druhá (na obrázku \textit{WebservicesCompatibilityChecker}) pak s metadaty získanými z popisu webové služby.
+Diagram \ref{fig:cmp-uml-class} znázorňuje strukturu tříd, jež slouží k porovnávání webových služeb. Každý porovnávač dědí od abstraktní třídy \textit{ApiCompatibilityChecker}, která obsahuje deklaraci metody určené k porovnání služeb (\textit{compareApis()}). Z důvodů zmíněných v sekci \ref{sec:cmp-alg} je algoritmus implementován ve dvou verzích (na obrázku zeleně vyznačené třídy) podle původu metadat. První verze (na obrázku \textit{RestApiCompatibilityChecker}) pracuje s metadaty získanými z implementace služby, druhá (na obrázku \textit{WebservicesCompatibilityChecker}) pak s metadaty získanými z popisu webové služby.
 
 % - zmínit, proč třídy pro porovnávání REST API a WS nemají společného předka (krom rozhraní)
 % 	- důvod: chtěl jsem nechat implementaci obou porovnávačů oddělenou pro případ, že by se změnila funkce indexerů
@@ -1117,7 +1117,7 @@ Diagram \ref{fig:cmp-uml-class} znázorňuje strukturu tříd, jež slouží k p
 
 I když je struktura metadat podobná, rozhodl jsem se vytvářet co možná nejméně společné implementace, protože bych tím vytvořil silnou vazbu mezi jinak nezávislými indexery. Ta by v případě změny struktury metadat u jednoho z indexerů přinášela obtíže při následné refaktorizaci porovnávacího modulu. Jediným společným předkem je tedy obecná abstraktní třída pro porovnávač webových služeb.
 
-Protože indexer pracující s popisem je schopen indexovat více typů služeb, je pro každý z těchto typů vytvořen zvláštní porovnávač. Na obrázku to jsou třídy dědící od \textit{WebservicesCompatibilityChecker}. Tato obsahuje porovnávací logiku a abstraktní metody pro získání konkrétních detailů jako například jmen některých atributů, identifikátorů \textit{Capability}, nebo instancí porovnávačů metadat, které jsou volané během porovnání. Daná implementace pak tyto metody překrývá čímž poskytuje data specifická danému typu služby.
+Protože indexer pracující s popisem je schopen indexovat více typů služeb, je pro každý z těchto typů vytvořen zvláštní porovnávač. Na obrázku to jsou třídy dědící od \textit{WebservicesCompatibilityChecker}. Tato obsahuje porovnávací logiku a abstraktní metody pro získání konkrétních detailů jako například jmen některých atributů, identifikátorů \textit{Capability}, nebo instancí porovnávačů metadat, které jsou použité během porovnání. Daná implementace pak tyto metody překrývá čímž poskytuje data specifická danému typu služby.
 
 \subsubsection{Porovnávání endpointů}
 
@@ -1134,7 +1134,7 @@ Abstraktní třída \textit{EndpointFeatureComparator} obsahuje pouze extrakci d
 
 \subsubsection{Vestavěné datové typy}
 
-Porovnávání vestavěných datových typů je řešeno obalovací třídou, jejíž vstupním parametrem je jméno obalovaného datového typu. Tato třída obsahuje logiku která je schopná vyhodnotit, zda se doopravdy jedná o jméno vestavěného typu a také logiku porovnání dvou vestavěných typů. V současné době je toto porovnání omezena na rovnost a generalizaci (jak bylo uvedeno v sekci \ref{sec:type-cmp}). Konkrétní obalové třídy jsou \textit{JavaTypeWrapper} pro vestavěné typy Javy a \textit{XsdDataType} pro vestavěné typy XML. 
+Porovnávání vestavěných datových typů je řešeno obalovací třídou, jejíž vstupním parametrem je jméno obalovaného datového typu. Tato třída obsahuje logiku která je schopná vyhodnotit, zda se doopravdy jedná o jméno vestavěného typu a také logiku porovnání dvou vestavěných typů. V současné době je toto porovnání omezeno na rovnost a generalizaci (jak bylo uvedeno v sekci \ref{sec:type-cmp}). Konkrétní obalové třídy jsou \textit{JavaTypeWrapper} pro vestavěné typy Javy a \textit{XsdDataType} pro vestavěné typy XML. 
 
 Obalové třídy nepokrývají všechny vestavěné typy, ale pouze jejich podmnožinu. Zejména se jedná o čísla (i s plovoucí desetinnou čárkou) a řetězce.
 
@@ -1211,7 +1211,7 @@ V tuto chvíli se nahraná komponenta nachází ve fázi \textit{Buffer}. Došlo
 \end{figure}
 
 \paragraph{Získání ID artefaktu}
-K porovnání webových služeb je nutné znát ID \textit{Resource}, jež reprezentují nahrané artefakty. To je možné zjistit označením daného artefaktu v uživatelském rozhraní a následným kliknutím na tlačítko \textit{Detail}. Detail nahraného artefaktu je na obrázku \ref{fig:crce-art-detail}.
+K porovnání webových služeb je nutné znát ID \textit{Resource}, jež reprezentují nahrané artefakty. To je možné zjistit označením daného artefaktu v uživatelském rozhraní a následným kliknutím na tlačítko \textit{Detail}. Detail artefaktu nahraného v předchozím kroku je na obrázku \ref{fig:crce-art-detail}.
 
 \begin{figure}[h]
 	\centering
@@ -1221,7 +1221,7 @@ K porovnání webových služeb je nutné znát ID \textit{Resource}, jež repre
 \end{figure}
 
 \paragraph{Volání porovnávací služby}
-Identifikátor získaný v předchozím kroku lze použít k volání REST služby pro porovnávání. K tomu jsem pro jednoduchost použil nástroj Postman. Příklad volání služby s danými identifikátory je na obrázku \ref{fig:apicomp-call}.
+Identifikátor získaný v předchozím kroku lze použít k volání REST služby pro porovnávání. K tomu jsem pro jednoduchost použil nástroj Postman. Protože se tento příklad zabývá pouze jedním artefaktem, jsou parametry \textit{id1} a \textit{id2} totožné. Příklad volání služby s danými identifikátory je na obrázku \ref{fig:apicomp-call}.
 
 \begin{figure}[h]
 	\centering
@@ -1231,7 +1231,7 @@ Identifikátor získaný v předchozím kroku lze použít k volání REST služ
 \end{figure}
 
 \paragraph{Výsledky porovnání}
-Výsledek vrácený porovnávací službou je uveden na obrázku \ref{fig:apicomp-res}. Pro jednoduchost jsou některé části výsledného JSON dokumentu vypuštěny. Ve výsledku je obsažena finální úroveň rozdílu (\textit{diffValue}), příznaky nastavené během porovnání (\textit{additionalInfo}) a také strukturu \textit{diffDetails} tvořenou stromem \textit{Diff} detailně popisující rozdíly mezi službami.
+Výsledek vrácený porovnávací službou je uveden na obrázku \ref{fig:apicomp-res}. Pro jednoduchost jsou některé části výsledného JSON dokumentu vypuštěny. Ve výsledku je obsažena finální úroveň rozdílu (\textit{diffValue}), příznaky nastavené během porovnání (\textit{additionalInfo}) a také strukturu \textit{diffDetails} tvořenou stromem objektů \textit{Diff} detailně popisující rozdíly mezi službami.
 
 \begin{figure}[h]
 	\centering
@@ -1240,13 +1240,13 @@ Výsledek vrácený porovnávací službou je uveden na obrázku \ref{fig:apicom
 	\label{fig:apicomp-res}
 \end{figure}
 
-Pokud by během porovnání došlo k nastavení příznaku MOV, byl by tento vrácený v \textit{additionalInfo}.
+Pokud by během porovnání došlo k nastavení příznaku MOV, byl by tento vrácený v \textit{additionalInfo}. Protože byl artefakt porovnán sám se sebou, je výsledný rozdíl \textit{NON}.
 
 \section{Testování}
 
 K ověření funkčnosti porovnávacího modulu je připraveno několik testovacích scénářů. Každý z nich je zaměřen na jeden typ indexované služby a všechny s CRCE komunikují skrze REST API, tak jak bylo popsáno v předchozí sekci.
 
-K testování jsem použil nástroj Postman, konkrétně jeho Collection Runner, který umožňuje vybrat šablonu volání REST API a soubor testovacích dat ve formátu csv, jehož každá řádka představuje jeden test v podobě porovnávané dvojice služeb a očekávaného výsledku. Příklad těchto dat je uveden na obrázku \ref{fig:test-data-csv}.
+K testování jsem použil nástroj Postman, konkrétně jeho Collection Runner, který umožňuje vybrat šablonu volání REST API a soubor testovacích dat ve formátu csv. jehož každá řádka představuje jeden test v podobě identifikátorů porovnávané dvojice služeb a očekávaného výsledku. Nástroj Collection Runner tento soubor čte po řádcích a data z každé řádky aplikuje na zmíněnou šablonu. Tím lze snadno zautomatizovat testování volání webové služby s mnoha kombinacemi vstupních dat. Příklad těchto datového souboru je uveden na obrázku \ref{fig:test-data-csv}. 
 
 \begin{figure}[h]
 	\centering
@@ -1255,7 +1255,17 @@ K testování jsem použil nástroj Postman, konkrétně jeho Collection Runner,
 	\label{fig:test-data-csv}
 \end{figure}
 
-Princip každého z testovacích scénářů spočívá ve vytvoření několika verzí jedné služby a následném vzájemném porovnání. Tím lze otestovat jak vybrané změny tak i pořadí porovnávaných služeb. Jednotlivé scénáře včetně výsledků jsou detailně popsány v následujících sekcích.
+Test, zda výsledek volání odpovídá datům uvedeným v csv souboru provádí skript napsaný v jazyce Javascript, jež je součástí zmíněné šablony volání. Příklad výsledků testů vrácených nástrojem Collection Runner je zobrazen na obrázku \ref{fig:test-results}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{test-results.png}
+	\caption{Výsledek testování nástrojem Postman}
+	\label{fig:test-results}
+\end{figure}
+
+
+Princip každého z testovacích scénářů spočívá ve vytvoření několika verzí jedné služby a následném vzájemném porovnání. Tím lze otestovat jak vybrané změny tak i závislost výsledku na pořadí porovnávaných služeb. Jednotlivé scénáře včetně výsledků jsou detailně popsány v následujících sekcích.
 
 \subsection{REST služba založená na Jersey}
 
@@ -1283,7 +1293,7 @@ Výsledky vrácené voláním porovnávací služby jsou zobrazeny v tabulce \re
 	
 \subsection{Služba popsaná JSON-WSP}
 
-Testovací scénář je zaměřen na služby popsané formátem JSON-WSP. Data pro testování tvoří čtyři verze uměle vytvořeného rozhraní založeného na příkladu \footnote{https://en.wikipedia.org/wiki/JSON-WSP}. Odlišnosti mezi jednotlivými verzemi, označenými \textit{v1} až \textit{v4}, jsou rozepsány v tabulce \ref{tab:json-wsp-diffs}.
+Testovací scénář je zaměřen na služby popsané formátem JSON-WSP. Data pro testování tvoří čtyři verze uměle vytvořeného rozhraní založeného na příkladu převzatém z Wikipedie\footnote{https://en.wikipedia.org/wiki/JSON-WSP}. Odlišnosti mezi jednotlivými verzemi, označenými \textit{v1} až \textit{v4}, jsou rozepsány v tabulce \ref{tab:json-wsp-diffs}.
 
 \begin{table}[h]
 	\centering
@@ -1428,11 +1438,11 @@ Základní verze \textit{v1} definuje operaci \textit{testOperation}, která má
 	\label{tab:stag-wsdl-cmp-res}
 \end{table}
 
-Tabulka \ref{tab:stag-wsdl-cmp-res} obsahuje výsledky vzájemných porovnání všech verzí služby. Tyto výsledky, včetně nastavených příznaků MOV odpovídají předpokladům.
+Výsledky vzájemných porovnání všech verzí služby obsažené v tabulce \ref{tab:stag-wsdl-cmp-res} odpovídají předpokladům a to včetně správně nastavených příznaků MOV.
 
 \section{Shrnutí testů}
 
-Testovací scénáře popsané v předchozích sekcích ověřily základní funkčnost porovnávacího modulu na všech typech indexovaných služeb, včetně jeho dostupnosti skrze REST API. V případě testování webové služby STAG-Číselníky byla také ověřena kombinace změn URL a datového typu parametru operace. 
+Testovací scénáře popsané v předchozích sekcích ověřily základní funkčnost porovnávacího modulu na všech typech indexovaných služeb, včetně jeho dostupnosti skrze REST API. V případě testování webové služby STAG-Číselníky byla také ověřena kombinace změn URL a datového typu parametru operace. Jednotkové testy, které pokrývají většinu základní funkcionality jsou spouštěny v rámci Gitlab Pipeline popsané v úvodu této kapitoly a jejich případné selhání by zabránilo nasazení chybné verze.
 
 Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům, včetně exportovaných metadat pro jednotlivé verze služeb. Stejně tak jsou přiloženy konfigurace testů pro nástroj Postman.
 
