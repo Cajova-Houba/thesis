@@ -1165,7 +1165,7 @@ Změny v této skupině představují buď kombinace několika méně závažný
 
 Cílem mé práce bylo vytvořit rozšíření CRCE schopné automatické kontroly kompatibility indexovaných webových služeb. V předchozí kapitole byl představen algoritmus pro porovnání dvou webových služeb na základě jejich metadat a následného vyhodnocení výsledků. Tato kapitola popisuje způsob implementace algoritmu jako rozšiřujícího modulu pro systém CRCE.
 
-První část kapitoly, v návaznosti na zmíněnou modulární architekturu CRCE, rozebírá způsob jeho rozšíření a integraci nových modulů. V druhé části je pak uveden stručný popis implementačních detailů výše zmíněného modulu.
+První část kapitoly, v návaznosti na zmíněnou modulární architekturu CRCE, rozebírá způsob jeho rozšíření a integraci nových modulů. V druhé části je pak uveden stručný popis implementačních detailů výše zmíněného modulu, včetně procesu automatizovaného sestavení a nasazení celého CRCE.
 
 \section{Rozšíření CRCE}
 
@@ -1225,17 +1225,35 @@ Porovnávání vestavěných datových typů je řešeno obalovací třídou, je
 
 Obalové třídy nepokrývají všechny vestavěné typy, ale pouze jejich podmnožinu. Zejména se jedná o čísla (i s plovoucí desetinnou čárkou) a řetězce.
 
+\section{Sestavení a nasazení modulu}
+
+Jedním z hlavních bodů oborového projektu, který předcházel této diplomové práci bylo zprovoznění automatického sestavení a nasazení CRCE do vývojového prostředí. Toho jsem využil při vývoji porovnávacího modulu zejména k rychlému nasazení nových verzí, které pak bylo možné pohodlně otestovat. Sestavením CRCE na nezávislém stroji jsem zároveň ověřil, že mnou vytvořený kód netrpí chybami typu "funguje na mém stroji".
+
+Kód CRCE je udržován na univerzitním Gitlabu, který kromě podpory verzování nástrojem GIT umožňuje také kontinuální integraci a nasazení pomocí Gitlab Pipelines\footnote{https://docs.gitlab.com/ee/ci/pipelines/index.html}. Vstupem tohoto nástroje je deklarativní konfigurace jednotlivých kroků od překladu až po nasazení. Pipeline se automaticky spustí vždy při nahrání nového commitu do úložiště. Součástí nakonfigurované pipeline je také spuštění unit testů.
+
+Soubor \verb|.gitlab-ci| obsahující nastavení pipeline ve formátu YAML se nachází v kořenovém adresáři projektu a obsahuje definici kroků pro sestavení a následné nasazení do testovacího prostředí. Obrázek \ref{fig:pipeline-example} znázorňuje příklad zjednodušené pipeline, její plná verze je uvedena v přiloženém archivu obsahujícím zdrojový kód CRCE. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{pipeline-example}
+	\caption{Příklad konfigurace Gitlab pipeline}
+	\label{fig:pipeline-example}
+\end{figure}
 
 \chapter{Ověření funkčnosti}
 \label{sec:testing}
 
-Rozšíření do systému CRCE, jež bylo předmětem mé práce bylo testováno skrze jednotkové a integrační testy. Tato kapitola se postupně ve třech částech zabývá použitím modulu a ověřením jeho správné funkčnosti. V první části je rozebráno použití modulu od nahrání artefaktů do CRCE až po získání výsledků porovnání. Druhá část této kapitoly obsahuje popis integračních testů, včetně testovacích dat. Ve třetí části je uvedeno shrnutí provedených testů.
+Rozšíření do systému CRCE, jež bylo předmětem mé práce bylo testováno jednotkovými a integračními testy. Tato kapitola se postupně ve třech částech zabývá použitím modulu a ověřením jeho správné funkčnosti. V první části je rozebráno spuštění a použití modulu od nahrání artefaktů do CRCE až po získání výsledků porovnání. Druhá část této kapitoly obsahuje popis integračních testů, včetně testovacích dat. Na konci kapitoly jsou shrnuty provedené testy a jejich výsledky.
 
-\subsection{Spouštění modulu}
-todo
-Na rozdíl od indexerů zmíněných v kapitole \ref{sec:api-index} není modul pro počítání kompatibility přímo napojen na žádnou z fází životního cyklu komponenty v CRCE a je potřeba jej manuálně spouštět. V současné době je rozšíření zpřístupněno skrze REST API implementovaném v modulu \textit{crce-rest-v2}. Zde je skrze dependency injection zpřístupněná služba \textit{ApiCompatibilityCheckerService}, která na základě předaných vstupních parametrů provede porovnání a vrátí výsledek v podobě objektu \textit{Compatibility}. Ten je pak vrácen klientovi.
+\section{Spouštění modulu}
 
-Modul je dostupný na adrese \verb|/apicomp/compare|. Parametry volání jsou uvedeny v tabulce \ref{tab:rest-cmp-params}. Nepovinný parametr \textit{force}, jehož výchozí hodnota je \textit{false} byl přidán z důvodů nutnosti přepočítání výsledků v případě změny implementace. Pokud tedy dojde například k opravě chyby díky které jsou v databázi uložena špatná data, není nutné je ručně mazat, ale stačí porovnání spustit znovu s nastaveným příznakem \textit{force}.
+Na rozdíl od indexerů zmíněných v kapitole \ref{sec:api-index} není modul pro počítání kompatibility přímo napojen na žádnou z fází životního cyklu komponenty v CRCE a je potřeba jej manuálně spouštět. V současné době je rozšíření zpřístupněno skrze REST API implementovaném v modulu \textit{crce-rest-v2}. Zde je pomocí dependency injection zpřístupněná služba \textit{ApiCompatibilityCheckerService}, která na základě předaných vstupních parametrů provede porovnání a vrátí výsledek v podobě objektu \textit{Compatibility}. Ten je pak vrácen klientovi. Endpoint na němž je zpřístupněn porovnávací modul je dostupný na URI:
+\begin{figure}[h]
+\centering
+\verb|http://69.90.132.97:8080/rest/v2/apicomp/compare|
+\end{figure}
+
+Parametry volání jsou uvedeny v tabulce \ref{tab:rest-cmp-params}. Nepovinný parametr \textit{force}, jehož výchozí hodnota je \textit{false} byl přidán z důvodů nutnosti přepočítání výsledků v případě změny implementace. Pokud tedy dojde například k opravě chyby díky které jsou v databázi uložena špatná data, není nutné je ručně mazat, ale stačí porovnání spustit znovu s nastaveným příznakem \textit{force}. Příklady volání API a následně vrácených dat jsou v následující podkapitole.
 
 \begin{table}[h]
 	\centering
@@ -1255,18 +1273,18 @@ Modul je dostupný na adrese \verb|/apicomp/compare|. Parametry volání jsou uv
 	\label{tab:rest-cmp-params}
 \end{table}
 
-\section{Sestavení a nasazení modulu}
-
-Jedním z hlavních bodů oborového projektu, který předcházel této diplomové práci bylo zprovoznění automatického sestavení a nasazení CRCE do vývojového prostředí. Toho jsem využil při vývoji porovnávacího modulu zejména k rychlému nasazení nových verzí, které pak bylo možné pohodlně otestovat. Sestavením CRCE na nezávislém stroji jsem zároveň ověřil, že mnou vytvořený kód netrpí chybami typu "funguje na mém stroji".
-
-Kód CRCE je udržován na univerzitním Gitlabu, který kromě podpory verzování nástrojem GIT umožňuje také kontinuální integraci a nasazení pomocí Gitlab Pipelines\footnote{https://docs.gitlab.com/ee/ci/pipelines/index.html}. Vstupem tohoto nástroje je deklarativní konfigurace jednotlivých kroků od překladu až po nasazení. Pipeline se automaticky spustí vždy při nahrání nového commitu do úložiště. Součástí nakonfigurované pipeline je také spuštění unit testů.
-
 \section{Použití modulu}
 
-Aby bylo možné modul použít, je nejprve potřeba nahrát testovací data. Tato sekce popisuje proces nahrání dat do CRCE a následného volání porovnávací služby. Pro jednoduchost je nahrán pouze jeden artefakt obsahující implementaci REST služby a následně je porovnán sám se sebou.
+Aby bylo možné modul použít, je nejprve potřeba nahrát testovací data. Tato sekce popisuje proces nahrání artefaktu obsahujícího implementaci webové služby, do CRCE a jeho následného porovnání se sebou samým. Uživatelské rozhraní testovací instance systému CRCE je dostupné na adrese:
+
+\begin{figure}[h]
+	\centering
+	\verb|http://69.90.132.97:8080/crce-webui/|
+\end{figure}
 
 \paragraph{Nahrání artefaktu do CRCE}
-Testovací artefakt \textit{jersey-test-1.war} lze do CRCE nahrát skrze uživatelské rozhraní v záložce \textit{File/url} v menu \textit{Upload}, viz obrázek \ref{fig:crce-art-upload}. Po dokončení nahrání se v pravém horním rohu zobrazí zpráva oznamující úspěch.
+
+Uživatelské rozhraní pro nahrávání artefaktů je zpřístupněno pod položkou  \textit{File/url} menu \textit{Upload}. Zde je možné tlačítkem \textit{Browse files} vybrat artefakt (v tomto případě \textit{jersey-test-1.war})  a potvrdit nahrání, po jehož dokončení se v pravém horním rohu zobrazí zpráva oznamující úspěch, viz obrázek \ref{fig:crce-art-upload}.
 
 \begin{figure}[h]
 	\centering
@@ -1276,7 +1294,7 @@ Testovací artefakt \textit{jersey-test-1.war} lze do CRCE nahrát skrze uživat
 \end{figure}
 
 \paragraph{Nahrání artefaktu do Store}
-V tuto chvíli se nahraná komponenta nachází ve fázi \textit{Buffer}. Došlo tedy k sebrání metadat a indexaci artefaktu, nicméně pro porovnání je nutné provést operaci \textit{commit} a tím komponentu posunout do fáze \textit{Store}. To je lze udělat tlačítkem \textit{Push to Store} v záložce \textit{Plugins} pod menu \textit{Repository} tak je znázorněno na obrázku \ref{fig:crce-art-push-to-store}. Tato záložka mimo jiné obsahuje přehled všech komponent nacházejících se ve fázi \textit{Buffer} svého životního cyklu.
+V tuto chvíli se nahraná komponenta nachází ve fázi \textit{Buffer}. Došlo tedy k získání metadat a indexaci artefaktu, nicméně pro porovnání je nutné provést operaci \textit{commit} a tím komponentu posunout do fáze \textit{Store}. To lze udělat tlačítkem \textit{Push to Store} v záložce \textit{Plugins} pod menu \textit{Repository}, jak je znázorněno na obrázku \ref{fig:crce-art-push-to-store}. Tato záložka mimo jiné obsahuje přehled všech komponent nacházejících se ve fázi \textit{Buffer} svého životního cyklu.
 
 \begin{figure}[h]
 	\centering
@@ -1286,11 +1304,11 @@ V tuto chvíli se nahraná komponenta nachází ve fázi \textit{Buffer}. Došlo
 \end{figure}
 
 \paragraph{Získání ID artefaktu}
-K porovnání webových služeb je nutné znát ID \textit{Resource}, jež reprezentují nahrané artefakty. To je možné zjistit označením daného artefaktu v uživatelském rozhraní a následným kliknutím na tlačítko \textit{Detail}. Detail artefaktu nahraného v předchozím kroku je na obrázku \ref{fig:crce-art-detail}.
+K porovnání webových služeb je nutné znát ID \textit{Resource}, jež reprezentují nahrané artefakty. Označením daného artefaktu v tabulce se zobrazí menu s akcemi \textit{Detail} a \textit{Remove} pro daný artefakt. Kliknutím na tlačítko \textit{Detail} je zobrazena stránka s metadaty artefaktu, včetně seznamů \textit{Capability} a \textit{Requirement}. Detail artefaktu nahraného v předchozím kroku je na obrázku \ref{fig:crce-art-detail}.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=7cm]{crce-art-detail.png}
+	\includegraphics[width=10cm]{crce-art-detail.png}
 	\caption{Detail nahraného artefaktu}
 	\label{fig:crce-art-detail}
 \end{figure}
@@ -1300,7 +1318,7 @@ Identifikátor získaný v předchozím kroku lze použít k volání REST služ
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[height=4cm]{apicomp-call.png}
+	\includegraphics[width=\linewidth]{apicomp-call.png}
 	\caption{Volání porovnávací služby}
 	\label{fig:apicomp-call}
 \end{figure}
@@ -1310,7 +1328,7 @@ Výsledek vrácený porovnávací službou je uveden na obrázku \ref{fig:apicom
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[height=3cm]{apicomp-res.png}
+	\includegraphics[width=\linewidth]{apicomp-res.png}
 	\caption{Volání porovnávací služby}
 	\label{fig:apicomp-res}
 \end{figure}
