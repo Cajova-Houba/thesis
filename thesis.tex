@@ -286,7 +286,7 @@ Služby komunikující protokolem HTTP si obvykle předávají data v textové p
 
 \subsubsection{XML}
 
-Extensible markup language (dále jen XML) je značkovací jazyk určený k reprezentaci dokumentů ve formátu, který je čitelný pro stroj i člověka. První verze specifikace\footnote{https://www.w3.org/TR/REC-xml/} byla zveřejněna roku 1998 konsorciem W3C, které tento formát vyvíjí a spravuje.
+Extensible markup language (dále jen XML) je značkovací jazyk určený k reprezentaci dokumentů ve formátu, který je čitelný pro stroj i člověka. První verze specifikace\footnote{https://www.w3.org/TR/REC-xml/} byla zveřejněna roku 1998 konsorciem W3C, které tento formát vyvíjí a spravuje. MIME typ pro označení XML je \verb|application/xml|.
 
 Základními stavebními kameny jazyka XML jsou dokument, tagy, elementy a atributy. Dokument je definován jako datový objekt, jež se skládá z prologu označujícího verzi XML, jednoho kořenového elementu a případných dodatků. Všechny zmíněné části dokumentu musí odpovídat syntaxi jazyka XML. Element je logická jednotka dokumentu ohraničená tagy. Může být prázdný, nebo může vnořovat další elementy. Atributy jsou páry klíč-hodnota přiřazené elementu.
 
@@ -300,6 +300,18 @@ Příklad XML dokumentu je znázorněn na obrázku \ref{fig:xml-example}. Kořen
 \end{figure} 
 
 \subsubsection{JSON} 
+JavaScript object notation (dále jen JSON) je formát výměny dat vzešlý z části standardu jazyka JavaScript\footnote{https://www.ecma-international.org/publications/standards/Ecma-262-arch.htm} publikovaného v roce 1999. Samotný JSON byl poprvé standardizován specifikací ECMA-404\footnote{https://www.ecma-international.org/publications/standards/Ecma-404-arch.htm} v roce 2013. Stejně jako zmíněný XML, je i tento čitelný člověka a stroj.  MIME typ pro označení JSON je \verb|application/json|.
+
+JSON je založen na dvou základních strukturách, jež by měly být podporovány většinou dnešních moderních programovacích jazyků. Těmito strukturami jsou kolekce párů klíč-hodnota zvaná \textit{objekt} a seřazený seznam hodnot zvaný \textit{pole}. Objekt je ohraničen složenými závorkami \verb|{|, \verb|}| a obsahuje neseřazený výčet párů klíč-hodnota. Klíč je od hodnoty oddělen dvojtečkou a celé páry jsou oddělené čárkami. Pole je ohraničeno hranatými závorkami \verb|[|, \verb|]| a obsahuje seřazený výčet hodnot, jež jsou vzájemně odděleny čárkou.
+
+Obrázek \ref{fig:json-examle} obsahuje příklad JSON objektu analogickému ke XML dokumentu na obrázku \ref{fig:xml-example}. Kořenový objekt obsahuje klíč \verb|kviz|, ke kterému jako hodnota náleží pole otázek. Otázka je reprezentována objektem s hodnotami pro klíče \verb|seq|, \verb|question| a \verb|answer|.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{json-example.png}
+	\caption{Příklad JSON objektu}
+	\label{fig:json-examle}
+\end{figure}
 
 \section{Remote Procedure Call}
 \label{sec:rpc-ws}
