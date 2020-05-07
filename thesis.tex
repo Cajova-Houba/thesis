@@ -1163,13 +1163,30 @@ Změny v této skupině představují buď kombinace několika méně závažný
 
 \chapter{Implementace rozšíření}
 
-Cílem mé práce bylo vytvořit rozšíření CRCE schopné automatické kontroly kompatibility indexovaných webových služeb. Tato kapitola obsahuje stručný popis implementace rozšíření, jež realizuje algoritmus popsaný v předešlé kapitole. Druhá část kapitoly obsahuje popis integrace rozšíření do systému CRCE.
+Cílem mé práce bylo vytvořit rozšíření CRCE schopné automatické kontroly kompatibility indexovaných webových služeb. V předchozí kapitole byl představen algoritmus pro porovnání dvou webových služeb na základě jejich metadat a následného vyhodnocení výsledků. Tato kapitola popisuje způsob implementace algoritmu jako rozšiřujícího modulu pro systém CRCE.
 
-\section{Porovnávač}
+První část kapitoly, v návaznosti na zmíněnou modulární architekturu CRCE, rozebírá způsob jeho rozšíření a integraci nových modulů. V druhé části je pak uveden stručný popis implementačních detailů výše zmíněného modulu.
 
-V kapitole \ref{sec:crce} byla zmíněna modulární architektura CRCE. Moduly představující nadstavbou jádra jsou podřazené modulu \verb|crce-modules-reactor| a zde je umístěno i mnou vytvořené rozšíření. Samotný modul je tvořen maven artefaktem a je implementovaný jako OSGi bundle, což je standardní postup v rámci CRCE.
+\section{Rozšíření CRCE}
 
-Veřejná funkcionalita modulu je deklarovaná v rozhraní \textit{ApiCompatibilityCheckerService}, jehož implementace je zpřístupněná formou OSGi služby (anotace \textit{Component}). V této jsou obsaženy všechny porovnávače webových služeb a implementace sama je schopná vybrat správný porovnávač pro zadanou dvojici \textit{Resource}.
+V kapitole \ref{sec:crce} byla zmíněna modulární architektura CRCE, jehož jednotlivé moduly jsou tvořeny OSGi bundly v podobě maven artefaktů. Základní funkcionalita CRCE je rozprostřena mezi několik modulů tvořící jádro. Ostatní moduly představující nadstavbou jádra jsou podřazené modulu \verb|crce-modules-reactor| a zde je umístěno i mnou vytvořené rozšíření.
+
+\subsection{Integrace modulu}
+
+Modul ke své správné funkčnosti vyžaduje několik dalších komponent. Tato závislost je znázorněna na obrázku \ref{fig:apicomp-crce-interaction}, porovnávací modul je zde zeleně označený. Konkrétně se jedná o moduly \textit{crce-core}, který sdružuje všechny komponenty jádra (takže není nutné definovat závislosti jednotlivě) a \textit{crce-compatibility-dao-api}, který obsahuje rozhraní pro přístup k datovému úložišti objektů \textit{Compatibility}. 
+
+Výsledky porovnání webových služeb jsou ukládány do perzistentního úložiště a není tedy nutné znovu počítat rozdíly pro již porovnané dvojice. Ukládání těchto dat obstarává modul \textit{crce-compatibility-dao-mongodb}, jež implementuje výše  zmíněné rozhraní. V rámci mé práce jsem tyto moduly rozšířil o funkcionalitu pro získání objektu \textit{Compatibility} podle zadané dvojice \textit{Resource} a mazání existujících objektů \textit{Compatibility}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=10cm]{module-integration}
+	\caption{Interakce rozšíření se zbytkem CRCE}
+	\label{fig:apicomp-crce-interaction}
+\end{figure}
+
+\section{Porovnávací rozšíření}
+
+Vnitřně je struktura modulu rozdělena na několik částí. Těmi nejdůležitějšími jsou část implementační nacházející se v balíku \verb|impl|, část pro reprezentaci výsledků v balíku \verb|result| a veřejné rozhraní porovnávací služby v \textit{ApiCompatibilityCheckerService}. Implementace tohoto rozhraní je zpřístupněná formou OSGi služby (anotace \textit{Component}), v níž jsou obsaženy všechny porovnávače jednotlivých typů webových služeb a implementace sama je schopná vybrat správný porovnávač pro zadanou dvojici \textit{Resource}.
 
 \subsection{Struktura tříd porovnávačů}
 
@@ -1208,21 +1225,14 @@ Porovnávání vestavěných datových typů je řešeno obalovací třídou, je
 
 Obalové třídy nepokrývají všechny vestavěné typy, ale pouze jejich podmnožinu. Zejména se jedná o čísla (i s plovoucí desetinnou čárkou) a řetězce.
 
-\section{Integrace modulu}
 
-Modul ke své správné funkčnosti vyžaduje několik dalších komponent, tato závislost je znázorněna na obrázku \ref{fig:apicomp-crce-interaction}. Konkrétně se jedná o moduly \textit{crce-core}, který sdružuje všechny komponenty jádra (takže není nutné definovat závislosti jednotlivě) a \textit{crce-compatibility-dao-api}, který obsahuje rozhraní pro přístup k datovému úložišti objektů \textit{Compatibility}. 
+\chapter{Ověření funkčnosti}
+\label{sec:testing}
 
-Výsledky porovnání webových služeb jsou ukládány do perzistentního úložiště a není tedy nutné znovu počítat rozdíly pro již porovnané dvojice. Ukládání těchto dat obstarává modul \textit{crce-compatibility-dao-mongodb}, jež implementuje výše  zmíněné rozhraní. V rámci mé práce jsem tyto moduly rozšířil o funkcionalitu pro získání objektu \textit{Compatibility} podle zadané dvojice \textit{Resource} a mazání existujících objektů \textit{Compatibility}.
+Rozšíření do systému CRCE, jež bylo předmětem mé práce bylo testováno skrze jednotkové a integrační testy. Tato kapitola se postupně ve třech částech zabývá použitím modulu a ověřením jeho správné funkčnosti. V první části je rozebráno použití modulu od nahrání artefaktů do CRCE až po získání výsledků porovnání. Druhá část této kapitoly obsahuje popis integračních testů, včetně testovacích dat. Ve třetí části je uvedeno shrnutí provedených testů.
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=10cm]{module-integration}
-	\caption{Interakce rozšíření se zbytkem CRCE}
-	\label{fig:apicomp-crce-interaction}
-\end{figure}
-
-\subsection{REST API}
-
+\subsection{Spouštění modulu}
+todo
 Na rozdíl od indexerů zmíněných v kapitole \ref{sec:api-index} není modul pro počítání kompatibility přímo napojen na žádnou z fází životního cyklu komponenty v CRCE a je potřeba jej manuálně spouštět. V současné době je rozšíření zpřístupněno skrze REST API implementovaném v modulu \textit{crce-rest-v2}. Zde je skrze dependency injection zpřístupněná služba \textit{ApiCompatibilityCheckerService}, která na základě předaných vstupních parametrů provede porovnání a vrátí výsledek v podobě objektu \textit{Compatibility}. Ten je pak vrácen klientovi.
 
 Modul je dostupný na adrese \verb|/apicomp/compare|. Parametry volání jsou uvedeny v tabulce \ref{tab:rest-cmp-params}. Nepovinný parametr \textit{force}, jehož výchozí hodnota je \textit{false} byl přidán z důvodů nutnosti přepočítání výsledků v případě změny implementace. Pokud tedy dojde například k opravě chyby díky které jsou v databázi uložena špatná data, není nutné je ručně mazat, ale stačí porovnání spustit znovu s nastaveným příznakem \textit{force}.
@@ -1244,11 +1254,6 @@ Modul je dostupný na adrese \verb|/apicomp/compare|. Parametry volání jsou uv
 	\caption{Parametry volání endpointu pro porovnání služeb}
 	\label{tab:rest-cmp-params}
 \end{table}
-
-\chapter{Ověření funkčnosti}
-\label{sec:testing}
-
-Rozšíření do systému CRCE, jež bylo předmětem mé práce bylo testováno skrze jednotkové a integrační testy. Tato kapitola se postupně ve třech částech zabývá použitím modulu a ověřením jeho správné funkčnosti. V první části je rozebráno použití modulu od nahrání artefaktů do CRCE až po získání výsledků porovnání. Druhá část této kapitoly obsahuje popis integračních testů, včetně testovacích dat. Ve třetí části je uvedeno shrnutí provedených testů.
 
 \section{Sestavení a nasazení modulu}
 
