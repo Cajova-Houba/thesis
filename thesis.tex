@@ -192,6 +192,8 @@ Tato definice netrpí výše zmíněnými nedostatky a zahrnuje webové služby 
 	\item \textbf{API}: Rozhraní webové služby.
 \end{itemize}
 
+Ve své práci jsem se zabýval dvěmi velkými skupinami webových služeb rozdělených podle přístupu k jejich architektuře. Těmi jsou RPC\footnote{Remote Procedure Call}-orientované služby a RESTové služby. Oba přístupy včetně technologií použitých k jejich realizaci jsou rozvedené v následujících sekcích.
+
 \subsection{Použití webových služeb}
 
 Samotný pojem služba z technického pohledu typicky označuje funkcionalitu, jež vykonává nějakou podnikovou operaci, zajišťuje přístup k souborům, nebo obstarává generickou funkcionalitu jako například přihlášení do systému. Webové služby umožňují tyto zpřístupnit různorodým klientům jako jsou například webový prohlížeč, nebo mobilní aplikace, nezávisle na technologiích použitých k jejich realizaci.
@@ -280,7 +282,24 @@ Implementace obsluhy metod sice záleží na konkrétním poskytovateli, nicmén
 
 \subsection{Formáty pro přenos dat}
 
-Krátce uvést XML a JSON v návaznosti na definici webové služby
+Služby komunikující protokolem HTTP si obvykle předávají data v textové podobě. Způsobů, jak taková data formátovat existuje mnoho, nicméně během mé práce jsem přišel do styku převážně s formáty XML a JSON, proto se zde zaměřím převážně na ně. Zmíněné syntaxe nemusí být použity pouze k serializaci předávaných dat, ale také k popisu rozhraní samotné služby, jak bude ukázáno v části \ref{sec:api-description-formats}.
+
+\subsubsection{XML}
+
+Extensible markup language (dále jen XML) je značkovací jazyk určený k reprezentaci dokumentů ve formátu, který je čitelný pro stroj i člověka. První verze specifikace\footnote{https://www.w3.org/TR/REC-xml/} byla zveřejněna roku 1998 konsorciem W3C, které tento formát vyvíjí a spravuje.
+
+Základními stavebními kameny jazyka XML jsou dokument, tagy, elementy a atributy. Dokument je definován jako datový objekt, jež se skládá z prologu označujícího verzi XML, jednoho kořenového elementu a případných dodatků. Všechny zmíněné části dokumentu musí odpovídat syntaxi jazyka XML. Element je logická jednotka dokumentu ohraničená tagy. Může být prázdný, nebo může vnořovat další elementy. Atributy jsou páry klíč-hodnota přiřazené elementu.
+
+Příklad XML dokumentu je znázorněn na obrázku \ref{fig:xml-example}. Kořenovým elementem je v tomto případě \verb|quiz|, jež je ohraničený tagem \verb|<quiz>|. Jeho vnořeným elementem je \verb|qanda| obsahující atribut \verb|seq| s hodnotou \verb|1|.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=12.5cm]{xml-example.png}
+	\caption{Příklad XML dokumentu}
+	\label{fig:xml-example}
+\end{figure} 
+
+\subsubsection{JSON} 
 
 \section{Remote Procedure Call}
 \label{sec:rpc-ws}
@@ -403,6 +422,7 @@ Může tedy nastat případ kdy poskytovatel v zájmu udržení zpětné kompati
 
 
 \section{Formální popis rozhraní webových služeb}
+\label{sec:api-description-formats}
 
 TODO: citace, formulace
 Aby bylo možné se službami komunikovat, je nutné znát jimi poskytované operace a akceptovaný formát dat. Tyto informace jsou zahrnuté v rozhraní služby, jež může být popsáno různými způsoby. Typy služeb popsané v části \ref{sec:rpc-ws} takové rozhraní poskytují ve strojově čitelné podobě, nicméně v případě REST služeb (část \ref{sec:rest}) je situace složitější, protože univerzální standardizovaná podoba rozhraní neexistuje a to pak může být definováno například Word dokumentem, nebo emailovou konverzací.
