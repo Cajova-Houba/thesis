@@ -739,6 +739,7 @@ Z WSDL popisu je vytvořena reprezentace služeb, jež jsou popsány xml element
 Logika parsování WSDL souborů (verze 1.1. i 2.0) obsahovala chybu ve čtení adresy endpointu. Ta byla očekávána v atributu \verb|action| elementu \verb|<wsdl:operation>|, který ale není uveden ve specifikaci WSDL 1.1 \cite{wsdl1} ani WSDL 2.0 \cite{wsdl2}. Tuto chybu jsem v rámci mé práce opravil.
 
 \subsection{Limity indexování}
+\label{sec:index-limits}
 
 Současný proces indexování webových služeb naráží na dva známé problémy týkající se datových typů. Jedná se o indexování rekurzivních datových typů a absenci samotných definic typů.
 
@@ -757,6 +758,7 @@ Z těchto důvodů je do metadat uložen pouze název datového typu což snižu
 % - oba dva moduly používají jiné identifikátory pro stejné elementy (endpoint, parametr, ...) proto nelze vzájemně porovnat REST indexovaný prvním a druhým modulem
 
 \chapter{Porovnávání webových služeb}
+\label{sec:alg}
 
 Cílem této práce je rozšířit systém CRCE o funkcionalitu pro porovnání webových služeb. Tato kapitola detailně rozebírá porovnávací algoritmus společně s daty, nad kterými je možné porovnávač použít. Zároveň je zde popsán způsob vyhodnocení výsledků porovnání a formát uložení takto získaných dat.
 
@@ -1162,6 +1164,7 @@ Změny v této skupině představují buď kombinace několika méně závažný
 
 
 \chapter{Implementace rozšíření}
+\label{sec:impl}
 
 Cílem mé práce bylo vytvořit rozšíření CRCE schopné automatické kontroly kompatibility indexovaných webových služeb. V předchozí kapitole byl představen algoritmus pro porovnání dvou webových služeb na základě jejich metadat a následného vyhodnocení výsledků. Tato kapitola popisuje způsob implementace algoritmu jako rozšiřujícího modulu pro systém CRCE.
 
@@ -1274,6 +1277,7 @@ Parametry volání jsou uvedeny v tabulce \ref{tab:rest-cmp-params}. Nepovinný 
 \end{table}
 
 \section{Použití modulu}
+\label{sec:module-how-to}
 
 Aby bylo možné modul použít, je nejprve potřeba nahrát testovací data. Tato sekce popisuje proces nahrání artefaktu obsahujícího implementaci webové služby, do CRCE a jeho následného porovnání se sebou samým. Uživatelské rozhraní testovací instance systému CRCE je dostupné na adrese:
 
@@ -1337,9 +1341,11 @@ Pokud by během porovnání došlo k nastavení příznaku MOV, byl by tento vr�
 
 \section{Testování}
 
-K ověření funkčnosti porovnávacího modulu je připraveno několik testovacích scénářů. Každý z nich je zaměřen na jeden typ indexované služby a všechny s CRCE komunikují skrze REST API, tak jak bylo popsáno v předchozí sekci.
+Funkčnost modulu byla ověřena pomocí několika testovacích scénářů, jejichž účelem je otestování změn v rozhraní webových služeb vedoucích na kompatibilní i nekompatibilní rozdíly. Každý ze scénářů je zaměřen na jeden typ indexované služby a všechny s CRCE komunikují skrze REST API, tak jak bylo popsáno v předchozí sekci. Vstupní data pro tyto scénáře byla získána z kombinace reálných i synteticky vytvořených služeb. Premisou pro úspěch testů je správná funkčnost indexovacích modulů popsaných v části \ref{sec:api-index} kapitoly \ref{sec:crce}. Ta byla ověřena analýzou implementace společně s manuálním testováním, během kterého byla objevena a opravena chyba ve zpracování WSDL dokumentu, rovněž popsaná v sekci \ref{sec:api-index}.
 
-K testování jsem použil nástroj Postman, konkrétně jeho Collection Runner, který umožňuje vybrat šablonu volání REST API a soubor testovacích dat ve formátu csv. jehož každá řádka představuje jeden test v podobě identifikátorů porovnávané dvojice služeb a očekávaného výsledku. Nástroj Collection Runner tento soubor čte po řádcích a data z každé řádky aplikuje na zmíněnou šablonu. Tím lze snadno zautomatizovat testování volání webové služby s mnoha kombinacemi vstupních dat. Příklad těchto datového souboru je uveden na obrázku \ref{fig:test-data-csv}. 
+Princip každého z testovacích scénářů spočívá ve vytvoření několika verzí jedné služby (případně jejího popisu) a následném vzájemném porovnání. Tím lze otestovat jak vybrané změny tak i závislost výsledku na pořadí porovnávaných služeb. Jednotlivé scénáře včetně výsledků jsou detailně popsány v následujících sekcích.
+
+K testování jsem použil nástroj Postman, konkrétně jeho Collection Runner, který umožňuje vybrat šablonu volání REST API a soubor testovacích dat ve formátu CSV. jehož každá řádka představuje jeden test v podobě identifikátorů porovnávané dvojice služeb a očekávaného výsledku. Nástroj Collection Runner tento soubor čte po řádcích a data z každé řádky aplikuje na zmíněnou šablonu. Tím lze snadno zautomatizovat testování volání webové služby s mnoha kombinacemi vstupních dat. Příklad těchto datového souboru je uveden na obrázku \ref{fig:test-data-csv}. 
 
 \begin{figure}[h]
 	\centering
@@ -1348,7 +1354,7 @@ K testování jsem použil nástroj Postman, konkrétně jeho Collection Runner,
 	\label{fig:test-data-csv}
 \end{figure}
 
-Test, zda výsledek volání odpovídá datům uvedeným v csv souboru provádí skript napsaný v jazyce Javascript, jež je součástí zmíněné šablony volání. Příklad výsledků testů vrácených nástrojem Collection Runner je zobrazen na obrázku \ref{fig:test-results}.
+Test, zda výsledek volání odpovídá datům uvedeným v CSV souboru provádí skript napsaný v jazyce JavaScript, jež je součástí zmíněné šablony volání (k dispozici na přiloženém CD). Příklad výsledků testů vrácených nástrojem Collection Runner je zobrazen na obrázku \ref{fig:test-results}.
 
 \begin{figure}[h]
 	\centering
@@ -1358,13 +1364,13 @@ Test, zda výsledek volání odpovídá datům uvedeným v csv souboru provádí
 \end{figure}
 
 
-Princip každého z testovacích scénářů spočívá ve vytvoření několika verzí jedné služby a následném vzájemném porovnání. Tím lze otestovat jak vybrané změny tak i závislost výsledku na pořadí porovnávaných služeb. Jednotlivé scénáře včetně výsledků jsou detailně popsány v následujících sekcích.
-
 \subsection{REST služba založená na Jersey}
 
-V tomto scénáři jsou testovány dvě verze REST služby. První z nich (\textit{v1}) obsahuje základní implementaci, druhá verze (\textit{v2}) pak mění datový typ parametru u jednoho z endpointů z \textit{Long} na \textit{Number}.
+V tomto scénáři jsou testovány dvě verze REST služby implementované frameworkem Jersey\footnote{https://eclipse-ee4j.github.io/jersey/}. Metadata služby byla získána nahráním její implementace do CRCE způsobem popsaným v sekci \ref{sec:module-how-to}. Popis rozhraní obou verzí služby se nachází v příloze tohoto textu.  
 
-Účelem tohoto testovacího scénáře je kromě ověření funkčnosti modulu pro REST služby také ověření správné aplikace principu kontravariance v případě změn datových typů parametrů endpointů. Změna datového typu z \textit{Long} na \textit{Number} je změnou \textit{GEN}. Po použití kotrnavariance by změna na úrovni endpointu měla být \textit{SPE} a protože je to jediný rozdíl mezi službami, měla by tato změna označovat také celkový rozdíl.
+Rozdíl mezi jednotlivými verzemi je pouze v datovém typu parametru \textit{longParam} endpointu \textit{myresource/special/pet/}. V první verzi je tento parametr typován na \textit{java.lang.Number}, v druhé pak na \textit{java.lang.Long}.
+
+Účelem tohoto testovacího scénáře je kromě ověření funkčnosti modulu pro indexaci REST služeb z bytecode také ověření správné aplikace principu kontravariance v případě změn datových typů parametrů endpointů. Změna datového typu z \textit{Long} na \textit{Number} je změnou \textit{GEN}. Po použití kontravariance by změna na úrovni endpointu měla být \textit{SPE} a protože je to jediný rozdíl mezi službami, měla by tato změna označovat také celkový rozdíl.
 
 Výsledky vrácené voláním porovnávací služby jsou zobrazeny v tabulce \ref{tab:jersey-cmp-res}. Výsledky odpovídají očekávání a princip kontravariance v případě změn \textit{GEN} a \textit{SPE} u datového typu parametru endpointu služby je tedy aplikován správně.
 
@@ -1386,7 +1392,7 @@ Výsledky vrácené voláním porovnávací služby jsou zobrazeny v tabulce \re
 	
 \subsection{Služba popsaná JSON-WSP}
 
-Testovací scénář je zaměřen na služby popsané formátem JSON-WSP. Data pro testování tvoří čtyři verze uměle vytvořeného rozhraní založeného na příkladu převzatém z Wikipedie\footnote{https://en.wikipedia.org/wiki/JSON-WSP}. Odlišnosti mezi jednotlivými verzemi, označenými \textit{v1} až \textit{v4}, jsou rozepsány v tabulce \ref{tab:json-wsp-diffs}.
+Testovací scénář je zaměřen na služby popsané formátem JSON-WSP. Vstupní metadata byla získána indexováním čtyř verzí popisu uměle vytvořeného rozhraní založeného na příkladu převzatém z Wikipedie\footnote{https://en.wikipedia.org/wiki/JSON-WSP}. Odlišnosti mezi jednotlivými verzemi, označenými \textit{v1} až \textit{v4}, jsou rozepsány v tabulce \ref{tab:json-wsp-diffs}. Všechny verze popisů rozhraní služby jsou umístěny v příloze tohoto textu.
 
 \begin{table}[h]
 	\centering
@@ -1435,7 +1441,7 @@ Tabulka \ref{tab:jsonwsp-cmp-res} obsahuje výsledky vrácené porovnávací slu
 
 \subsection{Služba FuelEconomy}
 
-Tento scénář je zaměřen na porovnání REST služeb popsaných formátem WADL. Data pro testování tvoří popis služby Fuel Economy\footnote{https://www.fueleconomy.gov/ws/rest/application.wadl} a z něj vycházející tři verze. Popis verzí včetně změn je uveden v tabulce \ref{tab:wadl-diffs}.
+Tento scénář je zaměřen na porovnání REST služeb, jejichž rozhraní je popsáno WADL dokumentem. Metadata, jež jsou vstupem tohoto testu, byla získána indexováním popisu rozhraní služby Fuel Economy\footnote{https://www.fueleconomy.gov/ws/rest/application.wadl} a z něj vycházejících tří modifikovaných verzí. Popis změn jednotlivých verzí oproti verzi \textit{v1} je uveden v tabulce \ref{tab:wadl-diffs}. Všechny verze WADL dokumentu jsou přiloženy k tomuto textu.
 
 \begin{table}[h]
 	\centering
@@ -1483,7 +1489,7 @@ Tabulka \ref{tab:wadl-cmp-res} obsahuje výsledky vzájemného porovnání jedno
 
 \subsection{Služba STAG-Číselníky}
 
-Testovací scénář je zaměřen na SOAP služby popsané formátem WSDL. Základem dat pro testování je popis služby STAG-Číselníky\footnote{https://stag-ws.zcu.cz/ws/services/soap/ciselniky?wsdl} který je rozšířen o operaci \textit{testOperation}. Z této základní podoby jsou vytvořeny další čtyři verze. Celkem je tedy porovnáno pět verzí, jejichž rozdíly jsou popsané v tabulce \ref{tab:wsdl-diffs}.
+Testovací scénář je zaměřen na SOAP služby popsané dokumentem ve formátu WSDL. Vstupní metadata byla získána indexováním popisu rozhraní služby STAG-Číselníky\footnote{https://stag-ws.zcu.cz/ws/services/soap/ciselniky?wsdl} a z něj vycházejících čtyř modifikovaných verzí. Celkem je tedy porovnáno pět verzí, jejichž rozdíly jsou popsané v tabulce \ref{tab:wsdl-diffs}. Všechny verze WSDL dokumentu popisující rozhraní této služby se nacházejí v příloze textu.
 
 \begin{table}[h]
 	\centering
@@ -1507,7 +1513,7 @@ Testovací scénář je zaměřen na SOAP služby popsané formátem WSDL. Zákl
 	\label{tab:wsdl-diffs}
 \end{table}
 
-Základní verze \textit{v1} definuje operaci \textit{testOperation}, která má nastavený parametr typovaný na \textit{xs:int}. Porovnání verze \textit{v1} s verzemi \textit{v2} a \textit{v5} je využito k testování principu kontravariance společně se změnami v URL. Verze \textit{v3} mění definici typu \textit{insertPracoviste}. Tato změna by neměla porovnání nijak ovlivnit, protože detaily vlastních datových typů nejsou indexovány. Verze \textit{v4} mění název \textit{service}, což by mělo být vyhodnoceno jako mutace.
+Základní verze \textit{v1} byla rozšířena o operaci \textit{testOperation}, která má nastavený parametr typovaný na \textit{xs:int}. Porovnání verze \textit{v1} s verzemi \textit{v2} a \textit{v5} je využito k testování principu kontravariance společně se změnami v URL. Verze \textit{v3} mění definici typu \textit{insertPracoviste}. Tato změna by neměla porovnání nijak ovlivnit, protože detaily vlastních datových typů nejsou indexovány. Verze \textit{v4} mění název \textit{service}, což by mělo být vyhodnoceno jako mutace.
 
 \begin{table}[h]
 	\centering
@@ -1535,7 +1541,11 @@ Výsledky vzájemných porovnání všech verzí služby obsažené v tabulce \r
 
 \section{Shrnutí testů}
 
-Testovací scénáře popsané v předchozích sekcích ověřily základní funkčnost porovnávacího modulu na všech typech indexovaných služeb, včetně jeho dostupnosti skrze REST API. V případě testování webové služby STAG-Číselníky byla také ověřena kombinace změn URL a datového typu parametru operace. Jednotkové testy, které pokrývají většinu základní funkcionality jsou spouštěny v rámci Gitlab Pipeline popsané v úvodu této kapitoly a jejich případné selhání by zabránilo nasazení chybné verze.
+Testovací scénáře popsané v předchozích sekcích úspěšně ověřily základní funkčnost porovnávacího modulu na všech typech indexovaných služeb, včetně jeho dostupnosti skrze REST API a tedy i úspěšné integrace do systému CRCE. 
+
+V případě testování webové služby STAG-Číselníky bylo ověřeno správné vyhodnocení kombinace změn URL a datového typu parametru operace, jehož výsledkem bylo nastavení příznaku MOV v případě bezpečné změny tak jak bylo popsáno v sekci \ref{subsec:mov}. Testy rovněž potvrdily limity indexování a následného porovnání vlastních datových typů. Jejich zdůvodnění je v sekcích \ref{sec:type-cmp} a \ref{sec:index-limits} předchozích kapitol. 
+
+Jednotkové testy určené k ověření funkčnosti elementárních prvků implementace (např. porovnání metadat endpointu nebo detekce změn v URL) jsou spouštěny v rámci Gitlab Pipeline popsané v kapitole \ref{sec:impl}. Jejich případné selhání by znamenalo zastavení celé pipeline a tím by bylo zabráněno nasazení chybné verze.
 
 Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům, včetně exportovaných metadat pro jednotlivé verze služeb. Stejně tak jsou přiloženy konfigurace testů pro nástroj Postman.
 
@@ -1559,6 +1569,7 @@ Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům
 \begin{longtable}{@{}p{3cm}@{}p{\dimexpr\textwidth-1cm\relax}@{}}
 	\nomenclature{API}{Application Programming Interface}
 	\nomenclature{CRCE}{Component Repository supporting Compatibility Evaluation}
+	\nomenclature{CSV}{Comma Separated Values}
 	\nomenclature{HATEOAS}{Hypertext As The Engine Of Application State}
 	\nomenclature{HTTP}{Hypertext Transfer Protocol}
 	\nomenclature{JAR}{Java Archive}
@@ -1637,5 +1648,46 @@ Tady bude WSDL
 \section*{Formát WADL}
 
 \section*{Formát WSDL}
+
+\chapter*{Příloha D - Popisy rozhraní testovaných služeb}
+\addcontentsline{toc}{chapter}{Příloha D - Popisy rozhraní testovaných služeb}
+
+\section*{REST služba založená na Jersey}
+
+\subsection*{Verze 1}
+
+\subsection*{Verze 2}
+
+\section*{Služba popsaná JSON-WSP}
+
+\subsection*{Verze 1}
+
+\subsection*{Verze 2}
+
+\subsection*{Verze 3}
+
+\subsection*{Verze 4}
+
+\section*{Popis služby FuelEconomy}
+
+\subsection*{Verze 1}
+
+\subsection*{Verze 2}
+
+\subsection*{Verze 3}
+
+\subsection*{Verze 4}
+
+\section*{Popis služby STAG-Číselníky}
+
+\subsection*{Verze 1}
+
+\subsection*{Verze 2}
+
+\subsection*{Verze 3}
+
+\subsection*{Verze 4}
+
+\subsection*{Verze 5}
 
 \end{document}
