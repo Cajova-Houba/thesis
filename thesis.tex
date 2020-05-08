@@ -159,11 +159,11 @@ Pojem 'webová služba' může mít odlišné významy\cite{w3cWsDesignIssues} a
 
 % ta není dobrá protože ... 
 
-Tato definice je pro účely mé práce problematická z několika důvodů. Prvním z nich je omezení formátu popisu služby pouze na WSDL. Strojově čitelný popis rozhraní sice snižuje náročnost vytvoření klienta pro danou službu, nicméně WSDL není jediným takovým formátem a netřeba tedy z definice vyloučit služby používající jiné formáty jako například WADL, nebo JSON-WSP, jež přímo souvisí s mou prací. Závislost na jednom konkrétním formátu také nemusí být výhodná z hlediska budoucího vývoje, protože nezohledňuje možnost příchodu jiného formátu, nebo změny přístupu k webovým službám obecně. WSDL do verze 1.1 například neumožňovalo popis REST služeb, ty byly zohledněny až ve verzi 2.0\cite{restWsdl}.  
+Tato definice je pro účely mé práce problematická z několika důvodů. Prvním z nich je omezení formátu popisu služby pouze na WSDL. Strojově čitelný popis rozhraní sice snižuje náročnost vytvoření klienta pro danou službu, nicméně WSDL není jediným takovým formátem a netřeba tedy z definice vyloučit služby používající jiné formáty jako například WADL nebo JSON-WSP, jež přímo souvisí s mou prací. Závislost na jednom konkrétním formátu také nemusí být výhodná z hlediska budoucího vývoje, protože nezohledňuje možnost příchodu jiného formátu, nebo změny přístupu k webovým službám obecně. WSDL do verze 1.1 například neumožňovalo popis REST služeb, ty byly zohledněny až ve verzi 2.0\cite{restWsdl}.  
 
 Definice dále svazuje implementaci webové služby s použitím konkrétního protokolu pro výměnu dat, v tomto případě SOAP, čímž opět nezahrnuje služby používající jakékoliv jiné protokoly. I zde platí nevýhoda takové vazby v kontextu budoucího vývoje, jež byla zmíněna v předchozím odstavci. Webová služba by například přestala být webovou službou, pokud by došlo k změně protokolu pro výměnu dat ze SOAP na JSON-RPC, což není žádoucí.
 
-Posledním důvodem je vymáhání použití XML jako jediného formátu pro přenos dat i přes rostoucí popularitu jiných formátů, jako například JSON, nebo v poslední době YAML. Není také výjimkou, že webové služby podporují více formátů pro serializaci dat a specifikace jednoho konkrétního formátu v definici tedy není nutná. 
+Posledním důvodem je vymáhání použití XML jako jediného formátu pro přenos dat i přes rostoucí popularitu jiných formátů, jako například JSON nebo v poslední době YAML. Není také výjimkou, že webové služby podporují více formátů pro serializaci dat a specifikace jednoho konkrétního formátu v definici tedy není nutná. 
 
 % a proto je webová služba zadefinována takto
 Z uvedených důvodů je potřeba zavést vhodnější definici s volnějšími kritérii tak, aby webové služby co možná nejméně omezovala. Definici, která služby popisuje primárně skrze užití komunikačního protokolu HTTP ve své knize nabízí R. Daigneau \cite{fromObjectsToWs}: 
@@ -173,7 +173,7 @@ Z uvedených důvodů je potřeba zavést vhodnější definici s volnějšími 
 	Webové služby poskytují prostředky pro integraci různorodých systémů a zpřístupňují znovupoužitelné business funkce skrze HTTP. HTTP je použito buď jako jednoduchý komunikační protokol, skrze který jsou přenášena data (např. SOAP/WSDL služby), nebo jako kompletní aplikační protokol, jež definuje sémantiku chování služby (např. RESTful služby).
 \end{quote}
 
-Tato definice netrpí výše zmíněnými nedostatky a zahrnuje webové služby se kterými jsem pracoval. Proto jsem se rozhodl ji využít pro účely mé práce a nebude-li určeno jinak, pojem 'webová služba' v tomto textu odpovídá zmíněné definici. S webovými službami se váže několik dalších pojmů, které jsou v průběhu textu užívány, a pro úplnost jsou zde taktéž definovány:
+Tato definice netrpí výše zmíněnými nedostatky a zahrnuje webové služby jimiž se tato práce zabývá. Proto jsem se rozhodl ji využít pro účely mé práce a nebude-li určeno jinak, pojem 'webová služba' v tomto textu odpovídá zmíněné definici. S webovými službami se váže několik dalších pojmů, které jsou v průběhu textu užívány, a pro úplnost jsou zde taktéž definovány:
 
 % definovat další pojmy jako
 % - pokytovatel služby
@@ -186,29 +186,29 @@ Tato definice netrpí výše zmíněnými nedostatky a zahrnuje webové služby 
 \begin{itemize}
 	\item \textbf{Poskytovatel služby}: server na kterém je služba dostupná, případě organizace, která ji spravuje,
 	\item \textbf{Konzument služby}: klient využívající službu, typicky se jedná o aplikaci,
-	\item \textbf{Endpoint}: Jedna konkrétní operace služby, případě URI na které je dostupný nějaký zdroj, nebo celá služba,
+	\item \textbf{Endpoint}: Jedna konkrétní operace služby, případě URI na které je dostupný nějaký zdroj nebo celá služba,
 	\item \textbf{Operace}: Operace webové služby, v tomto textu používáno ve stejném významu jako endpoint,
-	\item \textbf{Service}: element \verb|service| v popisu WSDL, při překladu do češtiny (služba) by mohl pojem kolidovat s pojmem 'webová služba', proto je pro element WSDL označující část SOAP služby ponechán anglický tvar service,
+	\item \textbf{Service}: element \verb|service| v popisu WSDL, při překladu do češtiny (služba) by mohl pojem kolidovat s pojmem 'webová služba', proto je pro element WSDL označující část služby ponechán anglický tvar service,
 	\item \textbf{API}: Rozhraní webové služby.
 \end{itemize}
 
-Ve své práci jsem se zabýval dvěmi velkými skupinami webových služeb rozdělených podle přístupu k jejich architektuře. Těmi jsou RPC\footnote{Remote Procedure Call}-orientované služby a RESTové služby. Oba přístupy včetně technologií použitých k jejich realizaci jsou rozvedené v následujících sekcích.
+Ve své práci jsem se zabýval dvěma velkými skupinami webových služeb rozdělených podle přístupu k jejich architektuře. Těmi jsou RPC\footnote{Remote Procedure Call}-orientované služby a RESTové služby. Oba přístupy včetně technologií použitých k jejich realizaci jsou rozvedené v následujících sekcích.
 
 \subsection{Použití webových služeb}
 
-Samotný pojem služba z technického pohledu typicky označuje funkcionalitu, jež vykonává nějakou podnikovou operaci, zajišťuje přístup k souborům, nebo obstarává generickou funkcionalitu jako například přihlášení do systému. Webové služby umožňují tyto zpřístupnit různorodým klientům jako jsou například webový prohlížeč, nebo mobilní aplikace, nezávisle na technologiích použitých k jejich realizaci.
+Samotný pojem služba z technického pohledu typicky označuje funkcionalitu, jež vykonává nějakou podnikovou operaci, zajišťuje přístup k souborům, nebo obstarává generickou funkcionalitu jako například přihlášení do systému. Webové služby umožňují tyto zpřístupnit různorodým klientům jako jsou například webový prohlížeč nebo mobilní aplikace, nezávisle na technologiích použitých k jejich realizaci.
 
 % \cite{fromObjectsToWs}
 % ws jsou jednoduché na použití, ke komunikaci stačí pouze HTTP, JSON/XML pro výměnu dat a znalost protokolu
 % to nutně neplatilo u předchůdců, například Shared Objects
 % díky tomu jsou služby snadno propojitelné a lze je skládat do větších celků za účelem realizace komplexních operací (funkcionalit)
-Ve srovnání s alternativami jako například distribuované objekty jsou webové služby snazší na použití, zejména kvůli jednoduché komunikaci skrze protokol HTTP a standardizované serializaci dat do formátů jako XML, nebo JSON. Použitím jednotného komunikačního kanálu (HTTP) je také docíleno oddělení implementace klienta od služby a tím i větší nezávislosti mezi nimi. Díky tomu jsou webové služby snadno propojitelné a lze je tak skládat do větších celků za účelem realizace komplexních procesů\cite{fromObjectsToWs}.
+Ve srovnání s alternativami jako například distribuované objekty jsou webové služby snazší na použití, zejména kvůli jednoduché komunikaci skrze protokol HTTP a standardizované serializaci dat do formátů jako XML nebo JSON. Použitím jednotného komunikačního kanálu (HTTP) je také docíleno oddělení implementace klienta od služby a tím i větší nezávislosti mezi nimi. Díky tomu jsou webové služby snadno propojitelné a lze je tak skládat do větších celků za účelem realizace komplexních procesů\cite{fromObjectsToWs}.
 
 % služby vytváří/nastolují vrstvu abstrakce mezi samotnou implementací služby a klientem
 % tím je docíleno volné vazby a jak služba tak klient se mohou nezávisle vyvíjet, dokud nedojde ke změnám narušujícím kompatibilitu (to by chtělo rozepsat víc)
 % tady lze zmínit např architekturu microservice
 % z toho by se mohlo dát navázat na problém změny implementace/resp. rozhraní a tím vzniklé nekompatibility mezi službou, kterou očekává klient a službou, kterou server poskytuje
-Architektura \textit{Microservices} této skutečnosti využívá a na aplikace nahlíží jako na systém volně propojených služeb, z nichž každá je nezávislá na ostatních a soustředí se na svou přidělenou úlohu. Tou může být například správa uživatelů, nebo analýza dat. Služby v této architektuře se také vyznačují vzájemně nezávislým vývojem \cite{microservices}, což může vést na problémy se vzájemnou kompatibilitou, pokud je například do nové verze služby zanesena změna, jež mutuje její rozhraní. Právě tímto tématem se v kontextu webových služeb zabývá má práce.
+Architektura \textit{Microservices} této skutečnosti využívá a na aplikace nahlíží jako na systém volně propojených služeb, z nichž každá je nezávislá na ostatních a soustředí se na svou přidělenou úlohu. Tou může být například správa uživatelů, nebo analýza dat. Služby v této architektuře se také vyznačují vzájemně nezávislým vývojem \cite{microservices}, což může vést na problémy se vzájemnou kompatibilitou, pokud je například do nové verze služby zanesena změna mutující její rozhraní. Právě tímto tématem se v kontextu webových služeb zabývá má práce.
 
 
 % taky by nebylo špatný popsat kdy dává použití WS smysl
@@ -217,26 +217,26 @@ Architektura \textit{Microservices} této skutečnosti využívá a na aplikace 
 \section{Techniky webových služeb}
 \label{sec:ws-tech}
 
-Tato podkapitola krátce představuje nejzákladnější techniky a protokoly určené k realizaci webových služeb.
+Tato podkapitola krátce představuje nejzákladnější techniky a protokoly určené k realizaci webových služeb. Z hlediska komunikace se jedná o protokol HTML a formáty XML a JSON sloužící k výměně dat a popisu rozhraní služeb.
 
 % zmínit:
 % zmínit RPC, SOAP
 %- popis použitých technologií: XML, SOAP, WSDL
 % někde zmínit, že se zde zaměřuji hlavně na dva druhy služeb:  RPC a REST 
 
-vzory:
-- RPC API
-- Message API
-- Resource API
+%vzory:
+%- RPC API
+%- Message API
+%- Resource API
 
-Faktory ke zvážení při návrhu API\cite{wsApiStyles}: Zapouzdření, Kontrakt služby, Autonomnost 
+%0Faktory ke zvážení při návrhu API\cite{wsApiStyles}: Zapouzdření, Kontrakt služby, Autonomnost 
 
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{ws-tech-stack.png}
-	\caption{Technologie zahrnuté ve webových službách}
-	\label{fig:ws-tech-stack}	
-\end{figure}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=\linewidth]{ws-tech-stack.png}
+%	\caption{Technologie zahrnuté ve webových službách}
+%	\label{fig:ws-tech-stack}	
+%\end{figure}
 
 \subsection{HTTP}
 
@@ -403,8 +403,7 @@ S reprezentacemi zdrojů je manipulováno HTTP voláním jejich identifikátorů
 
 \subsection{RESTful služba}
 
-TODO: Formulace
-Jedním z primárních účelů webových služeb založených na stylu REST je manipulace s XML reprezentacemi zdrojů, skrze jednotnou množinu bezestavových operací, jimiž typicky jsou  \textit{create}, \textit{retrieve}, \textit{update} a \textit{delete}\cite{w3cWsArch}. Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, jež se REST drží nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby, jež byl představen L. Richardsonem, se nazývá Richardson Maturity Model a ve svém online článku \cite{restfulMaturity} jej rozvedl M. Fowler. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
+Jedním z primárních účelů webových služeb založených na stylu REST je manipulace s XML reprezentacemi zdrojů pomocí jednotné množiny bezestavých operací, jimiž typicky jsou  \textit{create}, \textit{retrieve}, \textit{update} a \textit{delete}\cite{w3cWsArch}. Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, jež se REST drží nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby byl představen L. Richardsonem a nazývá se Richardson Maturity Model. M. Fowler jej pak vysvětlil ve svém online článku \cite{restfulMaturity}, který je hlavním zdrojem informací pro následující odstavce. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
 
 \begin{figure}[h]
 	\centering
