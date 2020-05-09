@@ -625,6 +625,12 @@ of values they compute.
 
 \subsection{Typový systém jazyka Java}
 
+\section{Typová kontrola}
+
+- jak to funguje
+- problémy při porovnání
+- kontravariance: F'(A) <: F(B) <=> B <: A
+
 \subsection{Subtyping}
 
 - binární relace definovaná nad typy
@@ -645,13 +651,19 @@ V případě primitivních typů subtyping označuje schopnost jednoho typu pojm
 
 \subsubsection{Záznamy}
 
-Relace subtypingu je pro záznamové datové typy $S = \{k_1:S_1 ... k_m:S_m\}$ a $T = \{l_1:T_1 ... l_n:T_n\}$ definována pomocí dvou pravidel: subtyping do šířky a subtyping do hloubky. Subtyping do šířky říká, že typ s více záznamy je subtyp typu s méně záznamy, musí tedy platit $n \leq m$. Pravidlo subtypingu do hloubky se zabývá typem jednotlivých položek a říká, že mezi položkami na stejné pozici musí platit relace subtypingu, tedy pro každé $i : S_i <: T_i$.
+Relace subtypingu je pro záznamové datové typy $S = \{k_1:S_1 ... k_m:S_m\}$ a $T = \{l_1:T_1 ... l_n:T_n\}$ je definována pomocí následujících třech kritérií:
+
+\begin{itemize}
+	\item \textbf{subtyping do šířky}: Delší záznam je sub-typ kratšího záznamu ($n \le m$),
+	\item \textbf{subtyping do hloubky}: Všechny položky na stejné pozici musí být v relaci subtypingu (pro každé $i : S_i <: T_i$),
+	\item \textbf{permutační subtyping}: Na pořadí položek nezáleží, pokud existuje $\{k_j:S_j | j \in 1..n \}$, které je permutací $\{l_i:T_i | i \in 1..n \}$.
+\end{itemize}
 
 Uvažujeme-li na příklad typy $S$ a $T$ definované jako:
 
 \begin{equation}
 \centering
-	S = \{a:int, b:boolean, c:char\}, 
+	S = \{a:int, b:boolean, c:char\}, \quad
 	T = \{a:long\}
 \end{equation}
 
@@ -663,25 +675,24 @@ Uvažujeme-li na příklad typy $S$ a $T$ definované jako:
  
 \begin{equation}
 	\centering
-	S = \{a:int, b:boolean, c:char\}, 
+	S = \{a:int, b:boolean, c:char\}, \quad
 	 T = \{a:short, b:char\}
 \end{equation} 
 
- však $S <: T$ neplatí, protože $\overline{int <: short}$ a $\overline{boolean <: char}$ a i když je dodrženo pravidlo "do šířky", není dodrženo pravidlo "do hloubky".
+ $S <: T$ neplatí, protože $\overline{int <: short}$ a $\overline{boolean <: char}$ a i když je dodrženo pravidlo "do šířky", není dodrženo pravidlo "do hloubky".
+
+\subsubsection{Funkce}
+
+Relaci subtypingu lze také definovat pro funkce. Zde se vychází z předpokladu, že funkci lze předat jako parametr a je tedy nutné určit, zda je možné použít typovanou funkci v kontextu, kde je očekáván jiný typ.
 
 \subsubsection{Objekty} 	
 
- - obdobné jako u záznamů
+ - kombinace záznamů a funkcí
  - u metod navíc aplikován princip kontravariance
 
-\section{Typová kontrola}
-
- - jak to funguje
- - problémy při porovnání
- - subtyping vs. matching (\cite{abadi1995subytping})
- - kontravariance: F'(A) <: F(B) <=> B <: A
-
 \subsection{Matching na základě subtypingu}
+
+- subtyping vs. matching (\cite{abadi1995subytping})
 
 \subsection{Statická}
 
