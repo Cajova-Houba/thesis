@@ -522,16 +522,28 @@ JSON-WSP definuje službu pomocí objektů \textit{description}, \textit{request
  
 \chapter{Datové typy a porovnávání}
 
-TODO: formulace
-
-Tato kapitola rozebírá vlastnosti datových typů se zaměřením na jejich vzájemné porovnání. Vzhledem ke kontextu práce jsou zde popsány typové systémy jazků Java a XSD.
+Tato kapitola rozebírá vlastnosti datových typů se zaměřením na jejich vzájemné porovnání. V první části kapitoly jsou představeny datové typy obecně, včetně jejich rozdělení v imperativní jazycích. Druhá část kapitoly se zabývá typovými systémy, způsoby kontroly typů a porovnáním datových typů. Vzhledem ke kontextu práce je text kapitoly zaměřen na staticky typované jazyky a typové systémy jazyků Java a XSD.
 
 \section{Datové typy a jejich reprezentace}
 
- - Datový typ představuje množinu hodnot, ze které může proměnná, konstanta, funkce, nebo jiný výraz vzít svou hodnotu \cite{dataType}
- - Příklady primitivních datových typů jazyka Java 8 v tabulce \ref{tab:java-prim-types}
+TODO: formulace
+
+Datový typ představuje množinu hodnot, ze které může proměnná, konstanta, funkce, nebo jiný výraz vzít svou hodnotu \cite{dataType}. O programovacích jazycích mluvíme jako o explicitně typovaných, pokud je název datového typu součástí syntaxe. Je-li navíc typová kontrola prováděna v čase překladu nazývají se tyto staticky typované \cite{cardelli2004}. Takovými jazyky jsou například C nebo Java.
+
+Datové typy lze rozdělit na primitivní a složené. Ty lze dále dělit na záznamy a objektové typy.
+
+ - datové typy se dělí podle něčeho na primitivní a složené
+ - složené datové typy se navíc dělí na záznamy a objekty
+ - všechny tyto jsou popsány v následujících sekcích
  
 \subsection{Primitivní datové typy}
+ 
+  - nejzákladnější datové typy jazyka
+  - na rozdíl od objektových datových typů zde neexistuje dědičnost
+  - používané k reprezentaci základních datových jednotek: číslo, znak, pravdivostní hodnota
+  - říkají kompilátoru, nebo interpretu co konkrétní data v paměti reprezentují
+  - Java má 8 primitivních datových typů
+  - Příklady primitivních datových typů jazyka Java 8 v tabulce \ref{tab:java-prim-types}
  
 \begin{table}[h]
 	\centering
@@ -554,12 +566,17 @@ Tato kapitola rozebírá vlastnosti datových typů se zaměřením na jejich vz
 \subsection{Záznamy}
 
  - A record is a collection of fields, possibly of different data types, typically in fixed number and sequence \cite{felleisen2001}
- - v C např \textit{struct}, v Pascalu \textit{record}, v Jave není
+ - v C např \textit{struct}, v Pascalu \textit{record}
+ - Java záznamy neobsahuje
+ - vlastní datové typy v XSD definované elementem \textit{complexType} jsou záznamy
+ 
 
 \subsection{Objektové datové typy}
 
- - datový typ složený s dat a metod
+ - datový typ složený z dat a metod
  - šablona objektového datového typu se v Jave nazývá třída (\textit{class})
+ - podpora dědičnosti, polymorfismu
+ - v Jave také rozhraní 
  
 
 \section{Typový systém}
@@ -575,39 +592,105 @@ of values they compute.
 	Typový systém je sledovatelná syntaktická metoda pro prokázání absence určitých chování programu klasifikováním frází podle druhů hodnot, které představují.
 \end{quote}
 
+- Typový systém udává pravidla pro kontrolu typů v programovacím jazyce nezávisle na konkrétních algoritmech. Jeho primárním účelem je zabránění výskytu chyb za běhu programu\cite{cardelli2004}.
 - elementární jazyk s podporou typů: simply typed lambda calculus
-- The fundamental purpose of a type system is to prevent the occurrence of execution errors during the running of a program. \cite{cardelli2004}
-- typový systém  udává pravidla pro kontrolu typů v programovacím jazyce nezávisle na konkrétních algoritmech \cite{cardelli2004}
+- lambda calculus je vhodným nástrojem k definici pravidel typového systému
 
 - přednášky z FJP
-- něco od taových typech obecně: https://www.cs.cmu.edu/~rwh/introsml/core/datatypes.htm
+- něco od datových typech obecně: https://www.cs.cmu.edu/~rwh/introsml/core/datatypes.htm
 - jak jazyky řeší datové typy
 	- rekurzivní vs. nerekurzivní
-	- možná fajn na rekurzivní typy: http://web.mit.edu/6.005/www/sp16/classes/16-recursive-data-types/recursive/
-- primitivní typy vs. objekty
-- super knížka \cite{pierce2002}
+- něco od taových typech obecně: https://www.cs.cmu.edu/~rwh/introsml/core/datatypes.htm
+
+\subsection{Rekurzivní datové typy}
+
+- možná fajn na rekurzivní typy: http://web.mit.edu/6.005/www/sp16/classes/16-recursive-data-types/recursive/
+- převzato z \cite{pierce2002}
+- typickým příkladem je immutable seznam
+	- seznam List<T> je buď prázdný, nebo je tvořený dvojicí first:T a rest:List<T>
+	- jeho konstruktor má tvar List(T, List<T>)
+- problém spočívá v rekurzivním rozvoji, protože pravá strana je definována tím, co se snažíme definovat
+- to vede na nekonečný strom
+- přístup k řešení se dělí podle toho, jak je vyřešen první krok rekurzivního rozvoje
+	- equi-recursive
+		- definitionally equal = zaměnitelné v jakémkoliv kontextu, protože představují stejné nekonečné stromy
+	- iso-recursive
+		- rekurzivní rozvoj = 1. krok celého rozvoje
+		- jazyk musí mít operace fold() a unfold()
+		- ty jsou navzájem isomorfní
 
 \subsection{Typový systém XSD}
 
+
+
 \subsection{Typový systém jazyka Java}
+
+\subsection{Subtyping}
+
+- binární relace definovaná nad typy
+- reflexivní A <: A
+- tranzitivní A <: B, B <: C => A <: C
+- značení A <: B čteme jako A je sub-typ B
+- znamená to, že A může být použito kdekoliv, kde je očekáváno B
+- příklad: \textit{java.lang.Long} je sub-typ \textit{java.lang.Number}, protože typ \textit{Long} může být použit kdekoliv tam, kde je očekáván typ \textit{Number} 
+
+\subsubsection{Primitivní typy}
+
+V případě primitivních typů subtyping označuje schopnost jednoho typu pojmout jiný. Tedy například primitivní typ \textit{double} je schopný reprezentovat všechna čísla z \textit{float} (ale ne naopak) a proto platí $float <: double$. V případě datových typů pro celá čísla v Jave pak platí následující:
+
+\begin{figure}[h]
+	\centering
+	$byte <: short <: int <: long$
+\end{figure}
+
+\subsubsection{Záznamy}
+
+Relace subtypingu je pro záznamové datové typy $S = \{k_1:S_1 ... k_m:S_m\}$ a $T = \{l_1:T_1 ... l_n:T_n\}$ definována pomocí dvou pravidel: subtyping do šířky a subtyping do hloubky. Subtyping do šířky říká, že typ s více záznamy je subtyp typu s méně záznamy, musí tedy platit $n \leq m$. Pravidlo subtypingu do hloubky se zabývá typem jednotlivých položek a říká, že mezi položkami na stejné pozici musí platit relace subtypingu, tedy pro každé $i : S_i <: T_i$.
+
+Uvažujeme-li na příklad typy $S$ a $T$ definované jako:
+
+\begin{equation}
+\centering
+	S = \{a:int, b:boolean, c:char\}, 
+	T = \{a:long\}
+\end{equation}
+
+ platí, že $S <: T$, protože $S$ má méně položek, než $T$ a zároveň $int <: long$. 
+ 
+ V případě typů
+ 
+ 
+ 
+\begin{equation}
+	\centering
+	S = \{a:int, b:boolean, c:char\}, 
+	 T = \{a:short, b:char\}
+\end{equation} 
+
+ však $S <: T$ neplatí, protože $\overline{int <: short}$ a $\overline{boolean <: char}$ a i když je dodrženo pravidlo "do šířky", není dodrženo pravidlo "do hloubky".
+
+\subsubsection{Objekty} 	
+
+ - obdobné jako u záznamů
+ - u metod navíc aplikován princip kontravariance
 
 \section{Typová kontrola}
 
  - jak to funguje
-- problémy při porovnání
-- subtyping vs. matching (\cite{abadi1995subytping})
-- kontravariance: F'(A) <: F(B) <=> B <: A
+ - problémy při porovnání
+ - subtyping vs. matching (\cite{abadi1995subytping})
+ - kontravariance: F'(A) <: F(B) <=> B <: A
 
-\subsection{Subtyping}
-
- - binární relace
- - reflexivní, tranzitivní
- - značení A <: B čteme jako A je sub-typ B
- 	- znamená to, že A může být použito kdekoliv, kde je očekáváno B
+\subsection{Matching na základě subtypingu}
 
 \subsection{Statická}
 
+ - datový typ proměnné je známý v době času překladu
+ - 
+
 \subsection{Dynamická}
+
+ - datový typ proměnné je známý až v čase běhu
 
 
 \chapter{Získávání metadat webových služeb v CRCE}
