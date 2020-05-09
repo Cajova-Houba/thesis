@@ -331,9 +331,7 @@ Protože součástí mé práce bylo zpracování metadat služeb popsaných for
 
 % SOAP
 
-Protokol SOAP, v současné verzi 1.2, je určený pro výměnu strukturovaných dat v decentralizovaném, distribuovaném prostředí. Specifikaci protokolu\cite{soap12}, z níž tato sekce převážně čerpá, spravuje konsorcium W3C. Mezi cíle návrhu protokolu patří zejména jeho nezávislost na konkrétní implementační platformě a komunikačním protokolu\cite{soap12}. Specifikace nijak neomezuje formát, ve kterém jsou data předávána, nicméně primárním způsobem pro jejich popis je XML.
-
-Základní komunikační jednotkou v SOAP je zpráva, která je předávána mezi komunikujícími uzly. Obsah zprávy, který je zapouzdřený v takzvané obálce se skládá z hlaviček a těla zprávy. Obrázek \ref{fig:soap-msg-example} převzatý ze specifikace protokolu znázorňuje příklad SOAP zprávy. V návaznosti na komunikační vzor RPC jsou SOAP zprávy mezi službami typicky používány k předání detailů o proceduře, jež má být vykonána, včetně vstupních parametrů. Výsledky těchto operací jsou vráceny v obdobném formátu.
+Protokol SOAP, současně ve verzi 1.2, je určený pro výměnu strukturovaných dat v decentralizovaném, distribuovaném prostředí. Specifikaci protokolu\cite{soap12}, z níž tato sekce převážně čerpá, spravuje konsorcium W3C. Mezi cíle návrhu protokolu patří zejména jeho nezávislost na konkrétní implementační platformě a komunikačním protokolu\cite{soap12}. Specifikace nijak neomezuje formát, ve kterém jsou data předávána, nicméně primárním způsobem pro jejich popis je XML.
 
 \begin{figure}[h]
 	\centering
@@ -341,6 +339,8 @@ Základní komunikační jednotkou v SOAP je zpráva, která je předávána mez
 	\caption{Příklad SOAP zprávy}
 	\label{fig:soap-msg-example}
 \end{figure}
+
+Základní komunikační jednotkou v SOAP je zpráva, která je předávána mezi komunikujícími uzly. Obsah zprávy, který je zapouzdřený v takzvané obálce, se skládá z hlaviček a těla zprávy. Obrázek \ref{fig:soap-msg-example}, převzatý ze specifikace protokolu, znázorňuje příklad SOAP zprávy. V návaznosti na komunikační vzor RPC jsou SOAP zprávy mezi službami typicky používány k předání detailů o proceduře, jež má být vykonána, včetně vstupních parametrů. Výsledky těchto operací jsou vráceny v obdobném formátu.
 
 % spojení WSDL služeb a SOAP
 Použití protokolu SOAP jako formátu dat nad konkrétním komunikačním protokolem je definováno souborem pravidel, jež se nazývá SOAP Protocol Binding Framework. Tato pravidla popisují především detaily použití komunikačního protokolu pro předávání SOAP zpráv, dodržení kontraktu a zpracování případných chyb. V kontextu mé práce je důležité zejména napojení SOAP na HTTP u služeb popsaných WSDL dokumentem.
@@ -368,21 +368,18 @@ Representational State Transfer (dále jen REST) je architektonický styl tvorby
 R.T Fielding definoval styl REST skrze množinu omezení, jež jsou aplikována na systém vzájemně komunikujících komponent, což jsou v rámci této práce webové služby. Vybraná omezení jsou popsána v následujících odstavcích.
 
 \subsubsection{Klient-server}
-kvůli separation of concenrs; oddělení klienta od uložení dat umožňuje nezávislý vývoj jednotlivých komponent
+Důvodem pro toto omezení je princip oddělení zodpovědnosti klienta (např. uživatelského rozhraní) od serveru, čímž je umožněn nezávislý vývoj  obou stran.
 
 \subsubsection{Absence stavu}
 
-Toto omezení se týká zejména volání služby, jež musí obsahovat vše nutné pro jeho zpracování a není možné využít kontext uložený na straně serveru. Ten je tedy uložený na straně klienta a je proto nutná kontrola jeho konzistence při zpracování volání. Mezi výhody plynoucí z tohoto omezení patří zlepšení spolehlivosti a zpřehlednění komunikace.
-
-\subsubsection{Cache}
-cache je na straně klienta, lze cacheovat pouze response, které jsou takto označené; tím lze zvýšit efektivitu
+Omezení se týká zejména volání služby, jež musí obsahovat vše nutné pro jeho zpracování a není možné využít kontext uložený na straně serveru. Ten je tedy uložený na straně klienta a je proto nutná kontrola jeho konzistence při zpracování volání. Mezi výhody plynoucí z tohoto omezení patří zlepšení spolehlivosti a zpřehlednění komunikace.
 
 \subsubsection{Uniformní rozhraní}
-(mezi komponentami)
-tím je docíleno oddělení služby, kterou komponenta poskytuje od její implementace; nevýhoda je zhoršení efektivity, protože informace jsou přenášeny ve standardním formátu, místo formátu, který by byl nativní aplikaci; 4 omezení rozhraní: identifikace zdrojů, manipulace se zdroji skrze reprezentace, sebe-popisující zprávy a hypermedia jako engine aplikačního stavu
+
+Komponenty vzájemně komunikují přes jednotné rozhraní, které odděluje jejich funkcionalitu od implementace. Rozhraní REST komponenty se vyznačuje čtyřmi vlastnostmi: identifikace zdrojů, manipulace jimi skrze reprezentace, sebe-popisující zprávy a hypermediální řízení (viz sekce \ref{sec:restful}).
 
 \subsubsection{Vrstvený styl}
-každý vrstva komunikuje pouze se sousedí vrstvou a nevidí vrstvy za nimi; to vede na větší nezávislost
+Komponenty jsou rozděleny do vrstev a každá z nich komunikuje pouze s komponentami v sousedních vrstvách. Aplikací tohoto modelu by mělo být dosaženo omezení komplexity a větší nezávislosti jednotlivých vrstev, respektive komponent v nich.
 
 \subsection{Zdroj a jeho reprezentace}
 \label{sec:rest-basics}
@@ -402,6 +399,7 @@ Každý zdroj má alespoň jeden identifikátor, v případě Webu se jedná o U
 S reprezentacemi zdrojů je manipulováno HTTP voláním jejich identifikátorů (tedy URI) s nastavenou HTTP metodou, jež byly popsané v části \ref{sec:ws-tech}.
 
 \subsection{RESTful služba}
+\label{sec:restful}
 
 Jedním z primárních účelů webových služeb založených na stylu REST je manipulace s XML reprezentacemi zdrojů pomocí jednotné množiny bezestavých operací, jimiž typicky jsou  \textit{create}, \textit{retrieve}, \textit{update} a \textit{delete}\cite{w3cWsArch}. Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, jež se REST drží nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby byl představen L. Richardsonem a nazývá se Richardson Maturity Model. M. Fowler jej pak vysvětlil ve svém online článku \cite{restfulMaturity}, který je hlavním zdrojem informací pro následující odstavce. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
 
@@ -435,19 +433,9 @@ Může tedy nastat případ kdy poskytovatel v zájmu udržení zpětné kompati
 \section{Formální popis rozhraní webových služeb}
 \label{sec:api-description-formats}
 
-TODO: citace, formulace
-Aby bylo možné se službami komunikovat, je nutné znát jimi poskytované operace a akceptovaný formát dat. Tyto informace jsou zahrnuté v rozhraní služby, jež může být popsáno různými způsoby. Typy služeb popsané v části \ref{sec:rpc-ws} takové rozhraní poskytují ve strojově čitelné podobě, nicméně v případě REST služeb (část \ref{sec:rest}) je situace složitější, protože univerzální standardizovaná podoba rozhraní neexistuje a to pak může být definováno například Word dokumentem, nebo emailovou konverzací.
+Aby bylo možné se službami komunikovat, je nutné znát jimi poskytované operace, zdroje a akceptovaný formát dat. Tyto informace jsou zahrnuté v rozhraní služby, jež může být popsáno různými způsoby s proměnlivou úrovní detailu. Služby popsané v části \ref{sec:rpc-ws} takové rozhraní automaticky poskytují ve strojově čitelné podobě, čímž mimo jiné umožňují automaticky generovat klienta a kostru serverové aplikace. V případě REST služeb (část \ref{sec:rest}) je situace složitější, protože univerzální standardizovaná podoba rozhraní neexistuje a to pak může mít podobu například Word dokumentu, nebo emailové konverzace. Výsledkem snah řešit problém se standardizací popisu rozhraní REST služeb jsou například strojově čitelné formáty Swagger\footnote{https://swagger.io/}, OpenApi\footnote{https://www.openapis.org/} nebo Raml\footnote{https://raml.org/}. 
 
-- existují různé, strojově čitelné, formáty pro popis API
-
-- WSDL 1.1, 2.0, WADL (REST), JSON-WSP
-
-- Swagger, Raml, OpenApi
-	- nicméně těmi se v práci nezabývám, protože zatím neexistují indexery schopné z těchto extrahovat metadata
-
-- v případě REST bohužel není nic formálně nutné (oproti třeba SOAP), takže specifikace API nemusí být kompatibilní, nemusí být úplné, nebo můžou být ad-hoc (např. slovní popis ve Word dokumentu) a tím pádem nemusí existovat univerzální způsob strojového čtení těchto specifikací
-
-- v mé práci se věnuji především formátům WSDL, WADL a JSON-WSP, protože pro tyto v současnosti existují indexery
+Jak bude popsáno v kapitole \ref{sec:crce}, systém CRCE, pro který byl vyvíjen rozšiřující modul, jež je předmětem této práce, je v současnosti schopný indexovat webové služby pouze na základě implementace nebo popisu JSON-WSP, WADL a WSDL. Z tohoto důvodu zde jsou popsány pouze zmíněné podporované formáty.
 
 \subsection{WSDL}
 
