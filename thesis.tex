@@ -528,21 +528,86 @@ Tato kapitola rozebírá vlastnosti datových typů se zaměřením na jejich vz
 
 \section{Datové typy a jejich reprezentace}
 
+ - Datový typ představuje množinu hodnot, ze které může proměnná, konstanta, funkce, nebo jiný výraz vzít svou hodnotu \cite{dataType}
+ - Příklady primitivních datových typů jazyka Java 8 v tabulce \ref{tab:java-prim-types}
+ 
+\subsection{Primitivní datové typy}
+ 
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|c|}
+		\hline
+		Název datového typu & Rozsah hodnot \\
+		\hline
+		\hline
+		int & $<-2^{31};2^{31}-1>$ \\
+		\hline
+		boolean & true, false \\
+		\hline
+		char & 16-bit Unicode znaky \\
+		\hline
+	\end{tabular}
+	\caption{Výběr primitivních datových typů jazyka Java}
+	\label{tab:java-prim-types}
+\end{table}
+
+\subsection{Záznamy}
+
+ - A record is a collection of fields, possibly of different data types, typically in fixed number and sequence \cite{felleisen2001}
+ - v C např \textit{struct}, v Pascalu \textit{record}, v Jave není
+
+\subsection{Objektové datové typy}
+
+ - datový typ složený s dat a metod
+ - šablona objektového datového typu se v Jave nazývá třída (\textit{class})
+ 
+
+\section{Typový systém}
+- definice typového systému podle \cite{pierce2002}:
+
+\begin{quote}
+A type system is a tractable syntactic method for proving the absence of
+certain program behaviors by classifying phrases according to the kinds
+of values they compute.
+\end{quote}
+
+\begin{quote}
+	Typový systém je sledovatelná syntaktická metoda pro prokázání absence určitých chování programu klasifikováním frází podle druhů hodnot, které představují.
+\end{quote}
+
+- elementární jazyk s podporou typů: simply typed lambda calculus
+- The fundamental purpose of a type system is to prevent the occurrence of execution errors during the running of a program. \cite{cardelli2004}
+- typový systém  udává pravidla pro kontrolu typů v programovacím jazyce nezávisle na konkrétních algoritmech \cite{cardelli2004}
+
 - přednášky z FJP
 - něco od taových typech obecně: https://www.cs.cmu.edu/~rwh/introsml/core/datatypes.htm
 - jak jazyky řeší datové typy
 	- rekurzivní vs. nerekurzivní
 	- možná fajn na rekurzivní typy: http://web.mit.edu/6.005/www/sp16/classes/16-recursive-data-types/recursive/
-- built-in typy (xsd, Java)
 - primitivní typy vs. objekty
+- super knížka \cite{pierce2002}
 
-\section{Porovnávání datových typů}
+\subsection{Typový systém XSD}
+
+\subsection{Typový systém jazyka Java}
+
+\section{Typová kontrola}
 
  - jak to funguje
- - problémy při porovnání
- - subtyping vs. matching (\cite{abadi1995subytping})
- - subtyping: A <: B <=> A může být použito v kdekoliv kde je očekáváno B
- - kontravariance: F'(A) <: F(B) <=> B <: A
+- problémy při porovnání
+- subtyping vs. matching (\cite{abadi1995subytping})
+- kontravariance: F'(A) <: F(B) <=> B <: A
+
+\subsection{Subtyping}
+
+ - binární relace
+ - reflexivní, tranzitivní
+ - značení A <: B čteme jako A je sub-typ B
+ 	- znamená to, že A může být použito kdekoliv, kde je očekáváno B
+
+\subsection{Statická}
+
+\subsection{Dynamická}
 
 
 \chapter{Získávání metadat webových služeb v CRCE}
@@ -1576,13 +1641,12 @@ Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům
 	\nomenclature{YAML}{YAML Ain't Markup Language}
 \end{longtable}
 
-\chapter*{Příloha A - WSDL webové služby pro komix Dilbert}
-\addcontentsline{toc}{chapter}{Příloha A - WSDL webové služby pro komix Dilbert}
+\appendix
+\chapter{WSDL webové služby pro komix Dilbert}
 Tady bude WSDL
 
 
-\chapter*{Příloha B - Výčet metadat služeb získaných z implementace}
-\addcontentsline{toc}{chapter}{Příloha B - Výčet metadat služeb získaných z implementace}
+\chapter{Výčet metadat služeb získaných z implementace}
 \begin{table}[h]
 	\centering
 	\begin{tabular}{|l|c|c|}
@@ -1627,8 +1691,7 @@ Tady bude WSDL
 	\caption{Metadata indexovaná pro parametr odpovědi}
 \end{table}
 
-\chapter*{Příloha C - Výčet metadat služeb získaných z popisu}
-\addcontentsline{toc}{chapter}{Příloha C - Výčet metadat služeb získaných z popisu}
+\chapter{Výčet metadat služeb získaných z popisu}
 
 \section*{Formát JSON-WSP}
 
@@ -1636,8 +1699,7 @@ Tady bude WSDL
 
 \section*{Formát WSDL}
 
-\chapter*{Příloha D - Popisy rozhraní testovaných služeb}
-\addcontentsline{toc}{chapter}{Příloha D - Popisy rozhraní testovaných služeb}
+\chapter{Popisy rozhraní testovaných služeb}
 
 \section*{REST služba založená na Jersey}
 
