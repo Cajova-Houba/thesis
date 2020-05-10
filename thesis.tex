@@ -165,7 +165,7 @@ Pojem 'webová služba' může mít odlišné významy\cite{w3cWsDesignIssues} a
 
 % ta není dobrá protože ... 
 
-Tato definice je pro účely mé práce problematická z několika důvodů. Prvním z nich je omezení formátu popisu služby pouze na WSDL. Strojově čitelný popis rozhraní sice snižuje náročnost vytvoření klienta pro danou službu, nicméně WSDL není jediným takovým formátem a netřeba tedy z definice vyloučit služby používající jiné formáty jako například WADL nebo JSON-WSP, jež přímo souvisí s mou prací. Závislost na jednom konkrétním formátu také nemusí být výhodná z hlediska budoucího vývoje, protože nezohledňuje možnost příchodu jiného formátu, nebo změny přístupu k webovým službám obecně. WSDL do verze 1.1 například neumožňovalo popis REST služeb, ty byly zohledněny až ve verzi 2.0\cite{restWsdl}.  
+Tato definice je pro účely mé práce problematická z několika důvodů. Prvním z nich je omezení formátu popisu služby pouze na WSDL. Strojově čitelný popis rozhraní sice snižuje náročnost vytvoření klienta pro danou službu, nicméně WSDL není jediným takovým formátem a netřeba tedy z definice vyloučit služby používající jiné formáty jako například WADL nebo JSON-WSP, jež přímo souvisí s mou prací. Závislost na jednom konkrétním formátu také nemusí být výhodná z hlediska budoucího vývoje, protože nezohledňuje možnost příchodu jiného formátu nebo změny přístupu k webovým službám obecně. WSDL do verze 1.1 například neumožňovalo popis REST služeb, ty byly zohledněny až ve verzi 2.0\cite{restWsdl}.  
 
 Definice dále svazuje implementaci webové služby s použitím konkrétního protokolu pro výměnu dat, v tomto případě SOAP, čímž opět nezahrnuje služby používající jakékoliv jiné protokoly. I zde platí nevýhoda takové vazby v kontextu budoucího vývoje, jež byla zmíněna v předchozím odstavci. Webová služba by například přestala být webovou službou, pokud by došlo k změně protokolu pro výměnu dat ze SOAP na JSON-RPC, což není žádoucí.
 
@@ -247,13 +247,13 @@ Tato podkapitola krátce představuje nejzákladnější techniky a protokoly ur
 \subsection{HTTP}
 
 % úvod do sekce o HTTP
-HTTP\footnote{Hypertext Transfer Protocol} je bezestavový protokol aplikační vrstvy určený pro distribuované hypermediální systémy a tvoří základ informačního systému WWW\footnote{World Wide Web}, který je využívá od 90. let \cite{httpRfc}. Celkem bylo specifikováno pět verzí protokolu: 0.9, 1.0, 1.1, 2.0 a 3.0. Tato sekce se zabývá protokolem HTTP/1.1, neboť právě vlastnosti představené v této verzi jsou relevantní mé práci. Komunikace přes HTTP typicky probíhá skrze TCP/IP spojení na portu 80. 
+HTTP\footnote{Hypertext Transfer Protocol} je bezestavový protokol aplikační vrstvy určený pro distribuované hypermediální systémy a tvoří základ informačního systému WWW\footnote{World Wide Web}, který jej využívá od 90. let \cite{httpRfc}. Celkem bylo specifikováno pět verzí protokolu: 0.9, 1.0, 1.1, 2.0 a 3.0. Tato sekce se zabývá protokolem HTTP/1.1, neboť právě vlastnosti představené v této verzi jsou relevantní mé práci. Komunikace přes HTTP typicky probíhá skrze TCP/IP spojení na portu 80. 
 
 % princip HTTP
 Protokol je založen na principu volání-odpověď. Klient odešle žádost ve formě metody, identifikátoru a verze protokolu, následovanou tělem žádosti v MIME\footnote{Multipurpose Internet Mail Extensions} formátu. Identifikátor žádosti posílané klientem je tvořen URI\footnote{Uniform Resource Identifier}, což je sekvence znaků, která jasně určuje daný zdroj \cite{uriRfc}. Tělo může obsahovat informace o klientovi, modifikátory žádosti a data pro příjemce. Server odpoví statusem, jež zahrnuje verzi protokolu a kód výsledku žádosti (chyba, nebo úspěch). Ten je následovaný zprávou, rovněž ve formátu MIME, obsahující informace o serveru a případně tělo odpovědi s daty pro klienta \cite{httpRfc}.
 
 % metody HTTP
-HTTP definuje množinu metod, jejichž účelem je specifikovat konkrétní operaci, která by měla být provedená na daným zdrojem, identifikovaným volaným URI. Výčet metod společně s popisem je uveden v tabulce \ref{tab:http-methods}.
+HTTP definuje množinu metod, jejichž účelem je specifikovat konkrétní operaci, která by měla být provedená nad daným zdrojem, identifikovaným volaným URI. Výčet metod společně s popisem je uveden v tabulce \ref{tab:http-methods}.
 
 \begin{table}[h]
 	\centering
@@ -288,7 +288,7 @@ Implementace obsluhy metod sice záleží na konkrétním poskytovateli, nicmén
 
 \subsection{Formáty pro přenos dat}
 
-Služby komunikující protokolem HTTP si obvykle předávají data v textové podobě. Způsobů, jak taková data formátovat existuje mnoho, nicméně během mé práce jsem přišel do styku převážně s formáty XML a JSON, proto se zde zaměřím převážně na ně. Zmíněné syntaxe nemusí být použity pouze k serializaci předávaných dat, ale také k popisu rozhraní samotné služby, jak bude ukázáno v části \ref{sec:api-description-formats}.
+Služby komunikující protokolem HTTP si obvykle předávají data v textové podobě. Způsobů, jak taková data formátovat existuje mnoho, nicméně během mé práce jsem přišel do styku převážně s formáty XML a JSON, proto se zde zaměřím právě na ně. Zmíněné syntaxe nemusí být použity pouze k serializaci předávaných dat, ale také k popisu rozhraní samotné služby, jak bude ukázáno v části \ref{sec:api-description-formats}.
 
 \subsubsection{XML}
 
@@ -306,7 +306,7 @@ Příklad XML dokumentu je znázorněn na obrázku \ref{fig:xml-example}. Kořen
 \end{figure} 
 
 \subsubsection{JSON} 
-JavaScript object notation (dále jen JSON) je formát výměny dat vzešlý z části standardu jazyka JavaScript\footnote{https://www.ecma-international.org/publications/standards/Ecma-262-arch.htm} publikovaného v roce 1999. Samotný JSON byl poprvé standardizován specifikací ECMA-404\footnote{https://www.ecma-international.org/publications/standards/Ecma-404-arch.htm} v roce 2013. Stejně jako zmíněný XML, je i tento čitelný člověka a stroj.  MIME typ pro označení JSON je \verb|application/json|.
+JavaScript object notation (dále jen JSON) je formát výměny dat vzešlý z části standardu jazyka JavaScript\footnote{https://www.ecma-international.org/publications/standards/Ecma-262-arch.htm} publikovaného v roce 1999. Samotný JSON byl poprvé standardizován specifikací ECMA-404\footnote{https://www.ecma-international.org/publications/standards/Ecma-404-arch.htm} v roce 2013. Stejně jako zmíněný XML, je i tento čitelný pro člověka a stroj.  MIME typ pro označení JSON je \verb|application/json|.
 
 JSON je založen na dvou základních strukturách, jež by měly být podporovány většinou dnešních moderních programovacích jazyků. Těmito strukturami jsou kolekce párů klíč-hodnota zvaná \textit{objekt} a seřazený seznam hodnot zvaný \textit{pole}. Objekt je ohraničen složenými závorkami \verb|{|, \verb|}| a obsahuje neseřazený výčet párů klíč-hodnota. Klíč je od hodnoty oddělen dvojtečkou a celé páry jsou oddělené čárkami. Pole je ohraničeno hranatými závorkami \verb|[|, \verb|]| a obsahuje seřazený výčet hodnot, jež jsou vzájemně odděleny čárkou.
 
@@ -351,7 +351,7 @@ Základní komunikační jednotkou v SOAP je zpráva, která je předávána mez
 % spojení WSDL služeb a SOAP
 Použití protokolu SOAP jako formátu dat nad konkrétním komunikačním protokolem je definováno souborem pravidel, jež se nazývá SOAP Protocol Binding Framework. Tato pravidla popisují především detaily použití komunikačního protokolu pro předávání SOAP zpráv, dodržení kontraktu a zpracování případných chyb. V kontextu mé práce je důležité zejména napojení SOAP na HTTP u služeb popsaných WSDL dokumentem.
 
-SOAP zprávy jsou skrze HTTP, vzhledem ke svému rozsahu, primárně přenášeny metodou POST a v rámci této práce je předpokládáno, že webové služby používající SOAP akceptují volání pouze skrze POST metody. V dokumentu WSDL je propojení SOAP s HTTP definováno v elementu \verb|<binding>| a příklad takového propojení je uveden na obrázku \ref{fig:soap-http-binding}.
+SOAP zprávy jsou skrze HTTP, vzhledem ke svému rozsahu, primárně přenášeny metodou POST a v rámci této práce je předpokládáno, že webové služby používající SOAP akceptují volání pouze s metodou POST. V dokumentu WSDL je propojení SOAP s HTTP definováno v elementu \verb|<binding>| a příklad takového propojení je uveden na obrázku \ref{fig:soap-http-binding}.
 
 \begin{figure}[h]
 	\centering
@@ -369,7 +369,7 @@ SOAP zprávy jsou skrze HTTP, vzhledem ke svému rozsahu, primárně přenášen
 % - jak se liší od WS definované v předchozí sekci
 % - základní popis elementů použitých v REST
 
-Representational State Transfer (dále jen REST) je architektonický styl tvorby webových služeb, který ve své disertační práci \cite{fielding2000rest} popsal R. T. Fielding. Služby tvořené v tomto stylu se od služeb definovaných podle definice konsorcia W3C se liší zejména využitím protokolu HTTP pro sémantiku aplikace a vyznačuje se také absencí stavu. 
+Representational State Transfer (dále jen REST) je architektonický styl tvorby webových služeb, který ve své disertační práci \cite{fielding2000rest} popsal R. T. Fielding. Služby tvořené v tomto stylu se od služeb definovaných konsorciem W3C liší zejména využitím protokolu HTTP pro sémantiku aplikace a vyznačuje se také absencí stavu. 
 
 R.T Fielding definoval styl REST skrze množinu omezení, jež jsou aplikována na systém vzájemně komunikujících komponent, což jsou v rámci této práce webové služby. Vybraná omezení jsou popsána v následujících odstavcích.
 
@@ -390,7 +390,7 @@ Komponenty jsou rozděleny do vrstev a každá z nich komunikuje pouze s kompone
 \subsection{Zdroj a jeho reprezentace}
 \label{sec:rest-basics}
 
-Na rozdíl od služeb vycházejících ze RPC, jež jsou koncipovány jako množiny různých operací, jsou REST služby orientovány kolem zdrojů a manipulaci s jejich reprezentacemi. Architektura vycházející z toho stylu se nazývá ROA\footnote{Resource Oriented Architecture} a ve své publikaci\cite{restfulWebServices} ji popsal L. Richardson. Tato sekce v popisuje význam zdroje a jeho reprezentací v REST.
+Na rozdíl od služeb vycházejících z RPC, jež jsou koncipovány jako množiny různých operací, jsou REST služby orientovány kolem zdrojů a manipulaci s jejich reprezentacemi. Architektura vycházející z toho stylu se nazývá ROA\footnote{Resource Oriented Architecture} a ve své publikaci\cite{restfulWebServices} ji popsal L. Richardson. Tato sekce se zabývá významem zdroje a jeho reprezentací v REST.
 
 Zdroj (anglicky \textit{resource}) je klíčovou abstrakcí informace v REST a může představovat jakoukoliv pojmenovatelnou informaci jako například dokument, obrázek, webovou službu, nebo  kolekci jiných zdrojů. R. T. Fielding ve své práci\cite{fielding2000rest} definuje zdroj $R$ jako: 
 
@@ -398,7 +398,7 @@ Zdroj (anglicky \textit{resource}) je klíčovou abstrakcí informace v REST a m
 	funkci $M_R(t)$, která pro čas $t$ vrací množinu ekvivalentních entit. Tato množina může být prázdná, nebo obsahovat reprezentace daného \textit{resource}, případně jeho identifikátory
 \end{quote}
 
-Pojem zdroj tedy neoznačuje konkrétní objekt, nebo data, ale abstraktní koncept, který je konkrétním objektem, nebo daty pouze reprezentován. Jako příklad lze uvést systém pro správu verzí, kde identifikátor 'poslední verze' označuje zdroj a samotná verze (0.8, 0.9, ...) jeho reprezentaci, která se s časem mění. Reprezentace různých zdrojů se mohou shodovat. V návaznosti na předchozí příklad by zdroje identifikované 'poslední verze' a 'verze 0.8' mohly být v určitý čas $t$ reprezentovány stejnou verzí '0.8'. 
+Pojem zdroj tedy neoznačuje konkrétní objekt nebo data, ale abstraktní koncept, který je konkrétním objektem nebo daty pouze reprezentován. Jako příklad lze uvést systém pro správu verzí, kde identifikátor 'poslední verze' označuje zdroj a samotná verze (0.8, 0.9, ...) jeho reprezentaci, která se s časem mění. Reprezentace různých zdrojů se mohou shodovat. V návaznosti na předchozí příklad by zdroje identifikované 'poslední verze' a 'verze 0.8' mohly být v určitý čas $t$ reprezentovány stejnou verzí '0.8'. 
 
 Každý zdroj má alespoň jeden identifikátor, v případě Webu se jedná o URI. Tento identifikátor by měl být co nejvíce popisný a v rámci jedné služby dodržovat stejný styl\cite{restfulWebServices}. 
 
@@ -407,7 +407,7 @@ S reprezentacemi zdrojů je manipulováno HTTP voláním jejich identifikátorů
 \subsection{RESTful služba}
 \label{sec:restful}
 
-Jedním z primárních účelů webových služeb založených na stylu REST je manipulace s XML reprezentacemi zdrojů pomocí jednotné množiny bezestavých operací, jimiž typicky jsou  \textit{create}, \textit{retrieve}, \textit{update} a \textit{delete}\cite{w3cWsArch}. Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, jež se REST drží nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby byl představen L. Richardsonem a nazývá se Richardson Maturity Model. M. Fowler jej pak vysvětlil ve svém online článku \cite{restfulMaturity}, který je hlavním zdrojem informací pro následující odstavce. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
+Jedním z primárních účelů webových služeb založených na stylu REST je manipulace s XML reprezentacemi zdrojů pomocí jednotné množiny bezestavých operací, jimiž typicky jsou  \textit{create}, \textit{retrieve}, \textit{update} a \textit{delete}\cite{w3cWsArch}. Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, jež se REST drží nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby byl představen L. Richardsonem a nazývá se Richardson Maturity Model. M. Fowler jej vysvětluje ve svém online článku \cite{restfulMaturity}, který je hlavním zdrojem informací pro následující odstavce. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
 
 \begin{figure}[h]
 	\centering
@@ -427,7 +427,7 @@ Služby v 0. úrovni se vyznačují použitím protokolu HTTP pro komunikaci, al
 Předchozí úrovně používají HTTP metody nezávisle na jejich účelu. Endpoint každého zdroje z předchozí úrovně by tedy například očekával volání POST i když by pouze vracel data. 2. úroveň tento přístup mění a služby používají HTTP metody tak, jak jsou v HTTP definované. Volání GET endpointu zdroje tedy vrací data, zatímco POST zdroj vytváří, nebo mění. 
 
 \subsubsection{Hypermediální řízení}
-Poslední úroveň zavádí princip HATEOAS\footnote{Hypertext As The Engine Of Application State}, ve kterém je klientovi s reprezentacemi zdrojů navíc předána informace o další možné manipulaci s nimi. Tím je docíleno většího oddělení klienta od poskytovatele, neboť server může mimo jiné měnit schéma URI zdrojů a nenarušit tím schéma používané klientem.
+Poslední úroveň zavádí princip HATEOAS\footnote{Hypertext As The Engine Of Application State}, ve kterém je klientovi s reprezentacemi zdrojů navíc předána informace o další možné manipulaci s nimi. Tím je docíleno většího oddělení klienta od poskytovatele, neboť server může mimo jiné měnit část schématu URI zdrojů a nenarušit tím schéma používané klientem.
 
 \subsection{Verzování REST služeb}
 
@@ -445,7 +445,7 @@ Jak bude popsáno v kapitole \ref{sec:crce}, systém CRCE, pro který byl vyvíj
 
 \subsection{WSDL}
 
-Formát WSDL je využíván převážně pro popis webových služeb využívajících protokol SOAP k výměně dat, nicméně od verze 2.0 lze popsat i REST služby. Formát současně existuje ve verzích 1.1 a 2.0. Z důvodů stáří verze 1.1, jež byla publikována v roce 2001 je tento popis zaměřen především na verzi 2.0. 
+Formát WSDL je využíván převážně pro popis webových služeb využívajících protokol SOAP k výměně dat, nicméně od verze 2.0 lze popsat i REST služby. Formát současně existuje ve verzích 1.1 a 2.0. Z důvodů stáří verze 1.1, jež byla publikována v roce 2001, je tento popis zaměřen především na verzi 2.0. 
 
 WSDL je formát založený na XML popisující webové služby jako množiny endpointů operujících nad zprávami (\textit{messages}), jež obsahují buď dokumentově, nebo procedurálně orientované informace. Abstraktně popsané operace a zprávy jsou spojeny s konkrétním síťovým protokolem a formátem zpráv, čímž je definován endpoint. Související endpointy jsou sdruženy do \textit{services} \cite{wsdl2}. Tabulka \ref{tab:wsdl-elements} obsahuje popis vybraných elementů použitých ve formátu WSDL 2.0.
 
@@ -502,7 +502,7 @@ Formát je založený na XML a popisuje webové služby jako kolekce zdrojů, na
  
 \subsection{JSON-WSP}
 
-Formát JSON-WSP je založený na JSON vychází z JSON-RPC což je protokol pro vzdálené volání procedur. JSON-WSP popisuje rozhraní webových aplikací a i když měl původně nahradit JSON-RPC, je zatím ve stavu neformálního návrhu a není nijak standardizovaný, ani neexistuje RFC s jeho specifikací, nebo JSON schéma. Neoficiální specifikace je udržována na Wikipedii\cite{jsonWspSpec}.
+Formát JSON-WSP je založený na JSON a vychází z JSON-RPC, což je protokol pro vzdálené volání procedur. JSON-WSP popisuje rozhraní webových aplikací a i když měl původně nahradit JSON-RPC, je zatím ve stavu neformálního návrhu a není nijak standardizovaný ani neexistuje RFC s jeho specifikací nebo JSON schéma. Neoficiální specifikace je udržována na Wikipedii\cite{jsonWspSpec}.
 
 
 JSON-WSP definuje službu pomocí objektů \textit{description}, \textit{request}, \textit{response} a \textit{fault}. Objekt \textit{description} popisuje rozhraní služby, obsahuje mimo jiné název služby, URL služby a kolekci metod, které služba dokáže vykonat. Objekty \textit{request}, \textit{response} a \textit{fault} definují podobu dat, které služba přijímá, respektive vrací. Tabulka \ref{tab:jsonwsp-elements} uvádí výběr objektů definovaných v \textit{description} relevantních pro mou práci.
