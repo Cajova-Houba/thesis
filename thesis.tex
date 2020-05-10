@@ -96,6 +96,9 @@
 % delta-eq
 \usepackage{amssymb}
 
+% zdroják
+\usepackage{listings}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % VLASTNÍ TEXT PRÁCE
@@ -568,10 +571,16 @@ Datové typy lze rozdělit na primitivní a složené. Ty lze dále dělit na z�
 
 \subsection{Záznamy}
 
- - A record is a collection of fields, possibly of different data types, typically in fixed number and sequence \cite{felleisen2001}
- - v C např \textit{struct}, v Pascalu \textit{record}
- - Java záznamy neobsahuje
- - vlastní datové typy v XSD definované elementem \textit{complexType} jsou záznamy
+Datový typ záznam (anglicky \textit{record}) je kolekcí položek různých datových typů s typicky pevně daným pořadím \cite{felleisen2001}. Příkladem záznamu v jazycích je například \textit{struct} v C \textit{record} v Pascalu. Jazyk Java datový typ záznam nedefinuje.
+
+Jako na záznam se také dá nahlížet na vlastní datový typ definovaný v XSD elementem \textit{complexType}, jež představuje pojmenovaný výčet položek s různými datovými typy. Pro srovnání je na obrázku \ref{fig:record-xsd-c} uveden příklad záznamu \textit{personinfo} definovaného pomocí \textit{complexType} v XSD a \textit{struct} v C.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{record-example}
+	\caption{Záznam v XSD a C}
+	\label{fig:record-xsd-c}
+\end{figure}
  
 
 \subsection{Objektové datové typy}
@@ -584,6 +593,8 @@ Datové typy lze rozdělit na primitivní a složené. Ty lze dále dělit na z�
  
 
 \section{Typový systém}
+
+- úzce souvisí s návrhem jazyka
 - definice typového systému podle \cite{pierce2002}:
 
 \begin{quote}
@@ -625,9 +636,14 @@ of values they compute.
 
 \subsection{Typový systém XSD}
 
-
+ - pouze primitivní typy nebo záznamy
+ - definováno XML
+ - dědičnost: https://www.liquid-technologies.com/xml-schema-tutorial/xsd-extending-types
 
 \subsection{Typový systém jazyka Java}
+
+ - primitivní typy nebo objekty
+ - abstraktní třídy, rozhraní, dědičnost
 
 \section{Typová kontrola}
 
@@ -635,6 +651,18 @@ of values they compute.
 - problémy při porovnání
 - většina informací v této části založena na publikace B. C. Pierce \cite{pierce2002}.
 - k typové kontrole jsou použity dvě relace: matching a subtyping
+
+Rozeznáváme dva druhy typové kontroly:
+
+\paragraph{Statická typová kontrola} probíhá v čase překladu a konkrétní datové typy proměnných jsou známé ještě před spuštěním programu. V případě detekce typovací chyby dojde k přerušení překladu a sestavení programu, čímž je zabráněno případným chybám, které by mohly vést k pádu programu za běhu.
+
+\paragraph{Dynamická typová kontrola} probíhá za běhu programu a provádí ji například interpret jazyka. Oproti statické typové kontrole umožňuje tato spuštění programů s chybami v typech (například \verb|int a = 1 + "abc"|), jež se mohou projevit zastavením nebo pádem programu.
+
+- většina jazyku používající statickou kontrolu používá i dynamickou, kvůli meta-programování, downcastingu, atp
+
+- relace jež se zabývá vztahem mezi typy a která se používá k vyhodnocení typové bezpečnosti se nazývá subtyping a je popsána v následující sekci
+
+
 
 \subsection{Subtyping}
 \label{sec:subtyping}
@@ -736,15 +764,6 @@ V příkladu z předešlé sekce \ref{sec:subtyping} by protokoly typů $Min$ a 
 \end{equation}
 
 Klíčové slovo \textit{Self} označuje typ, pro který mimo jiné platí $Self <: Self$. Pokud použijeme postup konstrukce subtypingu na zmíněné protokoly, výsledkem bude \textit{MinMaxProt <\# MaxProt}. Relace matching nad protokoly typů neimplikuje subtyping daných typů a nelže tedy vyvodit, že $MinMax <: Max$.
-
-\subsection{Statická}
-
- - datový typ proměnné je známý v době času překladu
- - 
-
-\subsection{Dynamická}
-
- - datový typ proměnné je známý až v čase běhu
 
 
 \chapter{Získávání metadat webových služeb v CRCE}
@@ -1555,7 +1574,7 @@ Test, zda výsledek volání odpovídá datům uvedeným v CSV souboru provádí
 
 \subsection{REST služba založená na Jersey}
 
-V tomto scénáři jsou testovány dvě verze REST služby implementované frameworkem Jersey\footnote{https://eclipse-ee4j.github.io/jersey/}. Metadata služby byla získána nahráním její implementace do CRCE způsobem popsaným v sekci \ref{sec:module-how-to}. Popis rozhraní obou verzí služby se nachází v příloze tohoto textu.  
+V tomto scénáři jsou testovány dvě verze REST služby implementované frameworkem Jersey\footnote{https://eclipse-ee4j.github.io/jersey/}. Metadata služby byla získána nahráním její implementace do CRCE způsobem popsaným v sekci \ref{sec:module-how-to}. Popis rozhraní obou verzí služby se nachází na přiloženém CD.  
 
 Rozdíl mezi jednotlivými verzemi je pouze v datovém typu parametru \textit{longParam} endpointu \textit{myresource/special/pet/}. V první verzi je tento parametr typován na \textit{java.lang.Number}, v druhé pak na \textit{java.lang.Long}.
 
@@ -1581,7 +1600,7 @@ Výsledky vrácené voláním porovnávací služby jsou zobrazeny v tabulce \re
 	
 \subsection{Služba popsaná JSON-WSP}
 
-Testovací scénář je zaměřen na služby popsané formátem JSON-WSP. Vstupní metadata byla získána indexováním čtyř verzí popisu uměle vytvořeného rozhraní založeného na příkladu převzatém z Wikipedie\footnote{https://en.wikipedia.org/wiki/JSON-WSP}. Odlišnosti mezi jednotlivými verzemi, označenými \textit{v1} až \textit{v4}, jsou rozepsány v tabulce \ref{tab:json-wsp-diffs}. Všechny verze popisů rozhraní služby jsou umístěny v příloze tohoto textu.
+Testovací scénář je zaměřen na služby popsané formátem JSON-WSP. Vstupní metadata byla získána indexováním čtyř verzí popisu uměle vytvořeného rozhraní založeného na příkladu převzatém z Wikipedie\footnote{https://en.wikipedia.org/wiki/JSON-WSP}. Odlišnosti mezi jednotlivými verzemi, označenými \textit{v1} až \textit{v4}, jsou rozepsány v tabulce \ref{tab:json-wsp-diffs}. Všechny verze popisů rozhraní služby jsou umístěny na přiloženém CD.
 
 \begin{table}[h]
 	\centering
@@ -1630,7 +1649,7 @@ Tabulka \ref{tab:jsonwsp-cmp-res} obsahuje výsledky vrácené porovnávací slu
 
 \subsection{Služba FuelEconomy}
 
-Tento scénář je zaměřen na porovnání REST služeb, jejichž rozhraní je popsáno WADL dokumentem. Metadata, jež jsou vstupem tohoto testu, byla získána indexováním popisu rozhraní služby Fuel Economy\footnote{https://www.fueleconomy.gov/ws/rest/application.wadl} a z něj vycházejících tří modifikovaných verzí. Popis změn jednotlivých verzí oproti verzi \textit{v1} je uveden v tabulce \ref{tab:wadl-diffs}. Všechny verze WADL dokumentu jsou přiloženy k tomuto textu.
+Tento scénář je zaměřen na porovnání REST služeb, jejichž rozhraní je popsáno WADL dokumentem. Metadata, jež jsou vstupem tohoto testu, byla získána indexováním popisu rozhraní služby Fuel Economy\footnote{https://www.fueleconomy.gov/ws/rest/application.wadl} a z něj vycházejících tří modifikovaných verzí. Popis změn jednotlivých verzí oproti verzi \textit{v1} je uveden v tabulce \ref{tab:wadl-diffs}. Všechny verze WADL dokumentu jsou na přiloženém CD.
 
 \begin{table}[h]
 	\centering
@@ -1678,7 +1697,7 @@ Tabulka \ref{tab:wadl-cmp-res} obsahuje výsledky vzájemného porovnání jedno
 
 \subsection{Služba STAG-Číselníky}
 
-Testovací scénář je zaměřen na SOAP služby popsané dokumentem ve formátu WSDL. Vstupní metadata byla získána indexováním popisu rozhraní služby STAG-Číselníky\footnote{https://stag-ws.zcu.cz/ws/services/soap/ciselniky?wsdl} a z něj vycházejících čtyř modifikovaných verzí. Celkem je tedy porovnáno pět verzí, jejichž rozdíly jsou popsané v tabulce \ref{tab:wsdl-diffs}. Všechny verze WSDL dokumentu popisující rozhraní této služby se nacházejí v příloze textu.
+Testovací scénář je zaměřen na SOAP služby popsané dokumentem ve formátu WSDL. Vstupní metadata byla získána indexováním popisu rozhraní služby STAG-Číselníky\footnote{https://stag-ws.zcu.cz/ws/services/soap/ciselniky?wsdl} a z něj vycházejících čtyř modifikovaných verzí. Celkem je tedy porovnáno pět verzí, jejichž rozdíly jsou popsané v tabulce \ref{tab:wsdl-diffs}. Všechny verze WSDL dokumentu popisující rozhraní této služby se nachází na přiloženém CD.
 
 \begin{table}[h]
 	\centering
@@ -1780,7 +1799,150 @@ Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům
 
 \appendix
 \chapter{WSDL webové služby pro komix Dilbert}
-Tady bude WSDL
+\begin{lstlisting}
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions
+ xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"
+ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+ xmlns:tns="http://gcomputer.net/webservices/"
+ xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+ xmlns:s="http://www.w3.org/2001/XMLSchema"
+ xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+ xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+ targetNamespace="http://gcomputer.net/webservices/"
+ xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+ 
+<wsdl:types>
+  <s:schema elementFormDefault="qualified"
+   targetNamespace="http://gcomputer.net/webservices/">
+    <s:element name="TodaysDilbert">
+      <s:complexType />
+    </s:element>
+	<s:element name="TodaysDilbertResponse">
+      <s:complexType>
+        <s:sequence>
+          <s:element 
+            minOccurs="0" maxOccurs="1" 
+            name="TodaysDilbertResult" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+    </s:element>
+    <s:element name="DailyDilbert">
+      <s:complexType>
+        <s:sequence>
+          <s:element 
+            minOccurs="1" maxOccurs="1" 
+            name="ADate" type="s:dateTime" />
+        </s:sequence>
+      </s:complexType>
+    </s:element>
+	<s:element name="DailyDilbertResponse">
+      <s:complexType>
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" 
+            name="DailyDilbertResult" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+	</s:element>
+  </s:schema>
+</wsdl:types>
+
+<wsdl:message name="TodaysDilbertSoapIn">
+  <wsdl:part name="parameters" 
+    element="tns:TodaysDilbert" />
+</wsdl:message>
+<wsdl:message name="TodaysDilbertSoapOut">
+  <wsdl:part name="parameters" 
+    element="tns:TodaysDilbertResponse" />
+</wsdl:message>
+<wsdl:message name="DailyDilbertSoapIn">
+  <wsdl:part name="parameters" 
+    element="tns:DailyDilbert" />
+</wsdl:message>
+<wsdl:message name="DailyDilbertSoapOut">
+  <wsdl:part name="parameters" 
+    element="tns:DailyDilbertResponse" />
+</wsdl:message>
+
+<wsdl:portType name="DilbertSoap">
+  <wsdl:operation name="TodaysDilbert">
+    <wsdl:input message="tns:TodaysDilbertSoapIn" />
+    <wsdl:output message="tns:TodaysDilbertSoapOut" />
+  </wsdl:operation>
+  <wsdl:operation name="DailyDilbert">
+    <wsdl:input message="tns:DailyDilbertSoapIn" />
+    <wsdl:output message="tns:DailyDilbertSoapOut" />
+  </wsdl:operation>
+</wsdl:portType>
+
+<wsdl:binding name="DilbertSoap" type="tns:DilbertSoap">
+  <soap:binding 
+    transport="http://schemas.xmlsoap.org/soap/http" />
+  <wsdl:operation name="TodaysDilbert">
+    <soap:operation 
+      soapAction="http://gcomputer.net/webservices/TodaysDilbert" 
+      style="document" />
+    <wsdl:input>
+      <soap:body use="literal" />
+    </wsdl:input>
+    <wsdl:output>
+      <soap:body use="literal" />
+    </wsdl:output>
+  </wsdl:operation>
+
+  <wsdl:operation name="DailyDilbert">
+    <soap:operation 
+      soapAction="http://gcomputer.net/webservices/DailyDilbert" 
+      style="document" />
+    <wsdl:input>
+      <soap:body use="literal" />
+    </wsdl:input>
+    <wsdl:output>
+      <soap:body use="literal" />
+    </wsdl:output>
+  </wsdl:operation>
+</wsdl:binding>
+
+<wsdl:binding name="DilbertSoap12" type="tns:DilbertSoap">
+  <soap12:binding 
+    transport="http://schemas.xmlsoap.org/soap/http" />
+  <wsdl:operation name="TodaysDilbert">
+    <soap12:operation 
+      soapAction="http://gcomputer.net/webservices/TodaysDilbert" 
+      style="document" />
+    <wsdl:input>
+    <soap12:body use="literal" />
+    </wsdl:input>
+    <wsdl:output>
+    <soap12:body use="literal" />
+    </wsdl:output>
+  </wsdl:operation>
+  <wsdl:operation name="DailyDilbert">
+    <soap12:operation 
+      soapAction="http://gcomputer.net/webservices/DailyDilbert" 
+      style="document" />
+    <wsdl:input>
+    <soap12:body use="literal" />
+    </wsdl:input>
+    <wsdl:output>
+    <soap12:body use="literal" />
+    </wsdl:output>
+  </wsdl:operation>
+</wsdl:binding>
+
+<wsdl:service name="Dilbert">
+  <wsdl:port name="DilbertSoap" binding="tns:DilbertSoap">
+    <soap:address 
+    location="http://www.gcomputer.net/webservices/dilbert.asmx"/>
+  </wsdl:port>
+  <wsdl:port name="DilbertSoap12" binding="tns:DilbertSoap12">
+    <soap12:address 
+    location="http://www.gcomputer.net/webservices/dilbert.asmx"/>
+  </wsdl:port>
+</wsdl:service>
+</wsdl:definitions>
+\end{lstlisting}
 
 
 \chapter{Výčet metadat služeb získaných z implementace}
@@ -1790,6 +1952,24 @@ Tady bude WSDL
 		\hline
 		Název elementu & Typ elementu & Popis \\ 
 		\hline
+		\hline
+		name & Attribute & Název endpointu \\
+		\hline
+		path & Attribute & Relativní cesta k endpointu \\
+		\hline
+		method & Attribute & Seznam HTTP metod endpointu \\
+		\hline
+		consumes & Attribute & Seznam přijímaných MIME typů \\
+		\hline
+		produces & Attribute & Seznam vrácených MIME typů \\
+		\hline
+		requestBody & Property & Tělo requestu \\
+		\hline
+		requestParameter & Property & Parametr endpointu \\
+		\hline
+		response & Property & Detail odpovědi endpointu \\
+		\hline
+		responsePrameter & Property & Parametr odpovědi \\
 		\hline
 	\end{tabular}
 	\caption{Metadata indexovaná pro endpoint}
@@ -1802,8 +1982,14 @@ Tady bude WSDL
 		Název elementu & Typ elementu & Popis \\ 
 		\hline
 		\hline
+		type & Attribute & Datový typ těla \\
+		\hline
+		isArray & Attribute & Příznak určující zda je tělo kolekce \\
+		\hline
+		isOptional & Attribute & Příznak určující povinnost těla \\
+		\hline
 	\end{tabular}
-	\caption{Metadata indexovaná pro parametr endpointu}
+	\caption{Metadata indexovaná pro tělo requestu}
 \end{table}
 
 \begin{table}[h]
@@ -1812,17 +1998,58 @@ Tady bude WSDL
 		\hline
 		Název elementu & Typ elementu & Popis \\ 
 		\hline
+		\hline
+		name & Attribute & Název parametru \\
+		\hline
+		dataType & Attribute & Datový typ parametru \\
+		\hline
+		category & Attribute & Kategorie parametru (PATH, FORM, ...) \\
+		\hline
+		isArray & Attribute & Příznak určující zda je parametr kolekce \\
+		\hline
+		defaultValue & Attribute & Výchozí hodnota parametru \\
+		\hline
+		isOptional & Attribute & Příznak určující povinnost parametru \\
+		\hline
+	\end{tabular}
+	\caption{Metadata indexovaná pro parametr endpointu}
+\end{table}
+
+\begin{table}
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu & Typ elementu & Popis \\ 
+		\hline
+		\hline
+		id & Attribute & Id odpovědi \\
+		\hline
+		isArray & Attribute & Příznak určující zda je odpověď kolekce \\
+		\hline
+		dataType & Attribute & Datový typ odpovědi \\
+		\hline
+		status & Attribute & Číslo vráceného HTTP statusu \\
 		\hline
 	\end{tabular}
 	\caption{Metadata indexovaná pro odpověď}
 \end{table}
 
-\begin{table}[h]
+\begin{table}
 	\centering
 	\begin{tabular}{|l|c|c|}
 		\hline
 		Název elementu & Typ elementu & Popis \\ 
 		\hline
+		\hline
+		id & Attribute & Id odpovědi \\
+		\hline
+		name & Attribute & Název parametru \\
+		\hline
+		isArray & Attribute & Příznak určující zda je parametr kolekce \\
+		\hline
+		dataType & Attribute & Datový typ parametru \\
+		\hline
+		category & Attribute & Kategorie parametru (PATH, FORM, ...) \\
 		\hline
 	\end{tabular}
 	\caption{Metadata indexovaná pro parametr odpovědi}
@@ -1835,45 +2062,5 @@ Tady bude WSDL
 \section*{Formát WADL}
 
 \section*{Formát WSDL}
-
-\chapter{Popisy rozhraní testovaných služeb}
-
-\section*{REST služba založená na Jersey}
-
-\subsection*{Verze 1}
-
-\subsection*{Verze 2}
-
-\section*{Služba popsaná JSON-WSP}
-
-\subsection*{Verze 1}
-
-\subsection*{Verze 2}
-
-\subsection*{Verze 3}
-
-\subsection*{Verze 4}
-
-\section*{Popis služby FuelEconomy}
-
-\subsection*{Verze 1}
-
-\subsection*{Verze 2}
-
-\subsection*{Verze 3}
-
-\subsection*{Verze 4}
-
-\section*{Popis služby STAG-Číselníky}
-
-\subsection*{Verze 1}
-
-\subsection*{Verze 2}
-
-\subsection*{Verze 3}
-
-\subsection*{Verze 4}
-
-\subsection*{Verze 5}
 
 \end{document}
