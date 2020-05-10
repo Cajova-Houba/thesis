@@ -93,6 +93,9 @@
 \renewcommand\theadgape{\Gape[4pt]}
 \renewcommand\cellgape{\Gape[4pt]}
 
+% delta-eq
+\usepackage{amssymb}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % VLASTNÍ TEXT PRÁCE
@@ -577,6 +580,7 @@ Datové typy lze rozdělit na primitivní a složené. Ty lze dále dělit na z�
  - šablona objektového datového typu se v Jave nazývá třída (\textit{class})
  - podpora dědičnosti, polymorfismu
  - v Jave také rozhraní 
+ - zmínit self
  
 
 \section{Typový systém}
@@ -629,9 +633,11 @@ of values they compute.
 
 - jak to funguje
 - problémy při porovnání
-- kontravariance: F'(A) <: F(B) <=> B <: A
+- většina informací v této části založena na publikace B. C. Pierce \cite{pierce2002}.
+- k typové kontrole jsou použity dvě relace: matching a subtyping
 
 \subsection{Subtyping}
+\label{sec:subtyping}
 
 - binární relace definovaná nad typy
 - reflexivní A <: A
@@ -669,9 +675,7 @@ Uvažujeme-li na příklad typy $S$ a $T$ definované jako:
 
  platí, že $S <: T$, protože $S$ má méně položek, než $T$ a zároveň $int <: long$. 
  
- V případě typů
- 
- 
+ V případě typů $S$ a $T$ definovaných jako:
  
 \begin{equation}
 	\centering
@@ -679,20 +683,59 @@ Uvažujeme-li na příklad typy $S$ a $T$ definované jako:
 	 T = \{a:short, b:char\}
 \end{equation} 
 
- $S <: T$ neplatí, protože $\overline{int <: short}$ a $\overline{boolean <: char}$ a i když je dodrženo pravidlo "do šířky", není dodrženo pravidlo "do hloubky".
+ $S <: T$ neplatí, protože $\overline{int <: short}$ a $\overline{boolean <: char}$ a i když je dodrženo pravidlo "do šířky", není dodrženo pravidlo "do hloubky" ani v případě použití permutačního pravidla.
 
 \subsubsection{Funkce}
 
-Relaci subtypingu lze také definovat pro funkce. Zde se vychází z předpokladu, že funkci lze předat jako parametr a je tedy nutné určit, zda je možné použít typovanou funkci v kontextu, kde je očekáván jiný typ.
+Relaci subtypingu lze také definovat pro funkce. Zde se vychází z předpokladu, že funkci lze předat jako parametr a je tedy nutné určit, zda je možné použít typovanou funkci v kontextu, kde je očekáván jiný typ. 
+
+Uvažujeme-li funkce $f_1$ a $f_2$ definované v \ref{eq:functions}, pak relace subtypingu platí pokud jsou splněny podmínky $T_1 <: S_1$ a $S_2 <: T_2$ (viz \ref{eq:function-subtyping}).
+
+\begin{equation}
+	f_1: S_1 \rightarrow S_2,\quad f_2: T_1 \rightarrow T_2
+	\label{eq:functions}
+\end{equation}
+
+\begin{equation}
+	T_1 <: S_1, S_2 <: T_2 \vdash f_1 <: f_2
+	\label{eq:function-subtyping}
+\end{equation}
+
+V případě typů na levé straně funkce (typy vstupních parametrů) je relace subtypingu kontravariantní. Tato změna má následující zdůvodnění: pokud je někde očekávána funkce s argumentem typovaným na $T_1$, je bezpečné použít funkci s argumentem typovaným na $S_1$ tak, že $T_1 <: S_1$, protože $T_1$ lze použít tam, kde je očekáváno $S_1$ (definice subtypingu). 
+
+Očekáváme-li v programu například funkci $f_1: short \rightarrow double$, je bezpečné ji nahradit funkcí $f_2: int \rightarrow float$, protože datový typ \textit{int} dokáže pojmout typ \textit{short}, který by při volání funkce byl použitý. Výsledek vrácený funkcí $f_2$ je typovaný na \textit{float} a je tedy bezpečné jej uložit do proměnné typované na \textit{double}, což je očekávaný návratový typ $f_1$. Obě podmínky z \ref{eq:function-subtyping} jsou tedy splněné a platí $f_2 <: f_1$.
 
 \subsubsection{Objekty} 	
 
- - kombinace záznamů a funkcí
- - u metod navíc aplikován princip kontravariance
+Z pohledu subytypingu se na objektové datové typy dá nahlížet jako na záznam s přidanými funkcemi. Dva objektové typy jsou v relaci subtypingu pokud jsou v této relaci i všechny jejich proměnné a metody\cite{abadi1995subytping}. 
+
+Problém s relací subtypingu nastává v případě rekurzivních typů s funkcemi jejichž argumentem je \textit{self} a výstupem je hodnota typovaná stejně jako \textit{self}, tedy například typ $X$ s funkcí $f: X \rightarrow X$. Příčinou je nedodržení principu kontravariance popsaného u subtypingu funkcí. Následující příklad, který tento problém ilustruje, byl přejat z \cite{abadi1995subytping} a pro vyjádření typů používá upravenou notaci lambda kalkulu, která označuje funkce symbolem $^+$. 
+
+Uvažujeme-li typy $Max$, $MinMax$ definované v \ref{eq:max-class} a \ref{eq:minmax-class}, pak při konstrukci relace $MinMax <: Max$ narazíme na funkce $max^+: Max \rightarrow Max$ a $max^+: MinMax \rightarrow MinMax$. Aby mezi těmito byla relace subtypingu, musí zároveň platit $Max <: MinMax$ a $MinMax <: Max$ což je spor a typ $MinMax$ tedy není pod-typ $Max$. Řešení tohoto problému je stručně popsáno v následující části.
+
+\begin{equation}
+	Max \triangleq \mu(X)[n:Int, max^+:X\rightarrow X] 
+	\label{eq:max-class}
+\end{equation} 
+\begin{equation}
+	MinMax \triangleq \mu(Y)[n:Int, max^+:Y\rightarrow Y, min^+: Y \rightarrow Y] 	
+	\label{eq:minmax-class}
+\end{equation}
 
 \subsection{Matching na základě subtypingu}
 
-- subtyping vs. matching (\cite{abadi1995subytping})
+Relace subtypingu v případě rekurzivních objektových typů naráží na problém popsaný v sekci \ref{sec:subtyping}. M. Abadi a L. Cardeli ve svém článku \cite{abadi1995subytping} zavádějí relaci \textit{matching} nad tzv. protokoly typů, což jsou reprezentace jejich rozhraní. Tato relace vychází ze subtypingu a je zapisována jako \textit{A <\# B}, což znamená "protokol typu A rozšiřuje protokol typu B". 
+
+V příkladu z předešlé sekce \ref{sec:subtyping} by protokoly typů $Min$ a $MinMax$ byly definovány jako:
+
+\begin{equation}
+	MaxProt \triangleq n:Int, max^+: Self \rightarrow Self
+\end{equation}
+\begin{equation}
+	MinMaxProt \triangleq n:Int, max^+: Self \rightarrow Self, min^+: Self \rightarrow Self
+\end{equation}
+
+Klíčové slovo \textit{Self} označuje typ, pro který mimo jiné platí $Self <: Self$. Pokud použijeme postup konstrukce subtypingu na zmíněné protokoly, výsledkem bude \textit{MinMaxProt <\# MaxProt}. Relace matching nad protokoly typů neimplikuje subtyping daných typů a nelže tedy vyvodit, že $MinMax <: Max$.
 
 \subsection{Statická}
 
