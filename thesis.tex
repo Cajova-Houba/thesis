@@ -609,7 +609,7 @@ of values they compute.
 
 - Typový systém udává pravidla pro kontrolu typů v programovacím jazyce nezávisle na konkrétních algoritmech. Jeho primárním účelem je zabránění výskytu chyb za běhu programu\cite{cardelli2004}.
 - elementární jazyk s podporou typů: simply typed lambda calculus
-- lambda calculus je vhodným nástrojem k definici pravidel typového systému
+- lambda kalkul je vhodným nástrojem k definici pravidel typového systému
 
 - přednášky z FJP
 - něco od datových typech obecně: https://www.cs.cmu.edu/~rwh/introsml/core/datatypes.htm
@@ -1664,14 +1664,14 @@ Tento scénář je zaměřen na porovnání REST služeb, jejichž rozhraní je 
 		\hline
 		v3 & \makecell{Odebrán resource \textit{labelvehicle}, \\ přidán resource \textit{somethingDifferent}} \\
 		\hline
-		v4 & \makecell{Změna URL a změna cesty k resource \\ \textit{/fuelprices} na \textit{fuel-prices}}  \\
+		v4 & \makecell{Změna URL a změna cesty z \textit{/fuelprices} na \textit{fuel-prices}}  \\
 		\hline
 	\end{tabular}
 	\caption{Přehled změn ve verzích služby}
 	\label{tab:wadl-diffs}
 \end{table}
 
-Scénář je zaměřen na mutaci operací a změny v URL na kterých jsou dostupné. Verze \textit{v2} a \textit{v3} testují mutaci, konkrétně přidávání a odebírání operací. Očekávané výsledky jsou \textit{DEL} v případě \textit{v2} a \textit{MUT} V případě \textit{v3}. Verze služby \textit{v4}, kde jedinou změnou je URL a cesta k endpointu \textit{fuelprices}, testuje správné nastavení příznaku \textit{MOV} a očekávaný rozdíl je \textit{NON}
+Scénář je zaměřen na mutaci operací a změny v URL na kterých jsou dostupné. Verze \textit{v2} a \textit{v3} testují mutaci, konkrétně přidávání a odebírání operací. Očekávané výsledky jsou \textit{DEL} v případě \textit{v2} a \textit{MUT} V případě \textit{v3}. Verze služby \textit{v4}, kde jedinou změnou je URL a cesta k endpointu \textit{fuelprices}, testuje správné nastavení příznaku \textit{MOV} a očekávaný rozdíl je \textit{NON}.
 
 \begin{table}[h]
 	\centering
@@ -1693,7 +1693,7 @@ Scénář je zaměřen na mutaci operací a změny v URL na kterých jsou dostup
 	\label{tab:wadl-cmp-res}
 \end{table} 
 
-Tabulka \ref{tab:wadl-cmp-res} obsahuje výsledky vzájemného porovnání jednotlivých verzí služby. Pro přehlednost je v tabulce uveden příznak MOV pouze v případě, že byl vrácen. Pokud nastaven nebyl, je v tabulce uveden pouze rozdíl služeb. 
+V tabulce \ref{tab:wadl-cmp-res} jsou obsaženy výsledky vzájemného porovnání jednotlivých verzí služby. Pro přehlednost je v tabulce uveden příznak MOV pouze v případě, že byl vrácen. Pokud nastaven nebyl, je v tabulce uveden pouze rozdíl služeb. 
 
 \subsection{Služba STAG-Číselníky}
 
