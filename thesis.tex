@@ -532,24 +532,13 @@ Tato kapitola rozebírá vlastnosti datových typů se zaměřením na jejich vz
 
 \section{Datové typy a jejich reprezentace}
 
-TODO: formulace
+Datový typ představuje množinu hodnot, kterých může nabýt proměnná, konstanta, funkce, nebo jiný výraz vzít \cite{dataType}. O programovacích jazycích mluvíme jako o explicitně typovaných, pokud je název datového typu součástí syntaxe. Je-li navíc typová kontrola prováděna v čase překladu nazývají se tyto staticky typované \cite{cardelli2004}. Takovými jazyky jsou například C nebo Java.
 
-Datový typ představuje množinu hodnot, ze které může proměnná, konstanta, funkce, nebo jiný výraz vzít svou hodnotu \cite{dataType}. O programovacích jazycích mluvíme jako o explicitně typovaných, pokud je název datového typu součástí syntaxe. Je-li navíc typová kontrola prováděna v čase překladu nazývají se tyto staticky typované \cite{cardelli2004}. Takovými jazyky jsou například C nebo Java.
-
-Datové typy lze rozdělit na primitivní a složené. Ty lze dále dělit na záznamy a objektové typy.
-
- - datové typy se dělí podle něčeho na primitivní a složené
- - složené datové typy se navíc dělí na záznamy a objekty
- - všechny tyto jsou popsány v následujících sekcích
+Datové typy lze rozdělit do tří hlavních skupin, kterými jsou primitivní, záznamové a objektové. Jednotlivé skupiny se od sebe liší především komplexností své struktury (popsána v následujících odstavcích) a z toho plynoucí složitostí způsobu porovnání (popsán v části \ref{sec:typecheck}).
  
 \subsection{Primitivní datové typy}
  
-  - nejzákladnější datové typy jazyka
-  - na rozdíl od objektových datových typů zde neexistuje dědičnost
-  - používané k reprezentaci základních datových jednotek: číslo, znak, pravdivostní hodnota
-  - říkají kompilátoru, nebo interpretu co konkrétní data v paměti reprezentují
-  - Java má 8 primitivních datových typů
-  - Příklady primitivních datových typů jazyka Java 8 v tabulce \ref{tab:java-prim-types}
+Primitivní typy jsou základními typy jazyka, jejichž účelem je uložení konkrétních hodnot (znak, číslo, ...). Typy mají pevně danou délku, nedefinují vlastní metody (na rozdíl od objektů) a neexistuje zde ani koncept dědičnosti. Jazyk obvykle definuje základní aritmetické operace pouze pro primitivní typy, nicméně výjimku tvoří např. C++, kde je možné operátory přetížit i pro uživatelsky definované typy. Java verze 8 podporuje celkem 8 primitivních datových typů, jejichž výčet se nachází v tabulce \ref{tab:java-prim-types}. 
  
 \begin{table}[h]
 	\centering
@@ -558,20 +547,30 @@ Datové typy lze rozdělit na primitivní a složené. Ty lze dále dělit na z�
 		Název datového typu & Rozsah hodnot \\
 		\hline
 		\hline
+		byte & $<-128;127>$ \\
+		\hline
+		short & $<-32768;32767>$ \\
+		\hline
 		int & $<-2^{31};2^{31}-1>$ \\
+		\hline
+		long & $<-2^{63};2^{63}-1>$ \\
+		\hline
+		float & 32-bit IEEE 754\footnote{https://ieeexplore.ieee.org/document/30711} \\
+		\hline
+		double & 64-bit IEEE 754\footnote{https://ieeexplore.ieee.org/document/30711} \\
 		\hline
 		boolean & true, false \\
 		\hline
 		char & 16-bit Unicode znaky \\
 		\hline
 	\end{tabular}
-	\caption{Výběr primitivních datových typů jazyka Java}
+	\caption{Primitivní datové typy jazyka Java}
 	\label{tab:java-prim-types}
 \end{table}
 
 \subsection{Záznamy}
 
-Datový typ záznam (anglicky \textit{record}) je kolekcí položek různých datových typů s typicky pevně daným pořadím \cite{felleisen2001}. Příkladem záznamu v jazycích je například \textit{struct} v C \textit{record} v Pascalu. Jazyk Java datový typ záznam nedefinuje.
+Datový typ záznam (anglicky \textit{record}) je kolekcí položek různých datových typů s typicky pevně daným pořadím \cite{felleisen2001}. Příkladem záznamu v jazycích je například \textit{struct} v C nebo \textit{record} v Pascalu. Jazyk Java datový typ záznam nedefinuje.
 
 Jako na záznam se také dá nahlížet na vlastní datový typ definovaný v XSD elementem \textit{complexType}, jež představuje pojmenovaný výčet položek s různými datovými typy. Pro srovnání je na obrázku \ref{fig:record-xsd-c} uveden příklad záznamu \textit{personinfo} definovaného pomocí \textit{complexType} v XSD a \textit{struct} v C.
 
@@ -585,14 +584,13 @@ Jako na záznam se také dá nahlížet na vlastní datový typ definovaný v XS
 
 \subsection{Objektové datové typy}
 
- - datový typ složený z dat a metod
- - šablona objektového datového typu se v Jave nazývá třída (\textit{class})
- - podpora dědičnosti, polymorfismu
- - v Jave také rozhraní 
- - zmínit self
- 
+Objektové typy se skládají ze stavu a metod, kterými vystavují své chování. Stav je reprezentován kolekcí položek různých datových typů, ke kterým je přistupováno metodami\cite{oracleJava}. Účelem objektů je typicky zapouzdření určité části dat s logicky související funkcionalitou, jako například rozměrů obdélníku s funkcemi pro výpočet jeho obvodu a obsahu.
 
+Třída (\textit{class}) obsahuje definice všech polí a metod, jež objekt používá. V momentě vytvoření objektu (klíčové slovo \verb|new|) mluvíme o instanci třídy. Jazyk Java podporuje dědičnost tříd, což umožňuje sdílet společný stav a chování mezi více třídami. Dědičnost a její dopady na porovnávání datových typů jsou rozvedeny v části \ref{sec:type-system}.
+
+ 
 \section{Typový systém}
+\label{sec:type-system}
 
 - úzce souvisí s návrhem jazyka
 - definice typového systému podle \cite{pierce2002}:
@@ -619,6 +617,7 @@ of values they compute.
 
 \subsection{Rekurzivní datové typy}
 
+- zmínit self tady
 - možná fajn na rekurzivní typy: http://web.mit.edu/6.005/www/sp16/classes/16-recursive-data-types/recursive/
 - převzato z \cite{pierce2002}
 - typickým příkladem je immutable seznam
@@ -646,6 +645,7 @@ of values they compute.
  - abstraktní třídy, rozhraní, dědičnost
 
 \section{Typová kontrola}
+\label{sec:typecheck}
 
 - jak to funguje
 - problémy při porovnání
