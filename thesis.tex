@@ -659,22 +659,29 @@ of values they compute.
 \section{Typová kontrola}
 \label{sec:typecheck}
 
-- jak to funguje
-- problémy při porovnání
-- většina informací v této části založena na publikace B. C. Pierce \cite{pierce2002}.
-- k typové kontrole lze použít dvou relací: matching a subtyping
+Tato podkapitola shrnuje základní informace o typové kontrole a způsoby, kterými může být provedena. Text čerpá především z publikace \cite{pierce2002} od B.C. Pierce.
 
-Rozeznáváme dva druhy typové kontroly:
+Z pohledu doby kdy ke kontrole typů dojde rozlišujeme statickou a dynamickou typovou kontrolu. Podle striktnosti pravidel aplikovaných při typové kontrole také rozlišujeme silné a statické typování. Tyto termíny jsou popsány v následujících odstavcích a s příklady jazyků znázorněny na obrázku \ref{fig:typying-examples}, jež byl převzat z \cite{mogensen2010}.
 
 \paragraph{Statická typová kontrola} probíhá v čase překladu a konkrétní datové typy proměnných jsou známé ještě před spuštěním programu. V případě detekce typovací chyby dojde k přerušení překladu a sestavení programu, čímž je zabráněno případným chybám, které by mohly vést k pádu programu za běhu.
 
 \paragraph{Dynamická typová kontrola} probíhá za běhu programu a provádí ji například interpret jazyka. Oproti statické typové kontrole umožňuje tato spuštění programů s chybami v typech (například \verb|int a = 1 + "abc"|), jež se mohou projevit zastavením nebo pádem programu.
 
-- většina jazyku používající statickou kontrolu používá i dynamickou, kvůli meta-programování, downcastingu, atp
+\paragraph{Silné typování} v případě volání operace jazyk zaručuje, že bude volána se správně typovanými argumenty \cite{mogensen2010}. Definuje-li například jazyk operaci sčítání operátorem \verb|+|, pak silně typovaný jazyk zaručí, že fragment \verb|a + b| půjde spustit pouze pokud \verb|a| a \verb|b| jsou správně typované.
 
-- relace jež se zabývá vztahem mezi typy a která se používá k vyhodnocení typové bezpečnosti se nazývá subtyping a je popsána v následující sekci
+\paragraph{Slabé typování} v případě volání operace jazyk nezaručuje, že operace prováděná nad argumenty bude z hlediska jejich typu dávat smysl. Výraz \verb|"5" * "5"| by byl v silně typovaném jazyce vyhodnocen jako chyba, nicméně slabě typovaný jazyk, jako například JavaScript, tento výraz vyhodnotí, protože oba řetězce lze konvertovat na čísla a následně vynásobit \cite{mogensen2010}. 
 
 
+\begin{figure} [h]
+	\centering
+	\includegraphics[width=\linewidth]{typing-examples}
+	\caption{Příklady jazyků rozdělených podle přístupu k typové kontrole}
+	\label{fig:typying-examples}
+\end{figure}
+
+Z uvedeného obrázku je vidět, že popsané rozdělení má spektrální charakter a jazyky typicky kombinují více přístupů. Důvodem je řešení typové kontroly v případě přístupu k polím, meta-programování, downcastignu, reflexi atp. 
+
+K určení vztahu mezi ne-primitivními typy, zejména v objektových jazycích, je užíváno relací subtypingu a matchingu. Tyto dvě relace, jež jsou popsány v následujících sekcích, měly původně tvořit základ pro porovnávání datových typů v mé práci. Z důvodů popsaných na konci kapitoly \ref{sec:crce} bylo však toto porovnávání omezeno na minimum a je tedy předmětem budoucích prací.
 
 \subsection{Subtyping}
 \label{sec:subtyping}
