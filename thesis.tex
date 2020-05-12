@@ -593,68 +593,39 @@ Třída (\textit{class}) obsahuje definice všech polí a metod, jež objekt pou
 \section{Typový systém}
 \label{sec:type-system}
 
-- úzce souvisí s návrhem jazyka
-- definice typového systému podle \cite{pierce2002}:
+Fundamentální součástí většiny jazyků je metoda pro kontrolu typové konzistence programů. Tato metoda se nazývá typový systém a B.C. Pierce ji v \cite{pierce2002} definuje takto:
 
-\begin{quote}
-A type system is a tractable syntactic method for proving the absence of
-certain program behaviors by classifying phrases according to the kinds
-of values they compute.
-\end{quote}
+% A type system is a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases according to the kinds of values they compute.
 
 \begin{quote}
 	Typový systém je sledovatelná syntaktická metoda pro prokázání absence určitých chování programu klasifikováním frází podle druhů hodnot, které představují.
 \end{quote}
 
-- Typový systém udává pravidla pro kontrolu typů v programovacím jazyce nezávisle na konkrétních algoritmech. Jeho primárním účelem je zabránění výskytu chyb za běhu programu\cite{cardelli2004}.
-- elementární jazyk s podporou typů: simply typed lambda calculus
-- lambda kalkul je vhodným nástrojem k definici pravidel typového systému
-- pro objektové jazyky se hodí object kalkul od Abadi a Cardelliho
-- typově silný jazyk = žádné execution errors pro jakýkoliv program napsaný v daném jazyce \cite{cardelli2004}
-- 
+Typový systém tedy poskytuje formální pravidla pro kontrolu typů, jež jsou nezávislá na konkrétních algoritmech použitých k jejich vymáhání. Primárním účelem takového systému je zabránění výskytu tzv. \textit{execution errors} za běhu programu, jež by mohly vést k jeho okamžitému přerušení nebo poškození dat\cite{cardelli2004}. 
 
-- přednášky z FJP
-- něco od datových typech obecně: https://www.cs.cmu.edu/~rwh/introsml/core/datatypes.htm
-- jak jazyky řeší datové typy
-	- rekurzivní vs. nerekurzivní
-- něco od taových typech obecně: https://www.cs.cmu.edu/~rwh/introsml/core/datatypes.htm
+Jednou z forem popisu typů a pravidel typového systému je typovaný lambda kalkul, případně objektový kalkul představený v \cite{abadi2006}. Základem obou je tzv. typovací relace, jež vázané proměnné X ve výrazu $\lambda x:T_1.t$ přiřazuje typ $T_1$. Následující sekce uvádí popis datových typů zmíněnými nástroji.
 
-\subsection{Rekurzivní datové typy}
+\subsection{Objektové typy}
 
-- rekurzivní datový typ, je takový, který ve své definici používá sám sebe (například typ proměnné, nebo argumentu funkce)
-- to vede na nekonečný strom
-- převzato z \cite{pierce2002}
-- typickým příkladem je immutable seznam
-	- seznam List<T> je buď prázdný, nebo je tvořený dvojicí first:T a rest:List<T>
-	- jeho konstruktor má tvar List(T, List<T>)
-	- problém spočívá v rekurzivním rozvoji, protože pravá strana je definována tím, co se snažíme definovat
-- přístup k řešení se dělí podle toho, jak je vyřešen první krok rekurzivního rozvoje
-	- equi-recursive
-		- definitionally equal = zaměnitelné v jakémkoliv kontextu, protože představují stejné nekonečné stromy
-	- iso-recursive
-		- rekurzivní rozvoj = 1. krok celého rozvoje
-		- jazyk musí mít operace fold() a unfold()
-- ty jsou navzájem isomorfní
+Jak již bylo zmíněno v sekci \ref{sec:data-types-repr}, na objekty lze nahlížet jako na kolekci proměnných a funkcí a ve výše zmíněných kalkulech jsou i takto popisovány. Jednou z vlastností objektových typů je sebe-reference, jež objektu umožňuje přistupovat k sobě samotnému (klíčové slovo \verb|self|, případně \verb|this|) a k jeho rodiči (\verb|super|, \verb|base|). Této vlastnosti lze využít i k popisu typu objektovým kalkulem, kde výraz $\varsigma(X)$ označuje \textit{self} parametr $X$. Následující příklad definuje objekt $o$ s metodou $m_1$ a tělem metody $b$:
+
+\begin{math}
+o = [m_1=\varsigma(x)b]
+\end{math}
+
+Volání metody nad objektem zapsané jako $o.method1$ by za \textit{self} parametr $x$ dosadilo instanci objektu $o$. Použití \textit{self} parametru k porovnání typů je dále rozvedeno v sekci \ref{sec:typecheck}.
 
 
-- zmínit self tady
-	- late binding of self \cite{pierce2002}
-	- použito v object calculu pro definici rekurzivních typů (resp. jejich protokolů)
-- zmínit super, kterým se objekty mohou odkazovat na rodiče
-- možná fajn na rekurzivní typy: http://web.mit.edu/6.005/www/sp16/classes/16-recursive-data-types/recursive/
+\subsection{Rekurzivní typy}
 
-- pro popis rekurzivních typů 
+Rekurzivní datový typ, je takový, který ke své definici používá sám sebe, například v typu proměnné nebo argumentu funkce. Typickým příkladem takového typu je neměnný (\textit{immutable}) seznam čísel \verb|NumList| tvořený poli \verb|first:int|, \verb|rest:NumList| a objektovým kalkulem zapsaný jako:
 
-\subsection{Typový systém XSD}
+\begin{math}
+	List \triangleq \mu(X)[first:int, rest:NumList]
+\end{math}
 
- - pouze primitivní typy nebo záznamy
- - definováno XML
- - dědičnost: https://www.liquid-technologies.com/xml-schema-tutorial/xsd-extending-types
+Během typové kontroly (viz část \ref{sec:typecheck}) je nutné typy rozvinout, aby mohlo dojít k jejich porovnání. Tento rozvoj však v případě rekurzivních typů vede na nekonečný strom, což představuje problém. B.C. Pierce zminuňuje\cite{pierce2002} dva přístupy k řešení tohoto problému, založené na odlišnosti definice typu a prvního kroku jejího rozvoje, kterými jsou \textit{equi-recursive} a \textit{iso-recursive}. První z nich se na definici typu a první krok jeho rozvoje dívá jako na ekvivalentní, protože představují "stejné" nekonečné podstromy. Druhý tyto vnímá jako definice odlišných typů, mezi kterými lze přecházet operacemi \verb|unfold()| a \verb|fold()|. Přístup \textit{equi-recursive} je běžný v objektových jazycích.
 
-\subsection{Typový systém jazyka Java}
-
- - primitivní typy nebo objekty
- - abstraktní třídy, rozhraní, dědičnost
 
 \section{Typová kontrola}
 \label{sec:typecheck}
