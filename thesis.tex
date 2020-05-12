@@ -115,18 +115,23 @@
 % co text práce obahuje
 % use casy
 
+% úvod do webových služeb obecně
  - Webové služby jsou v dnešní době stále populárnější součást vývoje aplikací
  - Spousta firem chce zpřístupnit svá data, proto poskytuje veřejné i neveřejné rozhraní pro přístup k nim
  - Webové služby také tvoří velkou část podnikových procesů
  - Existuje také spousta různých typů služeb, z nichž některé jsou popsané strojově čitelnými jazyky, jiné vůbec žádnými
  - Architektura Microservice je založe na systému volně propojených webových služeb
- - Komunikace mezi službami závisí na rozhraní, v případě, že dojde k změně v implementaci služby, jež přímo naruší kontrakt daný rozhraním, může na straně konzumenta služby vzniknout problém s kompatibilitou, který se může projevit například výpadkem služby
+ 
+% nastínění problémů s kompatibilitou služeb
+ - Správná komunikace mezi službami je postavena na jejich rozhraní. Případné změny implementace služby, jež přímo naruší kontrakt daný rozhraním, mohou na straně konzumenta služby zapříčinit problémy potenciálně vedoucí až k výpadku aplikace, která službu využívá.
  - Aplikace konzumující službu také může potřebovat přepnout poskytovatele stávající služby ať už kvůli přechodu mezi regiony, nebo dočasnému výpadku
  - Aby nedošlo k chybám při tomto přepnutí, je nutné kontrolovat vzájemnou kompatibilitu těchto služeb
+
+% jak to řeší má práce
  - Systém CRCE vyvíjený na ZČU je schopný indexace komponent a ukládání jejich metadat
- - V rámci prací Bc. Hessové a Bc. Pejřimovského vznikla rozšíření CRCE schopná transformovat rozhraní různých typů služeb do jednotného datového modelu
- - Cílem mé práce je na tyto práce navázat využitím metadat a  na základě rozdílů získaných jejich porovnáním rozhodnout o vzájemné kompatibilitě webových služeb, které reprezentují
- - V textu práce jsou postupně představeny webové služby a technologie ki jejich realizaci
+ -  V rámci prací Bc. Hessové a Bc. Pejřimovského vznikly pro systém CRCE rozšiřující moduly, schopné analyzovat různé typy webových služeb a transformovat jejich rozhraní do jednotného datového modelu.
+ - Cílem mé práce je na tyto navázat využitím metadat a na základě rozdílů získaných jejich porovnáním rozhodnout o vzájemné kompatibilitě webových služeb, které reprezentují.
+ - V textu práce jsou postupně představeny webové služby a technologie použité k jejich realizaci.
  - Následně je představen koncept datových typů a jejich vzájemného porovnání
  - Druhá část práce se zabývá návrhem a implementací porovnávacího algoritmu jako rozšiřujícího modulu pro systém CRCE
  - Na závěr je ověřena funkčnost modulu a jeho integrace do CRCE na testovacích datech 
@@ -1747,6 +1752,18 @@ Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům
 
 
 \chapter{Závěr}	
+
+Tato práce přímo navazuje na diplomové práce Bc. Gabriely Hessové a Bc. Davida Pejřimovského, ve kterých byly představeny metody pro analýzu webových služeb a následného uložení jejich popisů do CRCE. Předmětem mé práce pak bylo takto získané popisy vzájemně porovnat a na základě rozdílů rozhodnou o kompatibilitě jimi reprezentovaných služeb.
+
+V rámci této práce došlo k ověření funkčnosti výše zmíněných rozšíření a opravě několika drobných chyb, jež se projevovaly uložením vadných metadat. Po ověření funkčnosti byl na základě analýzy datového modelu navržen algoritmus porovnání zmíněných metadat, způsob reprezentace takto získaných výsledků a jejich následné vyhodnocení. Tento návrh byl realizován v podobě rozšiřujícího modulu integrovaného do CRCE, jež byl zpřístupněn skrze REST API, které CRCE poskytuje.
+
+% co dál
+- indexování custom typů
+- porovnání custom typů
+- lepší detekce MOV
+- 
+
+
 
  
 % 
