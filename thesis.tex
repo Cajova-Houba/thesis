@@ -531,6 +531,7 @@ JSON-WSP definuje službu pomocí objektů \textit{description}, \textit{request
  
  
 \chapter{Datové typy a porovnávání}
+\label{cap:data-types}
 
 Tato kapitola rozebírá vlastnosti datových typů se zaměřením na jejich vzájemné porovnání. V první části kapitoly jsou představeny datové typy obecně, včetně jejich rozdělení v imperativních a objektových jazycích. Druhá část kapitoly se zabývá typovými systémy, způsoby kontroly typů a porovnáním datových typů. Vzhledem ke kontextu práce je text kapitoly zaměřen na staticky typované jazyky a typové systémy jazyků Java a XSD.
 
@@ -1756,13 +1757,11 @@ Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům
 
 Tato práce přímo navazuje na diplomové práce Bc. Gabriely Hessové a Bc. Davida Pejřimovského, ve kterých byly představeny metody pro analýzu webových služeb a následného uložení jejich popisů do CRCE. Předmětem mé práce pak bylo takto získané popisy vzájemně porovnat a na základě rozdílů rozhodnou o kompatibilitě jimi reprezentovaných služeb.
 
-V rámci této práce došlo k ověření funkčnosti výše zmíněných rozšíření a opravě několika drobných chyb, jež se projevovaly uložením vadných metadat. Po ověření funkčnosti byl na základě analýzy datového modelu navržen algoritmus porovnání zmíněných metadat, způsob reprezentace takto získaných výsledků a jejich následné vyhodnocení. Tento návrh byl realizován v podobě rozšiřujícího modulu integrovaného do CRCE, jež byl zpřístupněn skrze REST API, které CRCE poskytuje.
+Prvním krokem v mé práci byla analýza implementace a následné ověření funkčnosti výše zmíněných rozšíření. To odhalilo několik drobných chyb jež se projevovaly uložením vadných metadat a byly následně opraveny. Po ověření funkčnosti byl na základě analýzy datového modelu webových služeb navržen algoritmus porovnání zmíněných metadat, způsob reprezentace takto získaných výsledků a jejich následné vyhodnocení a uložení do CRCE. 
 
-% co dál
-- indexování custom typů
-- porovnání custom typů
-- lepší detekce MOV
-- 
+Tento návrh byl realizován v podobě rozšiřujícího modulu integrovaného do CRCE, jež byl zpřístupněn skrze REST API, které CRCE poskytuje. Součástí integrace bylo také napojení modulu na komponenty, zajišťující persistenci dat. Celé řešení bylo následně nasazeno do vývojového prostředí a otestováno na kombinaci reálných a umělých dat, čímž byla potvrzena předpokládaná funkcionalita.
+
+V rámci budoucích prací by mohlo dojít k stávajících indexerů o podporu dalších typů služeb, například popsaných jazyky OpenAPI nebo RAML, jež byly zmíněny v kapitole \ref{sec:web-services-principles}. Důležitým rozšířením je také indexování datových typů definovaných v popisu služby, na základě kterého by mohl být porovnávací algoritmus doplněn o možnost sofistikovanějšího porovnání těchto typů, například způsoby, jež byly popsány v kapitole \ref{cap:data-types}. Tím by bylo dosaženo přesnějších výsledků při porovnávání služeb a také zlepšení celkové user experience.
 
 
 
