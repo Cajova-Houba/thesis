@@ -99,6 +99,8 @@
 % zdroják
 \usepackage{listings}
 
+% foonote v tabulce
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % VLASTNÍ TEXT PRÁCE
@@ -533,12 +535,12 @@ JSON-WSP definuje službu pomocí objektů \textit{description}, \textit{request
  
 \chapter{Datové typy a porovnávání}
 
-Tato kapitola rozebírá vlastnosti datových typů se zaměřením na jejich vzájemné porovnání. V první části kapitoly jsou představeny datové typy obecně, včetně jejich rozdělení v imperativní jazycích. Druhá část kapitoly se zabývá typovými systémy, způsoby kontroly typů a porovnáním datových typů. Vzhledem ke kontextu práce je text kapitoly zaměřen na staticky typované jazyky a typové systémy jazyků Java a XSD.
+Tato kapitola rozebírá vlastnosti datových typů se zaměřením na jejich vzájemné porovnání. V první části kapitoly jsou představeny datové typy obecně, včetně jejich rozdělení v imperativních a objektových jazycích. Druhá část kapitoly se zabývá typovými systémy, způsoby kontroly typů a porovnáním datových typů. Vzhledem ke kontextu práce je text kapitoly zaměřen na staticky typované jazyky a typové systémy jazyků Java a XSD.
 
 \section{Datové typy a jejich reprezentace}
 \label{sec:data-types-repr}
 
-Datový typ představuje množinu hodnot, kterých může nabýt proměnná, konstanta, funkce, nebo jiný výraz vzít \cite{dataType}. O programovacích jazycích mluvíme jako o explicitně typovaných, pokud je název datového typu součástí syntaxe. Je-li navíc typová kontrola prováděna v čase překladu nazývají se tyto staticky typované \cite{cardelli2004}. Takovými jazyky jsou například C nebo Java.
+Datový typ představuje množinu hodnot, kterých může nabýt proměnná, konstanta, funkce, nebo jiný výraz\cite{dataType}. O programovacích jazycích mluvíme jako o explicitně typovaných, pokud je název datového typu součástí syntaxe. Je-li navíc typová kontrola prováděna v čase překladu nazývají se tyto staticky typované \cite{cardelli2004}. Takovými jazyky jsou například C nebo Java.
 
 Datové typy lze rozdělit do tří hlavních skupin, kterými jsou primitivní, záznamové a objektové. Jednotlivé skupiny se od sebe liší především komplexností své struktury (popsána v následujících odstavcích) a z toho plynoucí složitostí způsobu porovnání (popsán v části \ref{sec:typecheck}).
  
@@ -561,9 +563,9 @@ Primitivní typy jsou základními typy jazyka, jejichž účelem je uložení k
 		\hline
 		long & $<-2^{63};2^{63}-1>$ \\
 		\hline
-		float & 32-bit IEEE 754\footnote{https://ieeexplore.ieee.org/document/30711} \\
+		float & 32-bit IEEE 754\\
 		\hline
-		double & 64-bit IEEE 754\footnote{https://ieeexplore.ieee.org/document/30711} \\
+		double & 64-bit IEEE 754\\
 		\hline
 		boolean & true, false \\
 		\hline
@@ -586,13 +588,16 @@ Jako na záznam se také dá nahlížet na vlastní datový typ definovaný v XS
 	\caption{Záznam v XSD a C}
 	\label{fig:record-xsd-c}
 \end{figure}
- 
+
+XSD umožňuje uživatelsky definované typy rozšiřovat elementem \textit{extension} a vytvářet tak komplexní struktury, nicméně i ty lze rozvinout do podoby záznamu. Uživatelský typ v XSD také může být rekurzivně definovaný. Metody práce s rekurzivními typy jsou popsány v sekcích \ref{sec:type-system} a \ref{sec:typecheck}.
 
 \subsection{Objektové datové typy}
 
-Objektové typy se skládají ze stavu a metod, kterými vystavují své chování. Stav je reprezentován kolekcí položek různých datových typů, ke kterým je přistupováno metodami\cite{oracleJava}. Účelem objektů je typicky zapouzdření určité části dat s logicky související funkcionalitou, jako například rozměrů obdélníku s funkcemi pro výpočet jeho obvodu a obsahu.
+Objektové typy se skládají ze stavu a metod, které reprezentují chování objektu. Stav je reprezentován kolekcí položek různých datových typů, ke kterým je přistupováno metodami\cite{oracleJava}. Účelem objektů je typicky zapouzdření určité části dat s logicky související funkcionalitou. Příkladem může být třída \textit{Obdelnik}, jejíž stav tvoří rozměry \textit{a}, \textit{b} a chování je reprezentováno metodami pro výpočet obsahu a obvodu.
 
-Třída (\textit{class}) obsahuje definice všech polí a metod, jež objekt používá. V momentě vytvoření objektu (klíčové slovo \verb|new|) mluvíme o instanci třídy. Jazyk Java podporuje dědičnost tříd, což umožňuje sdílet společný stav a chování mezi více třídami. Dědičnost a její dopady na porovnávání datových typů jsou rozvedeny v části \ref{sec:type-system}.
+Třída (\textit{class}) obsahuje definice všech polí a metod, jež objekt používá. Objekt, vytvořený například klíčovým slovem \verb|new|, je instancí třídy. Jazyk Java podporuje dědičnost tříd, což umožňuje sdílet společný stav a chování mezi více třídami. Dědičnost a její dopady na porovnávání datových typů jsou rozvedeny v části \ref{sec:type-system}. 
+
+Speciálními případy dědičnosti jsou v Javě také rozhraní a abstraktní třídy. Rozhraní (\textit{interface}) obsahuje pouze popis funkcionality v podobě deklarace metod a jako takové jej nelze instanciovat, ale pouze implementovat (případně oddědit v jiném rozhraní). Pouhou deklarací metod je vytvořen kontrakt, který musí implementující třídy dodržet. Tento přístup oddělující popis funkcionality od samotné implementace je využíván například v komponentové architektuře. Abstraktní třídy též nelze instanciovat, nicméně mohou nést třídní proměnné a část implementace. Tyto třídy typicky deklarují abstraktní metody, které, podobně jako rozhraní, pouze popisují chování a konkrétní logika je obsažena v implementující třídě. 
 
  
 \section{Typový systém}
@@ -606,7 +611,7 @@ Fundamentální součástí většiny jazyků je metoda pro kontrolu typové kon
 	Typový systém je sledovatelná syntaktická metoda pro prokázání absence určitých chování programu klasifikováním frází podle druhů hodnot, které představují.
 \end{quote}
 
-Typový systém tedy poskytuje formální pravidla pro kontrolu typů, jež jsou nezávislá na konkrétních algoritmech použitých k jejich vymáhání. Primárním účelem takového systému je zabránění výskytu tzv. \textit{execution errors} za běhu programu, jež by mohly vést k jeho okamžitému přerušení nebo poškození dat\cite{cardelli2004}. 
+Typový systém tedy poskytuje formální pravidla pro kontrolu typů, jež jsou nezávislá na konkrétních algoritmech použitých k jejich vymáhání. Primárním účelem takového systému je zabránění výskytu tzv. \textit{execution errors} za běhu programu, což je množina chyb, které by mohly vést k jeho okamžitému přerušení nebo poškození dat\cite{cardelli2004}. Tyto chyby se dělí na \textit{trapped}, které způsobí okamžité ukončení programu, a \textit{untrapped}, které samy o sobě chod programu nezastaví, nicméně mohou vést na nepredikovatelné chování jehož výsledkem může být ukončení chodu programu. Příkladem \textit{untrapped} chyby (v jazyce C) je přístup na legální adresu a následné přečtení příliš velkého množství dat v důsledku špatného typování. Následek takové chyby může být provádění výpočtu nad neplatnými daty.
 
 Jednou z forem popisu typů a pravidel typového systému je typovaný lambda kalkul, případně objektový kalkul představený v \cite{abadi2006}. Základem obou je tzv. typovací relace, jež vázané proměnné X ve výrazu $\lambda x:T_1.t$ přiřazuje typ $T_1$. Následující sekce uvádí popis datových typů zmíněnými nástroji.
 
@@ -618,18 +623,18 @@ Jak již bylo zmíněno v sekci \ref{sec:data-types-repr}, na objekty lze nahlí
 o = [m_1=\varsigma(x)b]
 \end{math}
 
-Volání metody nad objektem zapsané jako $o.method1$ by za \textit{self} parametr $x$ dosadilo instanci objektu $o$. Použití \textit{self} parametru k porovnání typů je dále rozvedeno v sekci \ref{sec:typecheck}.
+Volání metody nad objektem zapsané jako $o.method1$ by za \textit{self} parametr $x$ dosadilo instanci objektu $o$. Použití \textit{self} parametru k porovnání typů je dále rozvedeno v sekci \ref{sec:typecheck}. 
 
 
 \subsection{Rekurzivní typy}
 
-Rekurzivní datový typ, je takový, který ke své definici používá sám sebe, například v typu proměnné nebo argumentu funkce. Typickým příkladem takového typu je neměnný (\textit{immutable}) seznam čísel \verb|NumList| tvořený poli \verb|first:int|, \verb|rest:NumList| a objektovým kalkulem zapsaný jako:
+Rekurzivní datový typ, je takový, který ke své definici používá sám sebe, například v typu proměnné nebo argumentu funkce. Typickým příkladem takového typu je neměnný (\textit{immutable}) seznam čísel \verb|NumList|, tvořený poli \verb|first:int|, \verb|rest:NumList| a objektovým kalkulem zapsaný jako:
 
 \begin{math}
-	List \triangleq \mu(X)[first:int, rest:NumList]
+	NumList \triangleq \mu(X)[first:int, rest:NumList]
 \end{math}
 
-Během typové kontroly (viz část \ref{sec:typecheck}) je nutné typy rozvinout, aby mohlo dojít k jejich porovnání. Tento rozvoj však v případě rekurzivních typů vede na nekonečný strom, což představuje problém. B.C. Pierce zminuňuje\cite{pierce2002} dva přístupy k řešení tohoto problému, založené na odlišnosti definice typu a prvního kroku jejího rozvoje, kterými jsou \textit{equi-recursive} a \textit{iso-recursive}. První z nich se na definici typu a první krok jeho rozvoje dívá jako na ekvivalentní, protože představují "stejné" nekonečné podstromy. Druhý tyto vnímá jako definice odlišných typů, mezi kterými lze přecházet operacemi \verb|unfold()| a \verb|fold()|. Přístup \textit{equi-recursive} je běžný v objektových jazycích.
+Během typové kontroly (viz část \ref{sec:typecheck}) je nutné typy rozvinout, aby mohlo dojít k jejich porovnání. Tento rozvoj však v případě rekurzivních typů vede na nekonečný strom, což představuje problém. B.C. Pierce zminuňuje\cite{pierce2002} dva přístupy k řešení tohoto problému, založené na odlišnosti definice typu a prvního kroku jejího rozvoje, kterými jsou \textit{equi-recursive} a \textit{iso-recursive}. První z nich se na definici typu a první krok jeho rozvoje dívá jako na ekvivalentní, protože představují "stejné"\space  nekonečné podstromy. Druhý tyto vnímá jako definice odlišných typů, mezi kterými lze přecházet operacemi \verb|unfold()| a \verb|fold()|. Přístup \textit{equi-recursive} je více běžný v objektových jazycích.
 
 
 \section{Typová kontrola}
@@ -639,6 +644,13 @@ Tato podkapitola shrnuje základní informace o typové kontrole a způsoby, kte
 
 Z pohledu doby kdy ke kontrole typů dojde rozlišujeme statickou a dynamickou typovou kontrolu. Podle striktnosti pravidel aplikovaných při typové kontrole také rozlišujeme silné a statické typování. Tyto termíny jsou popsány v následujících odstavcích a s příklady jazyků znázorněny na obrázku \ref{fig:typying-examples}, jež byl převzat z \cite{mogensen2010}.
 
+\begin{figure} [h]
+	\centering
+	\includegraphics[width=\linewidth]{typing-examples}
+	\caption{Příklady jazyků rozdělených podle přístupu k typové kontrole}
+	\label{fig:typying-examples}
+\end{figure}
+
 \paragraph{Statická typová kontrola} probíhá v čase překladu a konkrétní datové typy proměnných jsou známé ještě před spuštěním programu. V případě detekce typovací chyby dojde k přerušení překladu a sestavení programu, čímž je zabráněno případným chybám, které by mohly vést k pádu programu za běhu.
 
 \paragraph{Dynamická typová kontrola} probíhá za běhu programu a provádí ji například interpret jazyka. Oproti statické typové kontrole umožňuje tato spuštění programů s chybami v typech (například \verb|int a = 1 + "abc"|), jež se mohou projevit zastavením nebo pádem programu.
@@ -646,14 +658,6 @@ Z pohledu doby kdy ke kontrole typů dojde rozlišujeme statickou a dynamickou t
 \paragraph{Silné typování} v případě volání operace jazyk zaručuje, že bude volána se správně typovanými argumenty \cite{mogensen2010}. Definuje-li například jazyk operaci sčítání operátorem \verb|+|, pak silně typovaný jazyk zaručí, že fragment \verb|a + b| půjde spustit pouze pokud \verb|a| a \verb|b| jsou správně typované.
 
 \paragraph{Slabé typování} v případě volání operace jazyk nezaručuje, že operace prováděná nad argumenty bude z hlediska jejich typu dávat smysl. Výraz \verb|"5" * "5"| by byl v silně typovaném jazyce vyhodnocen jako chyba, nicméně slabě typovaný jazyk, jako například JavaScript, tento výraz vyhodnotí, protože oba řetězce lze konvertovat na čísla a následně vynásobit \cite{mogensen2010}. 
-
-
-\begin{figure} [h]
-	\centering
-	\includegraphics[width=\linewidth]{typing-examples}
-	\caption{Příklady jazyků rozdělených podle přístupu k typové kontrole}
-	\label{fig:typying-examples}
-\end{figure}
 
 Z uvedeného obrázku je vidět, že popsané rozdělení má spektrální charakter a jazyky typicky kombinují více přístupů. Důvodem je řešení typové kontroly v případě přístupu k polím, meta-programování, downcastignu, reflexi atp. 
 
@@ -678,7 +682,7 @@ V případě primitivních typů subtyping označuje schopnost jednoho typu pojm
 
 \subsubsection{Záznamy}
 
-Relace subtypingu je pro záznamové datové typy $S = \{k_1:S_1 ... k_m:S_m\}$ a $T = \{l_1:T_1 ... l_n:T_n\}$ je definována pomocí následujících třech kritérií:
+Relace subtypingu je pro záznamové datové typy $S = \{k_1:S_1 ... k_m:S_m\}$ a $T = \{l_1:T_1 ... l_n:T_n\}$, kde dvojice $k_i:S_i$ označuje položku $k_i$ typovanou na $S_i$, definována pomocí následujících třech kritérií:
 
 \begin{itemize}
 	\item \textbf{subtyping do šířky}: Delší záznam je sub-typ kratšího záznamu ($n \le m$),
