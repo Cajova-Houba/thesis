@@ -118,16 +118,13 @@
 % use casy
 
 % úvod do webových služeb obecně
- - Webové služby jsou v dnešní době stále populárnější součást vývoje aplikací
- - Spousta firem chce zpřístupnit svá data, proto poskytuje veřejné i neveřejné rozhraní pro přístup k nim
- - Webové služby také tvoří velkou část podnikových procesů
- - Existuje také spousta různých typů služeb, z nichž některé jsou popsané strojově čitelnými jazyky, jiné vůbec žádnými
- - Architektura Microservice je založe na systému volně propojených webových služeb
+Webové služby jsou v dnešní době stále populárnější součást vývoje aplikací a existuje spousta poskytovatelů, kteří skrze tyto nabízejí možnost řízené manipulace s jejich daty (Facebook, Twitter), integraci aplikací (Trello) nebo výpočetní výkon (AWS, Google). Webové služby také tvoří nedílnou součást vnitro-podnikové a mezi-podnikové komunikace v podobě ERP\footnote{Enterprise Resource Planning} a EDI\footnote{Electronic Data Interchange} systémů.
  
 % nastínění problémů s kompatibilitou služeb
- - Správná komunikace mezi službami je postavena na jejich rozhraní. Případné změny implementace služby, jež přímo naruší kontrakt daný rozhraním, mohou na straně konzumenta služby zapříčinit problémy potenciálně vedoucí až k výpadku aplikace, která službu využívá.
- - Aplikace konzumující službu také může potřebovat přepnout poskytovatele stávající služby ať už kvůli přechodu mezi regiony, nebo dočasnému výpadku
- - Aby nedošlo k chybám při tomto přepnutí, je nutné kontrolovat vzájemnou kompatibilitu těchto služeb
+% todo: formulace
+Aby propojení služeb fungovalo správně a bylo možné je pohodlně škálovat, je nutná znalost operací nebo zdrojů, poskytovaných službou, a také způsobu, kterým služba komunikuje. Všechny tyto informace jsou popsány v rozhraní poskytnutém službou na jehož správnosti závisí úspěch celé komunikace. Případné změny implementace služby, jež přímo naruší kontrakt daný rozhraním, mohou na straně konzumenta služby zapříčinit problémy potenciálně vedoucí až k výpadku aplikace, která službu využívá. 
+
+Rozhraní také odděluje popis funkcionality od konkrétní implementace služby, kterou může dodávat mnoho poskytovatelů a konzumující aplikace mezi nimi mohou přepínat ať už na základě přechodu mezi regiony nebo dočasné nedostupnosti. Aby nedošlo k chybám při tomto přepnutí, je nutné kontrolovat vzájemnou kompatibilitu těchto služeb.
 
 % jak to řeší má práce
  - Systém CRCE vyvíjený na ZČU je schopný indexace komponent a ukládání jejich metadat
