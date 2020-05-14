@@ -122,18 +122,14 @@ Webové služby jsou v dnešní době stále populárnější součást vývoje 
  
 % nastínění problémů s kompatibilitou služeb
 % todo: formulace
-Aby propojení služeb fungovalo správně a bylo možné je pohodlně škálovat, je nutná znalost operací nebo zdrojů, poskytovaných službou, a také způsobu, kterým služba komunikuje. Všechny tyto informace jsou popsány v rozhraní poskytnutém službou na jehož správnosti závisí úspěch celé komunikace. Případné změny implementace služby, jež přímo naruší kontrakt daný rozhraním, mohou na straně konzumenta služby zapříčinit problémy potenciálně vedoucí až k výpadku aplikace, která službu využívá. 
+Aby propojení služeb fungovalo správně a bylo možné je pohodlně škálovat, je nutná znalost operací nebo zdrojů, poskytovaných službou, a také způsobu, kterým služba komunikuje. Všechny tyto informace jsou popsány v rozhraní poskytnutém službou na jehož správnosti závisí úspěch celé komunikace. Případné změny implementace služby, jež přímo naruší kontrakt daný rozhraním, mohou na straně konzumenta zapříčinit problémy potenciálně vedoucí až k výpadku aplikace, která službu využívá. 
 
-Rozhraní také odděluje popis funkcionality od konkrétní implementace služby, kterou může dodávat mnoho poskytovatelů a konzumující aplikace mezi nimi mohou přepínat ať už na základě přechodu mezi regiony nebo dočasné nedostupnosti. Aby nedošlo k chybám při tomto přepnutí, je nutné kontrolovat vzájemnou kompatibilitu těchto služeb.
+V případě použití webových služeb v systémech, jejichž kontext se mění s časem nebo polohou, může být potřeba přepnout mezi různými poskytovateli ať už z důvodu přechodu mezi regiony nebo dočasného výpadku. Aby nedošlo k chybám při tomto přepnutí, je nutné kontrolovat vzájemnou kompatibilitu rozhraní těchto služeb a zaručit, že nebude narušen klientem očekávaný kontrakt.
 
 % jak to řeší má práce
- - Systém CRCE vyvíjený na ZČU je schopný indexace komponent a ukládání jejich metadat
- -  V rámci prací Bc. Hessové a Bc. Pejřimovského vznikly pro systém CRCE rozšiřující moduly, schopné analyzovat různé typy webových služeb a transformovat jejich rozhraní do jednotného datového modelu.
- - Cílem mé práce je na tyto navázat využitím metadat a na základě rozdílů získaných jejich porovnáním rozhodnout o vzájemné kompatibilitě webových služeb, které reprezentují.
- - V textu práce jsou postupně představeny webové služby a technologie použité k jejich realizaci.
- - Následně je představen koncept datových typů a jejich vzájemného porovnání
- - Druhá část práce se zabývá návrhem a implementací porovnávacího algoritmu jako rozšiřujícího modulu pro systém CRCE
- - Na závěr je ověřena funkčnost modulu a jeho integrace do CRCE na testovacích datech 
+Systém CRCE vyvíjený skupinou ReliSA na Západočeské Univerzitě je schopen indexace komponent a ukládání takto získaných metadat. V rámci diplomových prací Bc. Hessové a Bc. Pejřimovského vznikly pro systém CRCE rozšiřující moduly, schopné analyzovat různé typy webových služeb a transformovat jejich rozhraní do jednotného datového modelu. Cílem mé práce je na tyto navázat využitím metadat a na základě rozdílů získaných jejich porovnáním rozhodnout o vzájemné kompatibilitě webových služeb, které reprezentují.
+
+V první části textu práce jsou nejprve představeny webové služby a technologie použité k jejich realizaci. Následně je popsán koncept datových typů a způsob vzájemného porovnání. Druhá část práce se zabývá návrhem a implementací porovnávacího algoritmu jako rozšiřujícího modulu pro systém CRCE. Na závěr je ověřena správnost funkce modulu a jeho integrace do CRCE na testovacích datech.
 
 \chapter{Webové služby}
 \label{sec:web-services-principles}
