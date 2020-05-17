@@ -615,7 +615,21 @@ Fundamentální součástí většiny jazyků je metoda pro kontrolu typové kon
 
 Typový systém tedy poskytuje formální pravidla pro kontrolu typů, jež jsou nezávislá na konkrétních algoritmech použitých k jejich vymáhání. Primárním účelem takového systému je zabránění výskytu tzv. \textit{execution errors} za běhu programu, což je množina chyb, které by mohly vést k jeho okamžitému přerušení nebo poškození dat \cite{cardelli2004}. Tyto chyby se dělí na \textit{trapped}, které způsobí okamžité ukončení programu, a \textit{untrapped}, které samy o sobě chod programu nezastaví, nicméně mohou vést na nepredikovatelné chování jehož výsledkem může být ukončení chodu programu. Příkladem \textit{untrapped} chyby (v jazyce C) je přístup na legální adresu a následné přečtení příliš velkého množství dat v důsledku špatného typování. Následek takové chyby může být provádění výpočtu nad neplatnými daty.
 
+
 Jednou z forem popisu typů a pravidel typového systému je typovaný lambda kalkul, případně objektový kalkul představený v \cite{abadi2006}. Základem obou je tzv. typovací relace, jež vázané proměnné $x$ ve výrazu $\lambda x:T_1.t$ přiřazuje typ $T_1$. Následující sekce uvádí popis datových typů zmíněnými nástroji.
+
+\subsection{Primitivní datové typy, záznamy a funkce}
+
+Jak již bylo zmíněno, základem kalkulů používaných pro definici pravidel typového systému je typovací relace. V případě primitivních datových typů nelze typ rozložit na atributy a funkce, jako je tomu např. u objektových typů, ale lze jej definovat pomocí typových pravidel. Například typ $T := Bool$ by mohl být definován pravidly $true: Bool$, $false: Bool$, které definují hodnoty datového typu a pravidlem \ref{eq:bool-ternary} definujícím výsledný typ ternárního operátoru \textit{if-then-else}.
+
+\begin{equation}
+	t_1: Bool, t_2:T, t_3:T \vdash (\verb|if|\: t_1\: \verb|then|\: t_2\: \verb|else|\: t_3):T
+	\label{eq:bool-ternary}
+\end{equation}
+
+Na záznamy lze nahlížet jako na kolekci typovaných položek a záznam $R = \{r_1:R_1 ... r_n:R_n\}$ je tedy definován jako množina položek $r_i$ typovaných na $R_i$.
+
+Datové typy funkcí jsou typicky popsány jako relace mezi datovým typem argumentu a datovým typem výsledku. Například funkce $next(n_1)$ jež vrací následovníka celého čísla $n_1$ by byla zapsána jako $next: int \rightarrow int$. Lambda kalkulem by stejná funkce byla zapsána jako $\lambda x:int.t_2\:\::\:\: int \rightarrow int$.
 
 \subsection{Objektové typy}
 
