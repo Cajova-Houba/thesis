@@ -782,11 +782,11 @@ Klíčové slovo \textit{Self} označuje typ, pro který mimo jiné platí $Self
 \chapter{Získávání metadat webových služeb v CRCE}
 \label{sec:crce}
 
-Cílem této práce je vytvořit rozšíření pro úložiště CRCE\footnote{Component Repository supporting Compatibility Evaluation}, které bude schopno vyhodnocovat vzájemnou kompatibilitu indexovaných webových služeb. Tato kapitola představuje samotné úložiště, formát metadat a obecný způsob jejich získání. Na konci kapitoly je popsán princip fungování konkrétních rozšíření, která indexují webové služby (tzv. indexery).
+Realizační část této práce se zabývá návrhem a vytvořením nástroje, jež bude schopen vyhodnocovat vzájemnou kompatibilitu webových služeb. K tomu bylo vybráno existující úložiště CRCE\footnote{Component Repository supporting Compatibility Evaluation}, neboť pro něj již jsou implementovány moduly schopné analýzy webových služeb a uložení získaných metadat. Tato kapitola představuje samotné úložiště, formát metadat a obecný způsob jejich získání. Na konci kapitoly je popsán princip fungování konkrétních rozšíření, která indexují webové služby (tzv. indexery), včetně ověření jejich funkcionality.
 
 \section{CRCE}
 
-CRCE je komponentové úložiště dlouhodobě vyvíjené a spravované výzkumnou skupinou ReliSA na Katedře Informatiky ZČU, jehož primárním účelem je indexace a následná kontrola vzájemné kompatibility komponent. Úložiště je postaveno na modulární architektuře (viz obrázek \ref{fig:crce-arch}) a je tedy možné přidat rozšíření pro indexaci a zpracování vlastních dat.
+CRCE je komponentové úložiště dlouhodobě vyvíjené a spravované výzkumnou skupinou ReliSA na Katedře Informatiky ZČU, jehož primárním účelem je indexace komponent a následná kontrola jejich vzájemné kompatibility. Proces indexace v sobě zahrnuje analýzu a sběr metadat, jež jsou následně uložena do CRCE. Úložiště je postaveno na modulární architektuře (viz obrázek \ref{fig:crce-arch}) a je tedy možné přidat rozšíření pro indexaci a zpracování vlastních dat.
 
 \begin{figure}[h]
 	\centering
@@ -933,8 +933,6 @@ Modul pro indexování webových služeb vznikl v rámci práce Bc. Davida Pejř
 
 Struktura dat vytvořených pro REST služby (tedy z popisu WADL, nebo JSON-WSP) je podobná struktuře dat vytvořené předchozím indexerem. Endpoint je tedy reprezentován entitou \textit{Capability}, jeho parametry entitami \textit{Property}. Z popisu Json-WSP je ještě vytvořena reprezentace odpovědi pro daný endpoint (entita \textit{Property}). Z popisu WADL se žádné další vlastnosti endpointů nezískávají.
 
-Z WSDL popisu je vytvořena reprezentace služeb, jež jsou popsány xml elementy \verb|<wsdl:service>| a jejich vnořených endpointů. Endpoint je ve WSDL popsán elementem \verb|<wsdl:port>| a má definované operace (elementy \verb|<wsdl:operation>|), nicméně modul tyto nevnořuje a vytváří zjednodušenou reprezentaci. Model endpointu tedy obsahuje metadata získaná z elementů \verb|<wsdl:operation>| a url definovanou v elementu \verb|<wsdl:port>|. Služby i endpointy jsou v metadatech reprezentovány entitami \textit{Capability}. Oproti REST službám, které mají jednu úroveň vnoření \textit{Capability}, zde vznikají úrovně dvě. Výčet elementů API a jejich reprezentace v metadatech je uveden v tabulce \ref{tab:ws-indexed}.
-
 \begin{table}[h]
 	\centering
 	\begin{tabular}{|l | c | c |}
@@ -957,16 +955,25 @@ Z WSDL popisu je vytvořena reprezentace služeb, jež jsou popsány xml element
 	\label{tab:ws-indexed}
 \end{table}
 
-Logika parsování WSDL souborů (verze 1.1. i 2.0) obsahovala chybu ve čtení adresy endpointu. Ta byla očekávána v atributu \verb|action| elementu \verb|<wsdl:operation>|, který ale není uveden ve specifikaci WSDL 1.1  \cite{wsdl1} ani WSDL 2.0 \cite{wsdl2}. Tuto chybu jsem v rámci mé práce opravil.
+Z WSDL popisu je vytvořena reprezentace služeb, jež jsou popsány xml elementy \verb|<wsdl:service>| a jejich vnořených endpointů. Endpoint je ve WSDL popsán elementem \verb|<wsdl:port>| a má definované operace (elementy \verb|<wsdl:operation>|), nicméně modul tyto nevnořuje a vytváří zjednodušenou reprezentaci. Model endpointu tedy obsahuje metadata získaná z elementů \verb|<wsdl:operation>| a url definovanou v elementu \verb|<wsdl:port>|. Služby i endpointy jsou v metadatech reprezentovány entitami \textit{Capability}. Oproti REST službám, které mají jednu úroveň vnoření \textit{Capability}, zde vznikají úrovně dvě. Výčet elementů API a jejich reprezentace v metadatech je uveden v tabulce \ref{tab:ws-indexed}.
 
-\subsection{Limity indexování}
+
+\section{Ověření funkčnosti indexerů a jejich limity}
 \label{sec:index-limits}
+
+Jedním z bodů zadání mé práce bylo seznámení se indexery a ověření jejich funkčnosti a správné integrace do CRCE. Toho jsem dosáhl prostudováním implementace obou zmíněných rozšíření a také provedením několika manuálních testů. 
+
+Během testování jsem v logice parsování WSDL souborů (verze 1.1. i 2.0) objevil chybu ve čtení adresy endpointu. Ta byla očekávána v atributu \verb|action| elementu \verb|<wsdl:operation>|, který ale není uveden ve specifikaci WSDL 1.1  \cite{wsdl1} ani WSDL 2.0 \cite{wsdl2}. Tuto chybu jsem v rámci mé práce opravil.
+
+\subsection{Limity indexování webových služeb}
 
 Současný proces indexování webových služeb naráží na dva známé problémy týkající se datových typů. Jedná se o indexování rekurzivních datových typů a absenci samotných definic typů.
 
-První problém se týká zejména indexování webových služeb podle popisných souborů, protože ty definice typů obsahují. Způsoby rozvoje a ukládání datových typů jsou popsány v \cite{abadi1995subytping}, nicméně logika zatím není implementována. Druhý problém se týká binární analýzy REST služeb, protože archiv s implementací služby nemusí nutně obsahovat definice tříd. Ty mohou být například v jiném artefaktu, na který se archiv pouze odkazuje skrze závislost.
+První problém se týká zejména indexování webových služeb podle popisných souborů, protože ty definice typů obsahují. Tyto rekurzivní typy mohou mít různou složitost, což vede na problémy popsané v kapitole \ref{cap:data-types}. Řešení těchto problémů, jež by umožnilo provést nad těmito datovými typy rozvoj a následně je uložit, existuje, nicméně logika zatím není implementována. 
 
-Z těchto důvodů je do metadat uložen pouze název datového typu, což snižuje možnosti porovnávání služeb.
+Druhý problém se týká binární analýzy REST služeb, protože archiv s implementací služby nemusí nutně obsahovat definice všech tříd, jež byly v API použité. Ty mohou být například v jiném artefaktu, na který se archiv pouze odkazuje skrze závislost.
+
+Z těchto důvodů je do metadat uložen pouze název datového typu. Důsledkem toho nemůže porovnávací algoritmus (popsaný v kapitole \ref{cap:alg}) detekovat změny uvnitř typového rozvoje a během porovnání může pracovat pouze se jménem datového typu.
 
 % - custom datové typy
 % - 2 problémy
@@ -979,7 +986,7 @@ Z těchto důvodů je do metadat uložen pouze název datového typu, což sniž
 % - oba dva moduly používají jiné identifikátory pro stejné elementy (endpoint, parametr, ...) proto nelze vzájemně porovnat REST indexovaný prvním a druhým modulem
 
 \chapter{Porovnávání webových služeb}
-\label{sec:alg}
+\label{cap:alg}
 
 Cílem této práce je rozšířit systém CRCE o funkcionalitu pro porovnání webových služeb. Tato kapitola detailně rozebírá porovnávací algoritmus společně s daty, nad kterými je možné porovnávač použít. Zároveň je zde popsán způsob vyhodnocení výsledků porovnání a formát uložení takto získaných dat.
 
