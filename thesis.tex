@@ -155,7 +155,7 @@ V této kapitole jsou definovány webové služby a související pojmy. Dále j
 % je třeba je n v rámci této práce jasně definovat
 % W3C používá jendu difnici \cite{w3cWsDesignIssues}
 
-Pojem 'webová služba' může mít odlišné významy\cite{w3cWsDesignIssues} a existuje pro něj také spousta definic, z nichž některé jsou více či méně vhodné pro tento text. Například konsorcium W3C\footnote{World Wide Web Consorcium} definuje pojem webová služba následovně\cite{w3cWsArch}:
+Pojem 'webová služba' může mít odlišné významy \cite{w3cWsDesignIssues} a existuje pro něj také spousta definic, z nichž některé jsou více či méně vhodné pro tento text. Například konsorcium W3C\footnote{World Wide Web Consorcium} definuje pojem webová služba následovně \cite{w3cWsArch}:
 
 
  % A Web service is a software system designed to support interoperable machine-to-machine interaction over a network. It has an interface described in a machine-processable format (specifically WSDL). Other systems interact with the Web service in a manner prescribed by its description using SOAP messages, typically conveyed using HTTP with an XML serialization in conjunction with other Web-related standards.
@@ -165,18 +165,18 @@ Pojem 'webová služba' může mít odlišné významy\cite{w3cWsDesignIssues} a
 
 % ta není dobrá protože ... 
 
-Tato definice je pro účely mé práce problematická z několika důvodů. Prvním z nich je omezení formátu popisu služby pouze na WSDL. Strojově čitelný popis rozhraní sice snižuje náročnost vytvoření klienta pro danou službu, nicméně WSDL není jediným takovým formátem a netřeba tedy z definice vyloučit služby používající jiné formáty jako například WADL nebo JSON-WSP, jež přímo souvisí s mou prací. Závislost na jednom konkrétním formátu také nemusí být výhodná z hlediska budoucího vývoje, protože nezohledňuje možnost příchodu jiného formátu nebo změny přístupu k webovým službám obecně. WSDL do verze 1.1 například neumožňovalo popis REST služeb, ty byly zohledněny až ve verzi 2.0\cite{restWsdl}.  
+Tato definice je pro účely mé práce problematická z několika důvodů. Prvním z nich je omezení formátu popisu služby pouze na WSDL. Strojově čitelný popis rozhraní sice snižuje náročnost vytvoření klienta pro danou službu, nicméně WSDL není jediným takovým formátem a netřeba tedy z definice vyloučit služby používající jiné formáty jako například WADL nebo JSON-WSP, jež přímo souvisí s mou prací. Závislost na jednom konkrétním formátu také nemusí být výhodná z hlediska budoucího vývoje, protože nezohledňuje možnost příchodu jiného formátu nebo změny přístupu k webovým službám obecně. WSDL do verze 1.1 například neumožňovalo popis REST\footnote{Representational State Transfer} služeb (viz sekce \ref{sec:rest}), ty byly zohledněny až ve verzi 2.0 \cite{restWsdl}.  
 
 Definice dále svazuje implementaci webové služby s použitím konkrétního protokolu pro výměnu dat, v tomto případě SOAP, čímž opět nezahrnuje služby používající jakékoliv jiné protokoly. I zde platí nevýhoda takové vazby v kontextu budoucího vývoje, jež byla zmíněna v předchozím odstavci. Webová služba by například přestala být webovou službou, pokud by došlo k změně protokolu pro výměnu dat ze SOAP na JSON-RPC, což není žádoucí.
 
 Posledním důvodem je vymáhání použití XML jako jediného formátu pro přenos dat i přes rostoucí popularitu jiných formátů, jako například JSON nebo v poslední době YAML. Není také výjimkou, že webové služby podporují více formátů pro serializaci dat a specifikace jednoho konkrétního formátu v definici tedy není nutná. 
 
 % a proto je webová služba zadefinována takto
-Z uvedených důvodů je potřeba zavést vhodnější definici s volnějšími kritérii tak, aby webové služby co možná nejméně omezovala. Definici, která služby popisuje primárně skrze užití komunikačního protokolu HTTP ve své knize nabízí R. Daigneau \cite{fromObjectsToWs}: 
+Z uvedených důvodů je potřeba zavést vhodnější definici s volnějšími kritérii tak, aby webové služby co možná nejméně omezovala. Definici, která služby popisuje primárně skrze užití komunikačního protokolu HTTP ve své knize nabízí R. Daigneau  \cite{fromObjectsToWs}: 
 
 %	Web services provide the means to integrate disparate systems and expose reusable business functions over HTTP. They either leverage HTTP as a simple transport over which data is carried (e.g., SOAP/WSDL services) or use it as a complete application protocol that defines the semantics for service behavior (e.g., RESTful services).
 \begin{quote}
-	Webové služby poskytují prostředky pro integraci různorodých systémů a zpřístupňují znovupoužitelné business funkce skrze HTTP. HTTP je použito buď jako jednoduchý komunikační protokol, skrze který jsou přenášena data (např. SOAP/WSDL služby), nebo jako kompletní aplikační protokol, jež definuje sémantiku chování služby (např. RESTful služby).
+	Webové služby poskytují prostředky pro integraci různorodých systémů a zpřístupňují znovupoužitelné business funkce pomocí protokolu HTTP. HTTP je použit buď jako jednoduchý komunikační protokol, skrze který jsou přenášena data (např. SOAP/WSDL služby), nebo jako kompletní aplikační protokol, jež definuje sémantiku chování služby (např. RESTful služby).
 \end{quote}
 
 Tato definice netrpí výše zmíněnými nedostatky a zahrnuje webové služby jimiž se tato práce zabývá. Proto jsem se rozhodl ji využít pro účely mé práce a nebude-li určeno jinak, pojem 'webová služba' v tomto textu odpovídá zmíněné definici. S webovými službami se váže několik dalších pojmů, které jsou v průběhu textu užívány, a pro úplnost jsou zde taktéž definovány:
@@ -208,7 +208,7 @@ Samotný pojem služba z technického pohledu typicky označuje funkcionalitu, j
 % ws jsou jednoduché na použití, ke komunikaci stačí pouze HTTP, JSON/XML pro výměnu dat a znalost protokolu
 % to nutně neplatilo u předchůdců, například Shared Objects
 % díky tomu jsou služby snadno propojitelné a lze je skládat do větších celků za účelem realizace komplexních operací (funkcionalit)
-Ve srovnání s alternativami jako například distribuované objekty jsou webové služby snazší na použití, zejména kvůli jednoduché komunikaci skrze protokol HTTP a standardizované serializaci dat do formátů jako XML nebo JSON. Použitím jednotného komunikačního kanálu (HTTP) je také docíleno oddělení implementace klienta od služby a tím i větší nezávislosti mezi nimi. Díky tomu jsou webové služby snadno propojitelné a lze je tak skládat do větších celků za účelem realizace komplexních procesů\cite{fromObjectsToWs}.
+Ve srovnání s alternativami jako například distribuované objekty jsou webové služby snazší na použití, zejména kvůli jednoduché komunikaci skrze protokol HTTP a standardizované serializaci dat do formátů jako XML nebo JSON. Použitím jednotného komunikačního kanálu (HTTP) je také docíleno oddělení implementace klienta od služby a tím i větší nezávislosti mezi nimi. Díky tomu jsou webové služby snadno propojitelné a lze je tak skládat do větších celků za účelem realizace komplexních procesů \cite{fromObjectsToWs}.
 
 % služby vytváří/nastolují vrstvu abstrakce mezi samotnou implementací služby a klientem
 % tím je docíleno volné vazby a jak služba tak klient se mohou nezávisle vyvíjet, dokud nedojde ke změnám narušujícím kompatibilitu (to by chtělo rozepsat víc)
@@ -250,7 +250,7 @@ Tato podkapitola krátce představuje nejzákladnější techniky a protokoly ur
 HTTP\footnote{Hypertext Transfer Protocol} je bezestavový protokol aplikační vrstvy určený pro distribuované hypermediální systémy a tvoří základ informačního systému WWW\footnote{World Wide Web}, který jej využívá od 90. let \cite{httpRfc}. Celkem bylo specifikováno pět verzí protokolu: 0.9, 1.0, 1.1, 2.0 a 3.0. Tato sekce se zabývá protokolem HTTP/1.1, neboť právě vlastnosti představené v této verzi jsou relevantní mé práci. Komunikace přes HTTP typicky probíhá skrze TCP/IP spojení na portu 80. 
 
 % princip HTTP
-Protokol je založen na principu volání-odpověď. Klient odešle žádost ve formě metody, identifikátoru a verze protokolu, následovanou tělem žádosti v MIME\footnote{Multipurpose Internet Mail Extensions} formátu. Identifikátor žádosti posílané klientem je tvořen URI\footnote{Uniform Resource Identifier}, což je sekvence znaků, která jasně určuje daný zdroj \cite{uriRfc}. Tělo může obsahovat informace o klientovi, modifikátory žádosti a data pro příjemce. Server odpoví statusem, jež zahrnuje verzi protokolu a kód výsledku žádosti (chyba, nebo úspěch). Ten je následovaný zprávou, rovněž ve formátu MIME, obsahující informace o serveru a případně tělo odpovědi s daty pro klienta \cite{httpRfc}.
+Protokol je založen na principu volání-odpověď. Klient odešle žádost ve formě metody, identifikátoru a verze protokolu, následovanou tělem žádosti v MIME\footnote{Multipurpose Internet Mail Extensions} formátu. Identifikátor žádosti posílané klientem je tvořen URI\footnote{Uniform Resource Identifier}, což je sekvence znaků, která jasně určuje daný zdroj  \cite{uriRfc}. Tělo může obsahovat informace o klientovi, modifikátory žádosti a data pro příjemce. Server odpoví statusem, jež zahrnuje verzi protokolu a kód výsledku žádosti (chyba, nebo úspěch). Ten je následovaný zprávou, rovněž ve formátu MIME, obsahující informace o serveru a případně tělo odpovědi s daty pro klienta \cite{httpRfc}.
 
 % metody HTTP
 HTTP definuje množinu metod, jejichž účelem je specifikovat konkrétní operaci, která by měla být provedená nad daným zdrojem, identifikovaným volaným URI. Výčet metod společně s popisem je uveden v tabulce \ref{tab:http-methods}.
@@ -329,7 +329,7 @@ Pojem Remote Procedure Call (dále jen RCP) obecně označuje technologii umož�
 Obecně je RPC postaveno na principu volání-odpověď. Klient voláním předá poskytovateli informace o operaci, jež má vykonat, včetně vstupních dat. Příjemce (server) tuto operaci provede a v odpovědi vrátí zpracovaná data. Typickým příkladem použití je přesunutí náročného výpočtu z méně výkonného klienta na výkonný server.
 
 % použití RPC ve webových službách
-V kontextu webových služeb se za 'RPC-like' považují služby založené na definici konsorcia W3C, tedy služby popsané WSDL předávající si data protokolem SOAP v těle HTTP volání a odpovědi. Klient takovou službu vnímá jako množinu operací které může volat, z nichž každá vykonává určitou úlohu \cite{rpcVsRest}. Aby toto bylo možné, musí každá služba definovat jasné rozhraní pomocí kterého klient přistupuje k operacím a zpracovává vrácená data. Příkladem takového rozhraní je popis služby ve formátu WSDL. 
+V kontextu webových služeb se za 'RPC-like' považují služby založené na definici konsorcia W3C, tedy služby popsané WSDL předávající si data protokolem SOAP v těle HTTP volání a odpovědi. Klient takovou službu vnímá jako množinu operací které může volat, z nichž každá vykonává určitou úlohu  \cite{rpcVsRest}. Aby toto bylo možné, musí každá služba definovat jasné rozhraní pomocí kterého klient přistupuje k operacím a zpracovává vrácená data. Příkladem takového rozhraní je popis služby ve formátu WSDL. 
 
 Protože součástí mé práce bylo zpracování metadat služeb popsaných formátem WSDL, jež typicky používají protokol SOAP pro výměnu dat, zabývají se další odstavce právě tímto protokolem. Popisný formát WSDL je detailněji rozveden na konci této kapitoly.
 
@@ -337,12 +337,12 @@ Protože součástí mé práce bylo zpracování metadat služeb popsaných for
 
 % SOAP
 
-Protokol SOAP, současně ve verzi 1.2, je určený pro výměnu strukturovaných dat v decentralizovaném, distribuovaném prostředí. Specifikaci protokolu\cite{soap12}, z níž tato sekce převážně čerpá, spravuje konsorcium W3C. Mezi cíle návrhu protokolu patří zejména jeho nezávislost na konkrétní implementační platformě a komunikačním protokolu\cite{soap12}. Specifikace nijak neomezuje formát, ve kterém jsou data předávána, nicméně primárním způsobem pro jejich popis je XML.
+Protokol SOAP, současně ve verzi 1.2, je určený pro výměnu strukturovaných dat v decentralizovaném, distribuovaném prostředí. Specifikaci protokolu \cite{soap12}, z níž tato sekce převážně čerpá, spravuje konsorcium W3C. Mezi cíle návrhu protokolu patří zejména jeho nezávislost na konkrétní implementační platformě a komunikačním protokolu \cite{soap12}. Specifikace nijak neomezuje formát, ve kterém jsou data předávána, nicméně primárním způsobem pro jejich popis je XML.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\linewidth]{soap-msg-example}
-	\caption{Příklad SOAP zprávy}
+	\caption{Příklad SOAP zprávy (převzato ze specifikace)}
 	\label{fig:soap-msg-example}
 \end{figure}
 
@@ -369,9 +369,9 @@ SOAP zprávy jsou skrze HTTP, vzhledem ke svému rozsahu, primárně přenášen
 % - jak se liší od WS definované v předchozí sekci
 % - základní popis elementů použitých v REST
 
-Representational State Transfer (dále jen REST) je architektonický styl tvorby webových služeb, který ve své disertační práci \cite{fielding2000rest} popsal R. T. Fielding. Služby tvořené v tomto stylu se od služeb definovaných konsorciem W3C liší zejména využitím protokolu HTTP pro sémantiku aplikace a vyznačuje se také absencí stavu. 
+Representational State Transfer (dále jen REST) je architektonický styl tvorby webových služeb, který ve své disertační práci  \cite{fielding2000rest} popsal R. T. Fielding. Služby tvořené v tomto stylu se od služeb definovaných konsorciem W3C liší zejména využitím protokolu HTTP pro sémantiku aplikace a vyznačuje se také absencí stavu. 
 
-R.T Fielding definoval styl REST skrze množinu omezení, jež jsou aplikována na systém vzájemně komunikujících komponent, což jsou v rámci této práce webové služby. Vybraná omezení jsou popsána v následujících odstavcích.
+R.T Fielding definoval styl REST pomocí množiny omezení, jež jsou aplikována na systém vzájemně komunikujících komponent, což jsou v rámci této práce webové služby. Vybraná omezení jsou popsána v následujících odstavcích.
 
 \subsubsection{Klient-server}
 Důvodem pro toto omezení je princip oddělení zodpovědnosti klienta (např. uživatelského rozhraní) od serveru, čímž je umožněn nezávislý vývoj  obou stran.
@@ -390,9 +390,9 @@ Komponenty jsou rozděleny do vrstev a každá z nich komunikuje pouze s kompone
 \subsection{Zdroj a jeho reprezentace}
 \label{sec:rest-basics}
 
-Na rozdíl od služeb vycházejících z RPC, jež jsou koncipovány jako množiny různých operací, jsou REST služby orientovány kolem zdrojů a manipulaci s jejich reprezentacemi. Architektura vycházející z toho stylu se nazývá ROA\footnote{Resource Oriented Architecture} a ve své publikaci\cite{restfulWebServices} ji popsal L. Richardson. Tato sekce se zabývá významem zdroje a jeho reprezentací v REST.
+Na rozdíl od služeb vycházejících z RPC, jež jsou koncipovány jako množiny různých operací, jsou REST služby orientovány kolem zdrojů a manipulaci s jejich reprezentacemi. Architektura vycházející z toho stylu se nazývá ROA\footnote{Resource Oriented Architecture} a ve své publikaci \cite{restfulWebServices} ji popsal L. Richardson. Tato sekce se zabývá významem zdroje a jeho reprezentací v REST.
 
-Zdroj (anglicky \textit{resource}) je klíčovou abstrakcí informace v REST a může představovat jakoukoliv pojmenovatelnou informaci jako například dokument, obrázek, webovou službu, nebo  kolekci jiných zdrojů. R. T. Fielding ve své práci\cite{fielding2000rest} definuje zdroj $R$ jako: 
+Zdroj (anglicky \textit{resource}) je klíčovou abstrakcí informace v REST a může představovat jakoukoliv pojmenovatelnou informaci jako například dokument, obrázek, webovou službu, nebo  kolekci jiných zdrojů. R. T. Fielding ve své práci \cite{fielding2000rest} definuje zdroj $R$ jako: 
 
 \begin{quote}
 	funkci $M_R(t)$, která pro čas $t$ vrací množinu ekvivalentních entit. Tato množina může být prázdná, nebo obsahovat reprezentace daného \textit{resource}, případně jeho identifikátory
@@ -400,14 +400,14 @@ Zdroj (anglicky \textit{resource}) je klíčovou abstrakcí informace v REST a m
 
 Pojem zdroj tedy neoznačuje konkrétní objekt nebo data, ale abstraktní koncept, který je konkrétním objektem nebo daty pouze reprezentován. Jako příklad lze uvést systém pro správu verzí, kde identifikátor 'poslední verze' označuje zdroj a samotná verze (0.8, 0.9, ...) jeho reprezentaci, která se s časem mění. Reprezentace různých zdrojů se mohou shodovat. V návaznosti na předchozí příklad by zdroje identifikované 'poslední verze' a 'verze 0.8' mohly být v určitý čas $t$ reprezentovány stejnou verzí '0.8'. 
 
-Každý zdroj má alespoň jeden identifikátor, v případě Webu se jedná o URI. Tento identifikátor by měl být co nejvíce popisný a v rámci jedné služby dodržovat stejný styl\cite{restfulWebServices}. 
+Každý zdroj má alespoň jeden identifikátor, v případě Webu se jedná o URI. Tento identifikátor by měl být co nejvíce popisný a v rámci jedné služby dodržovat stejný styl \cite{restfulWebServices}. 
 
 S reprezentacemi zdrojů je manipulováno HTTP voláním jejich identifikátorů (tedy URI) s nastavenou HTTP metodou, jež byly popsané v části \ref{sec:ws-tech}.
 
 \subsection{RESTful služba}
 \label{sec:restful}
 
-Jedním z primárních účelů webových služeb založených na stylu REST je manipulace s XML reprezentacemi zdrojů pomocí jednotné množiny bezestavých operací, jimiž typicky jsou  \textit{create}, \textit{retrieve}, \textit{update} a \textit{delete}\cite{w3cWsArch}. Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, jež se REST drží nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby byl představen L. Richardsonem a nazývá se Richardson Maturity Model. M. Fowler jej vysvětluje ve svém online článku \cite{restfulMaturity}, který je hlavním zdrojem informací pro následující odstavce. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
+Jedním z primárních účelů webových služeb založených na stylu REST je manipulace s XML reprezentacemi zdrojů pomocí jednotné množiny bezestavých operací, jimiž typicky jsou  \textit{create}, \textit{retrieve}, \textit{update} a \textit{delete} \cite{w3cWsArch}. Míra, kterou jednotlivé služby dodržují styl REST se různí a pojem 'RESTful' označuje ty, jež se REST drží nejvíce. Model zabývající se 'RESTful vyspělostí' dané služby byl představen L. Richardsonem a nazývá se Richardson Maturity Model. M. Fowler jej vysvětluje ve svém online článku \cite{restfulMaturity}, který je hlavním zdrojem informací pro následující odstavce. Model, uvedený na obrázku \ref{fig:rmm}, definuje čtyři níže popsané úrovně a pokud tyto služba splňuje, je označena jako RESTful (plně RESTová).
 
 \begin{figure}[h]
 	\centering
@@ -418,7 +418,7 @@ Jedním z primárních účelů webových služeb založených na stylu REST je 
 
 
 \subsubsection{0. úroveň}
-Služby v 0. úrovni se vyznačují použitím protokolu HTTP pro komunikaci, ale implementují vlastní sémantiku interakce, jež je typicky podobná stylu RPC. Služba je tedy například tvořena endpointem \textit{bookingService} a na tento jsou směřovány všechny volání obsahující informace o tom, co má služba vykonat. 
+Služby v 0. úrovni se vyznačují použitím protokolu HTTP pro komunikaci, ale implementují vlastní sémantiku interakce, jež je typicky podobná stylu RPC. Služba je tedy například tvořena endpointem \textit{bookingService} a na tento jsou směřována všechna volání obsahující informace o tom, co má služba vykonat. 
 
 \subsubsection{Zdroje}
 1. úroveň zavádí do služby zdroje, tak jak byly popsány v sekci \ref{sec:rest-basics}. Místo volání jednoho univerzálního endpointu služby jsou nyní volány endpointy jednotlivých zdrojů.
@@ -433,7 +433,7 @@ Poslední úroveň zavádí princip HATEOAS\footnote{Hypertext As The Engine Of 
 
 Webové služby dodržující poslední úroveň Richardsonova modelu by za předpokladu statických vstupních bodů nemusely svou verzi vystavovat. Nicméně existuje nezanedbatelná část, jež na tuto úroveň nedosahují a tedy udržují statické rozhraní pro každou verzi, protože jakákoliv změna v schématu URI se negativně projeví na straně klienta. Ten totiž díky absenci HATEOAS nemůže tuto změnu dynamicky nijak zjistit je proto odkázaný na rozhraní služby. 
 
-Může tedy nastat případ kdy poskytovatel v zájmu udržení zpětné kompatibility udržuje více verzí jedné služby současně. Existují různé způsoby jak vystavit konkrétní verzi, jedním z nich je uvedení verze v URI zdroje. Jedná se o běžnou a snadno implementovatelnou praktiku \cite{restApiVersion}\cite{restfulWebServices}. Dopady použití této praktiky na mou práci jsou rozebrány v částech \ref{sec:api-index} a \ref{sec:api-path-version}.
+Může tedy nastat případ kdy poskytovatel v zájmu udržení zpětné kompatibility udržuje více verzí jedné služby současně. Existují různé způsoby jak vystavit konkrétní verzi, jedním z nich je uvedení verze v URI zdroje. Jedná se o běžnou a snadno implementovatelnou praktiku  \cite{restApiVersion} \cite{restfulWebServices}. Dopady použití této praktiky na mou práci jsou rozebrány v částech \ref{sec:api-index} a \ref{sec:api-path-version}.
 
 
 \section{Formální popis rozhraní webových služeb}
@@ -478,7 +478,7 @@ WSDL je formát založený na XML popisující webové služby jako množiny end
  
 \subsection{WADL}
 
-WADL je strojově čitelný formát, jehož hlavním účelem je popis webových služeb založených na HTTP (například REST). Formát vznikl jako pokus o standardizaci popisu webových služeb, které jsou typicky popsané nestandardní, případě vzájemně odlišnou textovou dokumentací\cite{wadlSpec}.
+WADL je strojově čitelný formát, jehož hlavním účelem je popis webových služeb založených na HTTP (například REST). Formát vznikl jako pokus o standardizaci popisu webových služeb, které jsou typicky popsané nestandardní, případě vzájemně odlišnou textovou dokumentací \cite{wadlSpec}.
 
 Formát je založený na XML a popisuje webové služby jako kolekce zdrojů, nad kterými definuje operace (\textit{methods}). Zdroje \textit{resource} je možné vnořovat a každý zdroj je identifikován URI sestaveným podle předem daného vzoru. Tabulka \ref{tab:wadl-elements} obsahuje popis několika vybraných elementů, použitých k popisu webové služby.
 
@@ -502,7 +502,7 @@ Formát je založený na XML a popisuje webové služby jako kolekce zdrojů, na
  
 \subsection{JSON-WSP}
 
-Formát JSON-WSP je založený na JSON a vychází z JSON-RPC, což je protokol pro vzdálené volání procedur. JSON-WSP popisuje rozhraní webových aplikací a i když měl původně nahradit JSON-RPC, je zatím ve stavu neformálního návrhu a není nijak standardizovaný ani neexistuje RFC s jeho specifikací nebo JSON schéma. Neoficiální specifikace je udržována na Wikipedii\cite{jsonWspSpec}.
+Formát JSON-WSP je založený na JSON a vychází z JSON-RPC, což je protokol pro vzdálené volání procedur. JSON-WSP popisuje rozhraní webových aplikací a i když měl původně nahradit JSON-RPC, je zatím ve stavu neformálního návrhu a není nijak standardizovaný ani neexistuje RFC s jeho specifikací nebo JSON schéma. Neoficiální specifikace je udržována na Wikipedii \cite{jsonWspSpec}.
 
 
 JSON-WSP definuje službu pomocí objektů \textit{description}, \textit{request}, \textit{response} a \textit{fault}. Objekt \textit{description} popisuje rozhraní služby, obsahuje mimo jiné název služby, URL služby a kolekci metod, které služba dokáže vykonat. Objekty \textit{request}, \textit{response} a \textit{fault} definují podobu dat, které služba přijímá, respektive vrací. Tabulka \ref{tab:jsonwsp-elements} uvádí výběr objektů definovaných v \textit{description} relevantních pro mou práci.
@@ -525,16 +525,20 @@ JSON-WSP definuje službu pomocí objektů \textit{description}, \textit{request
 	\label{tab:jsonwsp-elements} 
 \end{table}
  
+\subsection{OpenAPI, RAML} 
+
+TODO
+ 
  
 \chapter{Datové typy a porovnávání}
 \label{cap:data-types}
 
-Tato kapitola rozebírá vlastnosti datových typů se zaměřením na jejich vzájemné porovnání. V první části kapitoly jsou představeny datové typy obecně, včetně jejich rozdělení v imperativních a objektových jazycích. Druhá část kapitoly se zabývá typovými systémy, způsoby kontroly typů a porovnáním datových typů. Vzhledem ke kontextu práce je text kapitoly zaměřen na staticky typované jazyky a typové systémy jazyků Java a XSD.
+Tato kapitola rozebírá vlastnosti datových typů programovacích jazyků, se zaměřením na jejich vzájemné porovnání. V první části kapitoly jsou představeny datové typy obecně, včetně jejich rozdělení v imperativních a objektových jazycích. Druhá část kapitoly se zabývá typovými systémy, způsoby kontroly typů a porovnáním datových typů. Vzhledem ke kontextu práce je text kapitoly zaměřen na staticky typované jazyky a typové systémy jazyků Java a XSD.
 
 \section{Datové typy a jejich reprezentace}
 \label{sec:data-types-repr}
 
-Datový typ představuje množinu hodnot, kterých může nabýt proměnná, konstanta, funkce, nebo jiný výraz\cite{dataType}. O programovacích jazycích mluvíme jako o explicitně typovaných, pokud je název datového typu součástí syntaxe. Je-li navíc typová kontrola prováděna v čase překladu nazývají se tyto staticky typované \cite{cardelli2004}. Takovými jazyky jsou například C nebo Java.
+Datový typ představuje množinu hodnot, kterých může nabýt proměnná, konstanta, funkce, nebo jiný výraz \cite{dataType}. O programovacích jazycích mluvíme jako o explicitně typovaných, pokud je název datového typu součástí syntaxe. Je-li navíc typová kontrola prováděna v čase překladu nazývají se tyto staticky typované \cite{cardelli2004}. Takovými jazyky jsou například C nebo Java.
 
 Datové typy lze rozdělit do tří hlavních skupin, kterými jsou primitivní, záznamové a objektové. Jednotlivé skupiny se od sebe liší především komplexností své struktury (popsána v následujících odstavcích) a z toho plynoucí složitostí způsobu porovnání (popsán v části \ref{sec:typecheck}).
  
@@ -587,11 +591,11 @@ XSD umožňuje uživatelsky definované typy rozšiřovat elementem \textit{exte
 
 \subsection{Objektové datové typy}
 
-Objektové typy se skládají ze stavu a metod, které reprezentují chování objektu. Stav je reprezentován kolekcí položek různých datových typů, ke kterým je přistupováno metodami\cite{oracleJava}. Účelem objektů je typicky zapouzdření určité části dat s logicky související funkcionalitou. Příkladem může být třída \textit{Obdelnik}, jejíž stav tvoří rozměry \textit{a}, \textit{b} a chování je reprezentováno metodami pro výpočet obsahu a obvodu.
+Objektové typy se skládají ze stavu a metod, které reprezentují chování objektu. Stav je reprezentován kolekcí atributů různých datových typů, ke kterým je přistupováno metodami \cite{oracleJava}. Účelem objektů je typicky zapouzdření určité části dat s logicky související funkcionalitou. Příkladem může být třída \textit{Obdelnik}, jejíž stav tvoří rozměry \textit{a}, \textit{b} a chování je reprezentováno metodami pro výpočet obsahu a obvodu.
 
-Třída (\textit{class}) obsahuje definice všech polí a metod, jež objekt používá. Objekt, vytvořený například klíčovým slovem \verb|new|, je instancí třídy. Jazyk Java podporuje dědičnost tříd, což umožňuje sdílet společný stav a chování mezi více třídami. Dědičnost a její dopady na porovnávání datových typů jsou rozvedeny v části \ref{sec:type-system}. 
+Třída (\textit{class}) obsahuje definice všech atributů a metod, jež objekt používá. Objekt, vytvořený například klíčovým slovem \verb|new|, je instancí třídy. Objektově orientované jazyky, včetně jazyka Java, podporují dědičnost tříd, což umožňuje sdílet společný stav a chování mezi více třídami. Dědičnost a její dopady na porovnávání datových typů jsou rozvedeny v části \ref{sec:type-system}. 
 
-Speciálními případy dědičnosti jsou v Javě také rozhraní a abstraktní třídy. Rozhraní (\textit{interface}) obsahuje pouze popis funkcionality v podobě deklarace metod a jako takové jej nelze instanciovat, ale pouze implementovat (případně oddědit v jiném rozhraní). Pouhou deklarací metod je vytvořen kontrakt, který musí implementující třídy dodržet. Tento přístup oddělující popis funkcionality od samotné implementace je využíván například v komponentové architektuře. Abstraktní třídy též nelze instanciovat, nicméně mohou nést třídní proměnné a část implementace. Tyto třídy typicky deklarují abstraktní metody, které, podobně jako rozhraní, pouze popisují chování a konkrétní logika je obsažena v implementující třídě. 
+Speciálními případy dědičnosti jsou v mnoha objektových jazycích také rozhraní a abstraktní třídy. Rozhraní (\textit{interface}) obsahuje pouze popis funkcionality v podobě deklarace metod a jako takové jej nelze instanciovat, ale pouze implementovat (případně oddědit v jiném rozhraní). Pouhou deklarací metod je vytvořen kontrakt, který musí implementující třídy dodržet. Tento přístup oddělující popis funkcionality od samotné implementace je využíván například v komponentové architektuře. Abstraktní třídy též nelze instanciovat, nicméně mohou nést třídní proměnné a část implementace. Tyto třídy typicky deklarují abstraktní metody, které, podobně jako rozhraní, pouze popisují chování a konkrétní logika je obsažena v implementující třídě. 
 
  
 \section{Typový systém}
@@ -602,12 +606,12 @@ Fundamentální součástí většiny jazyků je metoda pro kontrolu typové kon
 % A type system is a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases according to the kinds of values they compute.
 
 \begin{quote}
-	Typový systém je sledovatelná syntaktická metoda pro prokázání absence určitých chování programu klasifikováním frází podle druhů hodnot, které představují.
+	Typový systém je technicky realizovatelný, na syntaxi založený způsob jak dokázat, že program nevykazuje určité chyby chování, klasifikováním jeho syntaktických konstrukcí podle druhů hodnot, které představují.
 \end{quote}
 
-Typový systém tedy poskytuje formální pravidla pro kontrolu typů, jež jsou nezávislá na konkrétních algoritmech použitých k jejich vymáhání. Primárním účelem takového systému je zabránění výskytu tzv. \textit{execution errors} za běhu programu, což je množina chyb, které by mohly vést k jeho okamžitému přerušení nebo poškození dat\cite{cardelli2004}. Tyto chyby se dělí na \textit{trapped}, které způsobí okamžité ukončení programu, a \textit{untrapped}, které samy o sobě chod programu nezastaví, nicméně mohou vést na nepredikovatelné chování jehož výsledkem může být ukončení chodu programu. Příkladem \textit{untrapped} chyby (v jazyce C) je přístup na legální adresu a následné přečtení příliš velkého množství dat v důsledku špatného typování. Následek takové chyby může být provádění výpočtu nad neplatnými daty.
+Typový systém tedy poskytuje formální pravidla pro kontrolu typů, jež jsou nezávislá na konkrétních algoritmech použitých k jejich vymáhání. Primárním účelem takového systému je zabránění výskytu tzv. \textit{execution errors} za běhu programu, což je množina chyb, které by mohly vést k jeho okamžitému přerušení nebo poškození dat \cite{cardelli2004}. Tyto chyby se dělí na \textit{trapped}, které způsobí okamžité ukončení programu, a \textit{untrapped}, které samy o sobě chod programu nezastaví, nicméně mohou vést na nepredikovatelné chování jehož výsledkem může být ukončení chodu programu. Příkladem \textit{untrapped} chyby (v jazyce C) je přístup na legální adresu a následné přečtení příliš velkého množství dat v důsledku špatného typování. Následek takové chyby může být provádění výpočtu nad neplatnými daty.
 
-Jednou z forem popisu typů a pravidel typového systému je typovaný lambda kalkul, případně objektový kalkul představený v \cite{abadi2006}. Základem obou je tzv. typovací relace, jež vázané proměnné X ve výrazu $\lambda x:T_1.t$ přiřazuje typ $T_1$. Následující sekce uvádí popis datových typů zmíněnými nástroji.
+Jednou z forem popisu typů a pravidel typového systému je typovaný lambda kalkul, případně objektový kalkul představený v \cite{abadi2006}. Základem obou je tzv. typovací relace, jež vázané proměnné $x$ ve výrazu $\lambda x:T_1.t$ přiřazuje typ $T_1$. Následující sekce uvádí popis datových typů zmíněnými nástroji.
 
 \subsection{Objektové typy}
 
@@ -617,26 +621,26 @@ Jak již bylo zmíněno v sekci \ref{sec:data-types-repr}, na objekty lze nahlí
 o = [m_1=\varsigma(x)b]
 \end{math}
 
-Volání metody nad objektem zapsané jako $o.method1$ by za \textit{self} parametr $x$ dosadilo instanci objektu $o$. Použití \textit{self} parametru k porovnání typů je dále rozvedeno v sekci \ref{sec:typecheck}. 
+Volání metody nad objektem zapsané jako $o.m_1$ by za \textit{self} parametr $x$ dosadilo instanci objektu $o$. Použití \textit{self} parametru k porovnání typů je dále rozvedeno v sekci \ref{sec:typecheck}. 
 
 
 \subsection{Rekurzivní typy}
 
-Rekurzivní datový typ, je takový, který ke své definici používá sám sebe, například v typu proměnné nebo argumentu funkce. Typickým příkladem takového typu je neměnný (\textit{immutable}) seznam čísel \verb|NumList|, tvořený poli \verb|first:int|, \verb|rest:NumList| a objektovým kalkulem zapsaný jako:
+Rekurzivní datový typ je takový, který ke své definici používá sám sebe, například v typu proměnné nebo argumentu funkce. Typickým příkladem takového typu je neměnný (\textit{immutable}) seznam čísel \verb|NumList|, tvořený poli \verb|first:int|, \verb|rest:NumList| a objektovým kalkulem zapsaný jako:
 
 \begin{math}
 	NumList \triangleq \mu(X)[first:int, rest:NumList]
 \end{math}
 
-Během typové kontroly (viz část \ref{sec:typecheck}) je nutné typy rozvinout, aby mohlo dojít k jejich porovnání. Tento rozvoj však v případě rekurzivních typů vede na nekonečný strom, což představuje problém. B.C. Pierce zminuňuje\cite{pierce2002} dva přístupy k řešení tohoto problému, založené na odlišnosti definice typu a prvního kroku jejího rozvoje, kterými jsou \textit{equi-recursive} a \textit{iso-recursive}. První z nich se na definici typu a první krok jeho rozvoje dívá jako na ekvivalentní, protože představují "stejné"\space  nekonečné podstromy. Druhý tyto vnímá jako definice odlišných typů, mezi kterými lze přecházet operacemi \verb|unfold()| a \verb|fold()|. Přístup \textit{equi-recursive} je více běžný v objektových jazycích.
+Během typové kontroly (viz část \ref{sec:typecheck}) je nutné typy rozvinout, aby mohlo dojít k jejich porovnání. Tento rozvoj však v případě rekurzivních typů vede na nekonečný strom, což představuje problém. B.C. Pierce zminuňuje \cite{pierce2002} dva přístupy k řešení tohoto problému, založené na odlišnosti definice typu a prvního kroku jejího rozvoje, kterými jsou \textit{equi-recursive} a \textit{iso-recursive}. První z nich se na definici typu a první krok jeho rozvoje dívá jako na ekvivalentní, protože představují "stejné"\space  nekonečné podstromy. Druhý tyto vnímá jako definice odlišných typů, mezi kterými lze přecházet operacemi \verb|unfold()| a \verb|fold()|. Přístup \textit{equi-recursive} je více běžný v objektových jazycích.
 
 
 \section{Typová kontrola}
 \label{sec:typecheck}
 
-Tato podkapitola shrnuje základní informace o typové kontrole a způsoby, kterými může být provedena. Text čerpá především z publikace \cite{pierce2002} od B.C. Pierce.
+Tato podkapitola shrnuje základní informace o typové kontrole a způsoby, kterými může být provedena. Text čerpá především z publikace  \cite{pierce2002} od B.C. Pierce.
 
-Z pohledu doby kdy ke kontrole typů dojde rozlišujeme statickou a dynamickou typovou kontrolu. Podle striktnosti pravidel aplikovaných při typové kontrole také rozlišujeme silné a statické typování. Tyto termíny jsou popsány v následujících odstavcích a s příklady jazyků znázorněny na obrázku \ref{fig:typying-examples}, jež byl převzat z \cite{mogensen2010}.
+Z pohledu doby, kdy ke kontrole typů dojde, rozlišujeme statickou a dynamickou typovou kontrolu. Podle striktnosti pravidel aplikovaných při typové kontrole také rozlišujeme silné a statické typování. Tyto termíny jsou popsány v následujících odstavcích a s příklady jazyků znázorněny na obrázku \ref{fig:typying-examples}, jež byl převzat z \cite{mogensen2010}.
 
 \begin{figure} [h]
 	\centering
@@ -660,10 +664,10 @@ K určení vztahu mezi ne-primitivními typy, zejména v objektových jazycích,
 \subsection{Subtyping}
 \label{sec:subtyping}
 
-Subtyping je binární relace definovaná nad datovými typy. Zápis $A <: B$ čteme jako "\textit{A} je sub-typ \textit{B}", což znamená, že typ \textit{A} může být použit kdekoliv tam, kde je očekáván typ \textit{B}. Například \textit{java.lang.Long} je sub-typ \textit{java.lang.Number}, protože proměnnou typovanou na \textit{Long} lze použít kdekoliv, kde je očekávána proměnná typu \textit{Number}. Relace subtypingu je reflexivní ($A <: A$) a tranzitivní ($A <: B, B <: C \vdash A <: C$).
+Subtyping je binární relace definovaná nad datovými typy. Zápis $A <: B$ čteme jako ``\textit{A} je sub-typ \textit{B}'' což znamená, že typ \textit{A} může být použit kdekoliv tam, kde je očekáván typ \textit{B}. Například \textit{java.lang.Long} je sub-typ \textit{java.lang.Number}, protože proměnnou typovanou na \textit{Long} lze použít kdekoliv, kde je očekávána proměnná typu \textit{Number}. Relace subtypingu je reflexivní ($A <: A$) a tranzitivní ($A <: B, B <: C \vdash A <: C$).
 
 
-Následující odstavce popisují způsob konstrukce této relace pro jednotlivé skupiny datových typů, jež byly uvedené v \ref{sec:data-types-repr}. Informace a postupy vycházejí především z publikací \cite{pierce2002} a \cite{abadi1995subytping}.
+Následující odstavce popisují způsob konstrukce této relace pro jednotlivé skupiny datových typů, jež byly uvedené v \ref{sec:data-types-repr}. Informace a postupy vycházejí především z publikací \cite{pierce2002} a  \cite{abadi1995subytping}.
 
 \subsubsection{Primitivní typy}
 
@@ -679,7 +683,7 @@ V případě primitivních typů subtyping označuje schopnost jednoho typu pojm
 Relace subtypingu je pro záznamové datové typy $S = \{k_1:S_1 ... k_m:S_m\}$ a $T = \{l_1:T_1 ... l_n:T_n\}$, kde dvojice $k_i:S_i$ označuje položku $k_i$ typovanou na $S_i$, definována pomocí následujících třech kritérií:
 
 \begin{itemize}
-	\item \textbf{subtyping do šířky}: Delší záznam je sub-typ kratšího záznamu ($n \le m$),
+	\item \textbf{subtyping do šířky}: Delší záznam je sub-typ kratšího záznamu ($n \le m \Rightarrow S <: T $),
 	\item \textbf{subtyping do hloubky}: Všechny položky na stejné pozici musí být v relaci subtypingu (pro každé $i : S_i <: T_i$),
 	\item \textbf{permutační subtyping}: Na pořadí položek nezáleží, pokud existuje $\{k_j:S_j | j \in 1..n \}$, které je permutací $\{l_i:T_i | i \in 1..n \}$.
 \end{itemize}
@@ -720,15 +724,15 @@ Uvažujeme-li funkce $f_1$ a $f_2$ definované v \ref{eq:functions}, pak relace 
 	\label{eq:function-subtyping}
 \end{equation}
 
-V případě typů na levé straně funkce (typy vstupních parametrů) je relace subtypingu kontravariantní. Tato změna má následující zdůvodnění: pokud je někde očekávána funkce s argumentem typovaným na $T_1$, je bezpečné použít funkci s argumentem typovaným na $S_1$ tak, že $T_1 <: S_1$, protože $T_1$ lze použít tam, kde je očekáváno $S_1$ (definice subtypingu). 
+V případě typů na levé straně funkce (typy vstupních parametrů) je tedy relace subtypingu tzv. kontravariantní. Tato změna má následující zdůvodnění: pokud je někde očekávána funkce s argumentem typovaným na $T_1$, je bezpečné použít funkci s argumentem typovaným na $S_1$ tak, že $T_1 <: S_1$, protože $T_1$ lze použít tam, kde je očekáváno $S_1$ (definice subtypingu). 
 
 Očekáváme-li v programu například funkci $f_1: short \rightarrow double$, je bezpečné ji nahradit funkcí $f_2: int \rightarrow float$, protože datový typ \textit{int} dokáže pojmout typ \textit{short}, který by při volání funkce byl použitý. Výsledek vrácený funkcí $f_2$ je typovaný na \textit{float} a je tedy bezpečné jej uložit do proměnné typované na \textit{double}, což je očekávaný návratový typ $f_1$. Obě podmínky z \ref{eq:function-subtyping} jsou tedy splněné a platí $f_2 <: f_1$.
 
 \subsubsection{Objekty} 	
 
-Z pohledu subytypingu se na objektové datové typy dá nahlížet jako na záznam s přidanými funkcemi. Dva objektové typy jsou v relaci subtypingu pokud jsou v této relaci i všechny jejich proměnné a metody\cite{abadi1995subytping}. 
+Z pohledu subytypingu se na objektové datové typy dá nahlížet jako na záznam s přidanými funkcemi. Dva objektové typy jsou v relaci subtypingu pokud jsou v této relaci i všechny jejich atributy a metody \cite{abadi1995subytping}. 
 
-Problém s relací subtypingu nastává v případě rekurzivních typů s funkcemi jejichž argumentem je \textit{self} a výstupem je hodnota typovaná stejně jako \textit{self}, tedy například typ $X$ s funkcí $f: X \rightarrow X$. Příčinou je nedodržení principu kontravariance popsaného u subtypingu funkcí. Následující příklad, který tento problém ilustruje, byl přejat z \cite{abadi1995subytping} a pro vyjádření typů používá upravenou notaci lambda kalkulu, která označuje funkce symbolem $^+$. 
+Problém s relací subtypingu nastává v případě rekurzivních typů s funkcemi jejichž argumentem je \textit{self} a výstupem je hodnota typovaná stejně jako \textit{self}, tedy například typ $X$ s funkcí $f: X \rightarrow X$. Příčinou je nedodržení principu kontravariance popsaného u subtypingu funkcí. Následující příklad, který tento problém ilustruje, byl přejat z  \cite{abadi1995subytping} a pro vyjádření typů používá upravenou notaci lambda kalkulu, která označuje funkce symbolem $^+$. 
 
 Uvažujeme-li typy $Max$, $MinMax$ definované v \ref{eq:max-class} a \ref{eq:minmax-class}, pak při konstrukci relace $MinMax <: Max$ narazíme na funkce $max^+: Max \rightarrow Max$ a $max^+: MinMax \rightarrow MinMax$. Aby mezi těmito byla relace subtypingu, musí zároveň platit $Max <: MinMax$ a $MinMax <: Max$ což je spor a typ $MinMax$ tedy není pod-typ $Max$. Řešení tohoto problému je stručně popsáno v následující části.
 
@@ -743,7 +747,7 @@ Uvažujeme-li typy $Max$, $MinMax$ definované v \ref{eq:max-class} a \ref{eq:mi
 
 \subsection{Matching na základě subtypingu}
 
-Relace subtypingu v případě rekurzivních objektových typů naráží na problém popsaný v sekci \ref{sec:subtyping}. M. Abadi a L. Cardeli ve svém článku \cite{abadi1995subytping} zavádějí relaci \textit{matching} nad tzv. protokoly typů, což jsou reprezentace jejich rozhraní. Tato relace vychází ze subtypingu a je zapisována jako \textit{A <\# B}, což znamená "protokol typu A rozšiřuje protokol typu B". 
+Relace subtypingu v případě rekurzivních objektových typů naráží na problém popsaný v sekci \ref{sec:subtyping}. M. Abadi a L. Cardeli ve svém článku  \cite{abadi1995subytping} zavádějí relaci \textit{matching} nad tzv. protokoly typů, což jsou reprezentace jejich rozhraní. Tato relace vychází ze subtypingu a je zapisována jako \textit{A <\# B}, což znamená ``protokol typu A rozšiřuje protokol typu B''. 
 
 V příkladu z předešlé sekce \ref{sec:subtyping} by protokoly typů $Min$ a $MinMax$ byly definovány jako:
 
@@ -776,7 +780,7 @@ CRCE je komponentové úložiště dlouhodobě vyvíjené a spravované výzkumn
 \subsection{Metadata komponent}
 \label{subsec:crce-metadata}
 
-Data, která vzniknou indexací komponenty a případným dalším zpracováním (např. porovnáním) jsou uložena do souboru metadat a představují klíčový element systému CRCE. Návrh struktury  těchto metadat, který je naznačen na obrázku \ref{fig:crce-resource-uml}, vychází z konceptu OBR\footnote{OSGi bundle repository}, jehož základními entitami jsou mimo jiné \textit{Resource}, \textit{requirements} a \textit{capabilities}\cite{brada2015repository}. 
+Data, která vzniknou indexací komponenty a případným dalším zpracováním (např. porovnáním) jsou uložena do souboru metadat a představují klíčový element systému CRCE. Návrh struktury  těchto metadat, který je naznačen na obrázku \ref{fig:crce-resource-uml}, vychází z konceptu OBR\footnote{OSGi bundle repository}, jehož základními entitami jsou mimo jiné \textit{Resource}, \textit{requirements} a \textit{capabilities} \cite{brada2015repository}. 
 
 Entita \textit{Resource} reprezentuje komponentu uloženou v CRCE, \textit{requirements} a \textit{capabilities} jsou množiny vlastností, popisující co komponenta ke své správné funkci vyžaduje, respektive co naopak poskytuje. Model také umožňuje přidání key-value atributů k jednotlivým vlastnostem a jejich detailům.
  
@@ -850,7 +854,7 @@ Indexace komponenty a související sběr metadat je proveden ve fázi \textit{B
 
 Soubor obsahující implementaci nebo popis API, je v CRCE vnímán jako komponenta a prochází tedy zmíněným životním cyklem včetně výše popsané indexace. Pro popis webových služeb existuje mnoho standardních i nestandardních způsobů, jak již bylo zmíněno v kapitole \ref{sec:web-services-principles}. Z tohoto důvodu není možné je všechny analyzovat jedním indexerem a je nutné zaměřit se pouze na část z nich. 
 
-V současné době tedy existují dva moduly podporující několik popisných formátů a implementací. Konkrétně se jedná o modul pro indexaci webových služeb založených na architektonickém stylu REST\cite{hessova2015rest} a o modul pro indexaci webových služeb s popisem ve formátu WSDL, WADL, nebo Json-WSP \cite{pejrimovsky2015ws}. Oba dva vznikly v rámci diplomových prací a jsou stručně popsány v následujících sekcích.
+V současné době tedy existují dva moduly podporující několik popisných formátů a implementací. Konkrétně se jedná o modul pro indexaci webových služeb založených na architektonickém stylu REST \cite{hessova2015rest} a o modul pro indexaci webových služeb s popisem ve formátu WSDL, WADL, nebo Json-WSP \cite{pejrimovsky2015ws}. Oba dva vznikly v rámci diplomových prací a jsou stručně popsány v následujících sekcích.
 
 %- někde by asi bylo fajn ustanovit názvosloví použité v práci:
 %\begin{itemize}
@@ -875,13 +879,13 @@ Jak již bylo zmíněno v části \ref{subsec:crce-metadata}, hierarchickou stru
 
 I když jsou různé druhy API indexovány rozdílnými moduly, výsledná metadata mají podobnou strukturu. Příklad metadat API je zobrazen na objektovém diagramu \ref{fig:indexed-api-example}, jedná se o webovou službu, která vrací strip komixu Dilbert pro dnešní den.
 
-Z uvedeného obrázku je vidět, že klíčové elementy API, jako web service nebo endpoint, jsou reprezentovány objektem \textit{Capability}. Detaily těchto elementů jsou popsány objekty \textit{Property}. Jedná se zejména o parametry endpointů, těla requestů a response. Objekt \textit{Attribute} pak představuje konkrétní hodnoty, jež jsou na obrázku naznačeny jen jako páry "klíč=hodnota". \textit{Attribute} nemusí být vázaný jen na \textit{Property} a lze jej použít i pro popis \textit{Capability}, jak je tomu např. u objektu \textit{WebService1}.
+Z uvedeného obrázku je vidět, že klíčové elementy API, jako web service nebo endpoint, jsou reprezentovány objektem \textit{Capability}. Detaily těchto elementů jsou popsány objekty \textit{Property}. Jedná se zejména o parametry endpointů, těla požadavků a odpovědi. Objekt \textit{Attribute} pak představuje konkrétní hodnoty, jež jsou na obrázku naznačeny jen jako páry "klíč=hodnota". \textit{Attribute} nemusí být vázaný jen na \textit{Property} a lze jej použít i pro popis \textit{Capability}, jak je tomu např. u objektu \textit{WebService1}.
 
-\subsection{Indexování REST služeb}
+\subsection{Indexování implementace REST služeb}
 
 Modul pro indexování REST API vznikl v rámci diplomové práce Bc. Gabriely Hessové. Princip sběru dat je založen na binární analýze java archivů (JAR) obsahujících implementaci REST služeb pomocí frameworků splňujících specifikaci JAX-RS a frameworku Spring Web MVC. Modul byl testován na frameworcích Jersey verze 2.26, RESTEasy verze 3.0.16 a  Spring Boot verze 1.5.9 \cite{hessova2015rest}.
 
-Z implementace REST služby modul rekonstruuje kolekci endpointů s jejich parametry, tělem requestu, response a případnými parametry response. Každý endpoint je reprezentován entitou \textit{Capability}, všechny další jeho vlastnosti pak entitami \textit{Property}. Výčet všech indexovaných elementů rozhraní je uveden v tabulce \ref{tab:rest-indexed}.
+Z implementace REST služby modul rekonstruuje kolekci endpointů s jejich parametry, tělem požadavku, odpovědi a případnými parametry odpovědi. Každý endpoint je reprezentován entitou \textit{Capability}, všechny další jeho vlastnosti pak entitami \textit{Property}. Výčet všech indexovaných elementů rozhraní je uveden v tabulce \ref{tab:rest-indexed}.
 
 \begin{table}[h]
 	\centering
@@ -907,9 +911,9 @@ Z implementace REST služby modul rekonstruuje kolekci endpointů s jejich param
 
 \subsection{Indexování webových služeb na základě popisu}
 
-Modul pro indexování webových služeb vznikl v rámci práce Bc. Davida Pejřimovského. Oproti předchozímu modulu pro indexaci REST služeb nepracuje tento s její implementací, ale s popisným souborem služby, tak jak bylo uvedeno v kapitole \ref{sec:web-services-principles}. Podporované formáty popisu služeb jsou WSDL (verze 1.1 i 2.0) pro SOAP webové služby, WADL a Json-WSP pro REST služby\cite{pejrimovsky2015ws}.
+Modul pro indexování webových služeb vznikl v rámci práce Bc. Davida Pejřimovského. Oproti předchozímu modulu pro indexaci REST služeb nepracuje tento s její implementací, ale s popisným souborem služby, tak jak bylo uvedeno v kapitole \ref{sec:web-services-principles}. Podporované formáty popisu služeb jsou WSDL (verze 1.1 i 2.0) pro SOAP webové služby, WADL a Json-WSP pro REST služby \cite{pejrimovsky2015ws}.
 
-Struktura dat vytvořených pro REST služby (tedy z popisu WADL, nebo JSON-WSP) je podobná struktuře dat vytvořené předchozím indexerem. Endpoint je tedy reprezentován entitou \textit{Capability}, jeho parametry entitami \textit{Property}. Z popisu Json-WSP je ještě vytvořena reprezentace response pro daný endpoint (entita \textit{Property}). Z popisu WADL se žádné další vlastnosti endpointů nezískávají.
+Struktura dat vytvořených pro REST služby (tedy z popisu WADL, nebo JSON-WSP) je podobná struktuře dat vytvořené předchozím indexerem. Endpoint je tedy reprezentován entitou \textit{Capability}, jeho parametry entitami \textit{Property}. Z popisu Json-WSP je ještě vytvořena reprezentace odpovědi pro daný endpoint (entita \textit{Property}). Z popisu WADL se žádné další vlastnosti endpointů nezískávají.
 
 Z WSDL popisu je vytvořena reprezentace služeb, jež jsou popsány xml elementy \verb|<wsdl:service>| a jejich vnořených endpointů. Endpoint je ve WSDL popsán elementem \verb|<wsdl:port>| a má definované operace (elementy \verb|<wsdl:operation>|), nicméně modul tyto nevnořuje a vytváří zjednodušenou reprezentaci. Model endpointu tedy obsahuje metadata získaná z elementů \verb|<wsdl:operation>| a url definovanou v elementu \verb|<wsdl:port>|. Služby i endpointy jsou v metadatech reprezentovány entitami \textit{Capability}. Oproti REST službám, které mají jednu úroveň vnoření \textit{Capability}, zde vznikají úrovně dvě. Výčet elementů API a jejich reprezentace v metadatech je uveden v tabulce \ref{tab:ws-indexed}.
 
@@ -935,7 +939,7 @@ Z WSDL popisu je vytvořena reprezentace služeb, jež jsou popsány xml element
 	\label{tab:ws-indexed}
 \end{table}
 
-Logika parsování WSDL souborů (verze 1.1. i 2.0) obsahovala chybu ve čtení adresy endpointu. Ta byla očekávána v atributu \verb|action| elementu \verb|<wsdl:operation>|, který ale není uveden ve specifikaci WSDL 1.1 \cite{wsdl1} ani WSDL 2.0 \cite{wsdl2}. Tuto chybu jsem v rámci mé práce opravil.
+Logika parsování WSDL souborů (verze 1.1. i 2.0) obsahovala chybu ve čtení adresy endpointu. Ta byla očekávána v atributu \verb|action| elementu \verb|<wsdl:operation>|, který ale není uveden ve specifikaci WSDL 1.1  \cite{wsdl1} ani WSDL 2.0 \cite{wsdl2}. Tuto chybu jsem v rámci mé práce opravil.
 
 \subsection{Limity indexování}
 \label{sec:index-limits}
@@ -1023,6 +1027,7 @@ Porovnávací algoritmus pracuje s metadaty popsanými v části \ref{subsec:crc
 Moduly pro indexování webových služeb popsané v předchozí kapitole používají dvě různé množiny \textit{namespace} identifikátorů po pojmenování entit \textit{Capability}, \textit{Property} a \textit{Attribute}. Do budoucna je zároveň plánované rozšíření těchto modulů o funkcionalitu pro indexování datových typů a datová struktura metadat je tedy předmětem změny. Z těchto důvodů je algoritmus schopen porovnat pouze metadata vytvořená stejným indexerem a používající stejné \textit{namespace} identifikátory. Není tedy možné vzájemně porovnat například metadata REST služby získaná binární analýzou JAR s metadaty získanými čtením JSON-WSP dokumentu i když by se mohlo jednat o jednu službu.
 
 \subsection{Popis algoritmu}
+\label{sec:alg-desc}
 
 Vstupem algoritmu jsou reprezentace obou webových služeb v podobě objektů \textit{Resource}, z kterých jsou následně k porovnání vybrány kolekce endpointů, případě kolekce \textit{service} obsahující endpointy. Výstupem algoritmu je objekt \textit{Compatibility}, jež obsahuje detailní popis rozdílů mezi webovými službami ve formátu popsaném v sekci \ref{sec:diff-info}.
 
@@ -1057,7 +1062,7 @@ Endpoint \textit{e1} (\textit{service} \textit{s1})  z první webové služby je
 O porovnatelnosti a rozdílu dvou \textit{services} je rozhodnuto na základě úplné shody jejich jmen a typu (současně je používán pouze typ "\verb|rpc/messaging|").
 
 \subsubsection{Porovnání dvou endpointů}
-Po výběru vhodné dvojice endpointů dojde k jejich porovnání. Postupně se porovnají (pokud jsou pro daný typ webové služby definovány) parametry, response a těla request. Způsob porovnání parametrů a response je rozveden v následujících odstavcích. Metadata těla request jsou dostupná pouze v případě REST služeb indexovaných na základě implementace a detail jejich porovnání je znázorněn v tabulce \ref{tab:req-body-cmp}. U atributu \textit{isOptional} může dojít ke změně \textit{GEN} pokud se povinný atribut stane nepovinným. V opačném případě se jedná o změnu \textit{SPE}.
+Po výběru vhodné dvojice endpointů dojde k jejich porovnání. Postupně se porovnají (pokud jsou pro daný typ webové služby definovány) parametry, odpovědi a těla požadavků. Způsob porovnání parametrů a odpovědí je rozveden v následujících odstavcích. Metadata těla request jsou dostupná pouze v případě REST služeb indexovaných na základě implementace a detail jejich porovnání je znázorněn v tabulce \ref{tab:req-body-cmp}. U atributu \textit{isOptional} může dojít ke změně \textit{GEN} pokud se povinný atribut stane nepovinným. V opačném případě se jedná o změnu \textit{SPE}.
 
 \begin{table}[h]
 	\centering
@@ -1077,9 +1082,9 @@ Po výběru vhodné dvojice endpointů dojde k jejich porovnání. Postupně se 
 	\label{tab:req-body-cmp}
 \end{table}
 
-\subsubsection{Porovnání response dvou endpointů}
+\subsubsection{Porovnání odpovědí dvou endpointů}
 
-Element response je definovaný ve všech případech kromě služeb popsaných WADL. V případě REST služeb indexovaných na základě implementace jsou navíc definovány i parametry response a může také existovat více elementů response pro jeden endpoint. Ty jsou navzájem odlišeny atributem \textit{id}, jehož hodnotu vytváří indexer. Detail porovnání response (včetně parametrů) REST služeb je uveden v tabulce \ref{tab:resp-rest-cmp}, tabulka \ref{tab:resp-ws-cmp} pak obsahuje detail porovnání response ostatních služeb.
+Element \textit{response} je definovaný ve všech případech kromě služeb popsaných WADL. V případě REST služeb indexovaných na základě implementace jsou navíc definovány i parametry odpovědi a může také existovat více elementů \textit{response} pro jeden endpoint. Ty jsou navzájem odlišeny atributem \textit{id}, jehož hodnotu vytváří indexer. Detail porovnání odpovědí (včetně parametrů) REST služeb je uveden v tabulce \ref{tab:resp-rest-cmp}, tabulka \ref{tab:resp-ws-cmp} pak obsahuje detail porovnání odpovědí ostatních služeb.
 
 \begin{table}[h]
 	\centering
@@ -1103,7 +1108,7 @@ Element response je definovaný ve všech případech kromě služeb popsaných 
 		\textit{parameterDataType} & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
 		\hline
 	\end{tabular}
-	\caption{Porovnání atributů response a parametrů response endpointů REST služby}
+	\caption{Porovnání atributů a parametrů odpovědí endpointů REST služby}
 	\label{tab:resp-rest-cmp}
 \end{table}
 
@@ -1119,7 +1124,7 @@ Element response je definovaný ve všech případech kromě služeb popsaných 
 		\textit{dataType} & \textit{NON}, \textit{GEN}, \textit{SPE}, \textit{UNK} \\
 		\hline
 	\end{tabular}
-	\caption{Porovnání atributů response ostatních služeb}
+	\caption{Porovnání atributů odpovědí ostatních služeb}
 	\label{tab:resp-ws-cmp}
 \end{table}
 
@@ -1284,9 +1289,9 @@ Příklad na obrázku \ref{fig:mov-bad-example} tento problém znázorňuje. Oba
 \end{figure}
 
 \subsubsection{Algoritmus 'pick best'}
-Řešením zmíněného problému je algoritmus 'pick  best', který postupně porovnává dvojice endpointů (k tomu předem vybrané) a jako výsledek vrátí dvojici s nejlepším rozdílem. Vstupem algoritmu je tedy endpoint z první webové služby \textit{e1} a množina endpointů druhé webové služby \textit{endpoints2}. 
+Řešením zmíněného problému je algoritmus 'pick  best', který postupně porovnává dvojice endpointů (k tomu předem vybrané) a jako výsledek vrátí dvojici s co možná nejmenším rozdílem. Vstupem algoritmu je tedy endpoint z první webové služby \textit{e1} a množina endpointů druhé webové služby \textit{endpoints2}. 
 
-Algoritmus postupně vybírá elementy \textit{e2} z \textit{endpoints2} a pokud je pár $e1,e2$ vyhodnocen jako porovnatelný, dojde k detailnímu porovnání. V případě výsledku spadajícího do bezpečné množiny (${NON, GEN, SPE}$) je pár $e1,e2$ vrácen a porovnání pro endpoint \textit{e1} je ukončeno. V opačném případě je negativní výsledek uložen a z množiny \textit{endpoints2} jsou vybírány další porovnatelné endpointy, dokud algoritmus nedojde ke dvojici, jejíž rozdíl spadá do bezpečné množiny, nebo dokud není \textit{endpoints2} vyčerpána. Pokud je množina \textit{endpoints2} vyprázdněna, znamená to (alespoň částečnou) nekompatibilitu obou webových služeb a je vrácen první porovnávaný pár $e1,e2$.
+Algoritmus postupně vybírá elementy \textit{e2} z \textit{endpoints2} a pokud je pár $e1,e2$ vyhodnocen jako porovnatelný (viz sekce \ref{sec:alg-desc}), dojde k detailnímu porovnání. V případě výsledku spadajícího do bezpečné množiny (${NON, GEN, SPE}$) je pár $e1,e2$ vrácen a porovnání pro endpoint \textit{e1} je ukončeno. V opačném případě je negativní výsledek uložen a z množiny \textit{endpoints2} jsou vybírány další porovnatelné endpointy, dokud algoritmus nedojde ke dvojici, jejíž rozdíl spadá do bezpečné množiny, nebo dokud není \textit{endpoints2} vyčerpána. Pokud je množina \textit{endpoints2} vyprázdněna, znamená to (alespoň částečnou) nekompatibilitu obou webových služeb a je vrácen první porovnávaný pár $e1,e2$.
 
 \subsection{Verze REST API v cestě k endpointu}	
 \label{sec:api-path-version}
@@ -1373,9 +1378,9 @@ První část kapitoly, v návaznosti na zmíněnou modulární architekturu CRC
 
 V kapitole \ref{sec:crce} byla zmíněna modulární architektura CRCE, jehož jednotlivé moduly jsou tvořeny OSGi bundly v podobě maven artefaktů. Základní funkcionalita CRCE je rozprostřena mezi několik modulů tvořící jádro. Ostatní moduly představující nadstavbou jádra jsou podřazené modulu \verb|crce-modules-reactor| a zde je umístěno i mnou vytvořené rozšíření.
 
-\subsection{Integrace modulu}
+\subsection{Integrace porovnávacího modulu}
 
-Modul ke své správné funkčnosti vyžaduje několik dalších komponent. Tato závislost je znázorněna na obrázku \ref{fig:apicomp-crce-interaction}, porovnávací modul je zde zeleně označený. Konkrétně se jedná o moduly \textit{crce-core}, který sdružuje všechny komponenty jádra (takže není nutné definovat závislosti jednotlivě) a \textit{crce-compatibility-dao-api}, který obsahuje rozhraní pro přístup k datovému úložišti objektů \textit{Compatibility}. 
+Modul, jež je výsledkem mé práce, ke své správné funkčnosti vyžaduje několik dalších komponent. Tato závislost je znázorněna na obrázku \ref{fig:apicomp-crce-interaction}, porovnávací modul je zde zeleně označený. Konkrétně se jedná o moduly \textit{crce-core}, který sdružuje všechny komponenty jádra (takže není nutné definovat závislosti jednotlivě) a \textit{crce-compatibility-dao-api}, který obsahuje rozhraní pro přístup k datovému úložišti objektů \textit{Compatibility}. 
 
 Výsledky porovnání webových služeb jsou ukládány do perzistentního úložiště a není tedy nutné znovu počítat rozdíly pro již porovnané dvojice. Ukládání těchto dat obstarává modul \textit{crce-compatibility-dao-mongodb}, jež implementuje výše  zmíněné rozhraní. V rámci mé práce jsem tyto moduly rozšířil o funkcionalitu pro získání objektu \textit{Compatibility} podle zadané dvojice \textit{Resource} a mazání existujících objektů \textit{Compatibility}.
 
@@ -1404,7 +1409,7 @@ Diagram \ref{fig:cmp-uml-class} znázorňuje strukturu tříd, jež slouží k p
 	\label{fig:cmp-uml-class}
 \end{figure}
 
-I když je struktura metadat podobná, rozhodl jsem se vytvářet co možná nejméně společné implementace, protože bych tím vytvořil silnou vazbu mezi jinak nezávislými indexery. Ta by v případě změny struktury metadat u jednoho z indexerů přinášela obtíže při následné refaktorizaci porovnávacího modulu. Jediným společným předkem je tedy obecná abstraktní třída pro porovnávač webových služeb.
+I když je struktura metadat podobná, rozhodl jsem se vytvářet co možná nejméně společné implementace, abych se vyhnul vytvoření silné vazby mezi jinak nezávislými indexery. Ta by v případě změny struktury metadat u jednoho z indexerů přinášela obtíže při následné refaktorizaci porovnávacího modulu. Jediným společným předkem je tedy obecná abstraktní třída pro porovnávač webových služeb.
 
 Protože indexer pracující s popisem je schopen indexovat více typů služeb, je pro každý z těchto typů vytvořen zvláštní porovnávač. Na obrázku to jsou třídy dědící od \textit{WebservicesCompatibilityChecker}. Tato obsahuje porovnávací logiku a abstraktní metody pro získání konkrétních detailů, jako například jmen některých atributů, identifikátorů \textit{Capability}, nebo instancí porovnávačů metadat, které jsou použité během porovnání. Daná implementace pak tyto metody překrývá, čímž poskytuje data specifická danému typu služby.
 
@@ -1445,14 +1450,14 @@ Soubor \verb|.gitlab-ci| obsahující nastavení pipeline ve formátu YAML se na
 \chapter{Ověření funkčnosti}
 \label{sec:testing}
 
-Rozšíření do systému CRCE, jež bylo předmětem mé práce, bylo testováno jednotkovými a integračními testy. Tato kapitola se postupně ve třech částech zabývá použitím modulu a ověřením jeho správné funkčnosti. V první části je rozebráno spuštění a použití modulu od nahrání artefaktů do CRCE až po získání výsledků porovnání. Druhá část této kapitoly obsahuje popis integračních testů, včetně testovacích dat. Na konci kapitoly jsou shrnuty provedené testy a jejich výsledky.
+Rozšíření do systému CRCE, jež bylo předmětem mé práce, bylo testováno jednotkovými a integračními testy na kombinaci syntetických i reálných dat. Tato kapitola se postupně ve třech částech zabývá použitím modulu a ověřením jeho správné funkčnosti. V první části je rozebráno spuštění a použití modulu od nahrání artefaktů do CRCE až po získání výsledků porovnání. Druhá část této kapitoly obsahuje popis integračních testů, včetně testovacích dat. Na konci kapitoly jsou shrnuty provedené testy a jejich výsledky.
 
 \section{Spouštění modulu}
 
-Na rozdíl od indexerů zmíněných v kapitole \ref{sec:api-index} není modul pro počítání kompatibility přímo napojen na žádnou z fází životního cyklu komponenty v CRCE a je potřeba jej manuálně spouštět. V současné době je rozšíření zpřístupněno skrze REST API implementovaném v modulu \textit{crce-rest-v2}. Zde je pomocí dependency injection zpřístupněná služba \textit{ApiCompatibilityCheckerService}, která na základě předaných vstupních parametrů provede porovnání a vrátí výsledek v podobě objektu \textit{Compatibility}. Ten je pak vrácen klientovi. Endpoint na němž je zpřístupněn porovnávací modul je dostupný na URI:
+Na rozdíl od indexerů zmíněných v kapitole \ref{sec:api-index} není modul pro počítání kompatibility přímo napojen na žádnou z fází životního cyklu komponenty v CRCE a je potřeba jej manuálně spouštět pomocí rozhraní webových služeb CRCE. To je v současné době implementováno v modulu \textit{crce-rest-v2}. Zde je pomocí dependency injection zpřístupněná služba \textit{ApiCompatibilityCheckerService}, která na základě předaných vstupních parametrů provede porovnání a vrátí výsledek v podobě objektu \textit{Compatibility}. Ten je pak vrácen klientovi. Endpoint na němž je zpřístupněn porovnávací modul je dostupný na URI\footnote{'<adresa.serveru>' slouží pouze jako zástupce pro reálnou IP adresu nebo hostname}:
 \begin{figure}[h]
 \centering
-\verb|http://69.90.132.97:8080/rest/v2/apicomp/compare|
+\verb|http://<adresa.serveru>/rest/v2/apicomp/compare|
 \end{figure}
 
 Parametry volání jsou uvedeny v tabulce \ref{tab:rest-cmp-params}. Nepovinný parametr \textit{force}, jehož výchozí hodnota je \textit{false}, byl přidán z důvodů nutnosti přepočítání výsledků v případě změny implementace. Pokud tedy dojde například k opravě chyby, díky které jsou v databázi uložena špatná data, není nutné je ručně mazat, ale stačí porovnání spustit znovu s nastaveným příznakem \textit{force}. Příklady volání API a následně vrácených dat jsou v následující podkapitole.
@@ -1482,7 +1487,7 @@ Aby bylo možné modul použít, je nejprve potřeba nahrát testovací data. Ta
 
 \begin{figure}[h]
 	\centering
-	\verb|http://69.90.132.97:8080/crce-webui/|
+	\verb|http://<adresa.serveru>/crce-webui/|
 \end{figure}
 
 \paragraph{Nahrání artefaktu do CRCE}
@@ -1517,7 +1522,7 @@ K porovnání webových služeb je nutné znát ID \textit{Resource}, jež repre
 \end{figure}
 
 \paragraph{Volání porovnávací služby}
-Identifikátor získaný v předchozím kroku lze použít k volání REST služby pro porovnávání. K tomu jsem pro jednoduchost použil nástroj Postman. Protože se tento příklad zabývá pouze jedním artefaktem, jsou parametry \textit{id1} a \textit{id2} totožné. Příklad volání služby s danými identifikátory je na obrázku \ref{fig:apicomp-call}.
+Identifikátor získaný v předchozím kroku lze použít k volání REST služby pro porovnávání. K tomu jsem pro jednoduchost použil nástroj Postman\footnote{https://www.postman.com/}. Protože se tento příklad zabývá pouze jedním artefaktem, jsou parametry \textit{id1} a \textit{id2} totožné. Příklad volání služby s danými identifikátory je na obrázku \ref{fig:apicomp-call}.
 
 \begin{figure}[h]
 	\centering
@@ -1544,7 +1549,7 @@ Funkčnost modulu byla ověřena pomocí několika testovacích scénářů, jej
 
 Princip každého z testovacích scénářů spočívá ve vytvoření několika verzí jedné služby (případně jejího popisu) a následném vzájemném porovnání. Tím lze otestovat jak vybrané změny, tak i závislost výsledku na pořadí porovnávaných služeb. Jednotlivé scénáře včetně výsledků jsou detailně popsány v následujících sekcích.
 
-K testování jsem použil nástroj Postman, konkrétně jeho Collection Runner, který umožňuje vybrat šablonu volání REST API a soubor testovacích dat ve formátu CSV. jehož každá řádka představuje jeden test v podobě identifikátorů porovnávané dvojice služeb a očekávaného výsledku. Nástroj Collection Runner tento soubor čte po řádcích a data z každé řádky aplikuje na zmíněnou šablonu. Tím lze snadno zautomatizovat testování volání webové služby s mnoha kombinacemi vstupních dat. Příklad těchto datového souboru je uveden na obrázku \ref{fig:test-data-csv}. 
+K testování jsem použil nástroj Postman, konkrétně jeho Collection Runner, který umožňuje vybrat šablonu volání REST API a soubor testovacích dat ve formátu CSV. jehož každá řádka představuje jeden test v podobě identifikátorů porovnávané dvojice služeb a očekávaného výsledku. Nástroj Collection Runner tento soubor čte po řádcích a data z každé řádky aplikuje na zmíněnou šablonu. Tím lze snadno zautomatizovat testování volání webové služby s mnoha kombinacemi vstupních dat. Příklad tohoto datového souboru je uveden na obrázku \ref{fig:test-data-csv}. 
 
 \begin{figure}[h]
 	\centering
