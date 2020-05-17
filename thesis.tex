@@ -169,7 +169,7 @@ Tato definice je pro účely mé práce problematická z několika důvodů. Prv
 
 Definice dále svazuje implementaci webové služby s použitím konkrétního protokolu pro výměnu dat, v tomto případě SOAP, čímž opět nezahrnuje služby používající jakékoliv jiné protokoly. I zde platí nevýhoda takové vazby v kontextu budoucího vývoje, jež byla zmíněna v předchozím odstavci. Webová služba by například přestala být webovou službou, pokud by došlo k změně protokolu pro výměnu dat ze SOAP na JSON-RPC, což není žádoucí.
 
-Posledním důvodem je vymáhání použití XML jako jediného formátu pro přenos dat i přes rostoucí popularitu jiných formátů, jako například JSON nebo v poslední době YAML. Není také výjimkou, že webové služby podporují více formátů pro serializaci dat a specifikace jednoho konkrétního formátu v definici tedy není nutná. 
+Posledním důvodem je vymáhání použití XML jako jediného formátu pro přenos dat i přes rostoucí popularitu jiných formátů, jako například JSON\footnote{JavaScript Object Notation} nebo v poslední době YAML\footnote{YAML Ain't Markup Language}. Není také výjimkou, že webové služby podporují více formátů pro serializaci dat a specifikace jednoho konkrétního formátu v definici tedy není nutná. 
 
 % a proto je webová služba zadefinována takto
 Z uvedených důvodů je potřeba zavést vhodnější definici s volnějšími kritérii tak, aby webové služby co možná nejméně omezovala. Definici, která služby popisuje primárně skrze užití komunikačního protokolu HTTP ve své knize nabízí R. Daigneau  \cite{fromObjectsToWs}: 
@@ -283,7 +283,7 @@ HTTP definuje množinu metod, jejichž účelem je specifikovat konkrétní oper
 	\label{tab:http-methods}
 \end{table}
 
-Implementace obsluhy metod sice záleží na konkrétním poskytovateli, nicméně HTTP definuje tzv. bezpečné metody, jež by měly označovat pouze operace určené k získání dat. Jedná se o metody GET a HEAD. Protokol u metod také zavádí vlastnost idempotentnosti pokud $N>0$ identických volání způsobí stejné vedlejší efekty jako pouhé jedno volání \cite{httpRfc}.
+Implementace obsluhy metod sice záleží na konkrétním poskytovateli, nicméně HTTP definuje tzv. bezpečné metody, jež by měly označovat pouze operace určené k získání dat. Jedná se o metody GET a HEAD. Protokol u metod také zavádí vlastnost idempotence, pokud má $N>0$ identických volání stejné následky jako pouhé volání jedno \cite{httpRfc}.
 
 
 \subsection{Formáty pro přenos dat}
@@ -439,9 +439,9 @@ Může tedy nastat případ kdy poskytovatel v zájmu udržení zpětné kompati
 \section{Formální popis rozhraní webových služeb}
 \label{sec:api-description-formats}
 
-Aby bylo možné se službami komunikovat, je nutné znát jimi poskytované operace, zdroje a akceptovaný formát dat. Tyto informace jsou zahrnuté v rozhraní služby, jež může být popsáno různými způsoby s proměnlivou úrovní detailu. Služby popsané v části \ref{sec:rpc-ws} takové rozhraní automaticky poskytují ve strojově čitelné podobě, čímž mimo jiné umožňují automaticky generovat klienta a kostru serverové aplikace. V případě REST služeb (část \ref{sec:rest}) je situace složitější, protože univerzální standardizovaná podoba rozhraní neexistuje a to pak může mít podobu například Word dokumentu, nebo emailové konverzace. Výsledkem snah řešit problém se standardizací popisu rozhraní REST služeb jsou například strojově čitelné formáty Swagger\footnote{https://swagger.io/}, OpenApi\footnote{https://www.openapis.org/} nebo Raml\footnote{https://raml.org/}. 
+Aby bylo možné se službami komunikovat, je nutné znát jimi poskytované operace, zdroje a akceptovaný formát dat. Tyto informace jsou zahrnuté v rozhraní služby, jež může být popsáno různými způsoby s proměnlivou úrovní detailu. Služby popsané v části \ref{sec:rpc-ws} takové rozhraní automaticky poskytují ve strojově čitelné podobě, čímž mimo jiné umožňují automaticky generovat klienta a kostru serverové aplikace. V případě REST služeb (část \ref{sec:rest}) je situace složitější, protože univerzální standardizovaná podoba rozhraní neexistuje a to pak může mít podobu například Word dokumentu, nebo emailové konverzace. Výsledkem snah řešit problém se standardizací popisu rozhraní REST služeb jsou například strojově čitelné formáty Swagger\footnote{https://swagger.io/}, OpenApi\footnote{https://www.openapis.org/} nebo RAML\footnote{https://raml.org/}. 
 
-Jak bude popsáno v kapitole \ref{sec:crce}, systém CRCE, pro který byl vyvíjen rozšiřující modul, jež je předmětem této práce, je v současnosti schopný indexovat webové služby pouze na základě implementace nebo popisu JSON-WSP, WADL a WSDL. Z tohoto důvodu zde jsou popsány pouze zmíněné podporované formáty.
+Jak bude popsáno v kapitole \ref{sec:crce}, systém CRCE, pro který byl vyvíjen rozšiřující modul, jež je předmětem této práce, je v současnosti schopný indexovat webové služby pouze na základě implementace nebo popisu JSON-WSP, WADL a WSDL.
 
 \subsection{WSDL}
 
@@ -527,7 +527,11 @@ JSON-WSP definuje službu pomocí objektů \textit{description}, \textit{request
  
 \subsection{OpenAPI, RAML} 
 
-TODO
+Indexování REST služeb na základě jejich popisu ve formátu OpenAPI nebo RAML je jedním z hlavních témat budoucích rozšíření CRCE, které se této práce přímo dotýká. Proto jsou zde tyto formáty představeny, i když není v současné době implementována jejich analýza.
+
+RAML\footnote{RESTful API Modeling Language} je popisný formát zaměřený na dokumentaci RESTful služeb. První návrh vznikl roku  2013 a v současné době jej spravuje RAML Workgroup. OAS\footnote{OpenApi Specification} je specifikace dokumentace rozhraní webových služeb. Specifikace vychází z formátu Swagger\footnote{https://swagger.io/} a je spravována konsorciem OpenAPI Initiative.
+
+Oba formáty jsou čitelné pro člověka i stroj a v jejich návrhu je kladen důraz na samo-dokumentovatelnost. Existují nástroje pro generování klientů a koster serverů na základě popisného dokumentu. Syntaxe obou formátů vychází z YAML a strukturálně je velmi podobná. Nejprve je definován obecný popis API (url, verze, název, vlastní datové typy, ...), pak následuje hierarchický popis zdrojů pomocí jejich URI, včetně popisu volání (např. parametry) a struktury odpovědi.
  
  
 \chapter{Datové typy a porovnávání}
@@ -1788,8 +1792,10 @@ V rámci budoucích prací by mohlo dojít k stávajících indexerů o podporu 
 	\nomenclature{HTTP}{Hypertext Transfer Protocol}
 	\nomenclature{JAR}{Java Archive}
 	\nomenclature{JSON}{JavaScript Object Notation}
-	\nomenclature{JSON-WSP}{JSON Web-Service Protocol}
+	\nomenclature{JSON-RPC}{JSON Remote Procedure Call}	\nomenclature{JSON-WSP}{JSON Web-Service Protocol}
+	\nomenclature{OAS}{OpenAPI Specification}
 	\nomenclature{OSGi}{Open Services Gateway initiative}
+	\nomenclature{RAML}{RESTful API Modeling Language}
 	\nomenclature{REST}{Representational State Transfer}
 	\nomenclature{RPC}{Remote Procedure Call}
 	\nomenclature{SOAP}{Simple Object Access Protocol}
