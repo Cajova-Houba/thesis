@@ -1403,11 +1403,11 @@ První část kapitoly, v návaznosti na zmíněnou modulární architekturu CRC
 
 \section{Rozšíření CRCE}
 
-V kapitole \ref{sec:crce} byla zmíněna modulární architektura CRCE, jehož jednotlivé moduly jsou tvořeny OSGi bundly v podobě maven artefaktů. Základní funkcionalita CRCE je rozprostřena mezi několik modulů tvořící jádro. Ostatní moduly představující nadstavbou jádra jsou podřazené modulu \verb|crce-modules-reactor| a zde je umístěno i mnou vytvořené rozšíření.
+V kapitole \ref{sec:crce} byla zmíněna modulární architektura CRCE, jehož jednotlivé moduly jsou tvořeny OSGi bundly v podobě maven artefaktů. Základní funkcionalita CRCE je rozprostřena mezi několik modulů tvořící jádro. Ostatní moduly představující nadstavbou jádra jsou podřazené agregačnímu modulu \verb|crce-modules-reactor| a zde je umístěno i mnou vytvořené rozšíření.
 
 \subsection{Integrace porovnávacího modulu}
 
-Modul, jež je výsledkem mé práce, ke své správné funkčnosti vyžaduje několik dalších komponent. Tato závislost je znázorněna na obrázku \ref{fig:apicomp-crce-interaction}, porovnávací modul je zde zeleně označený. Konkrétně se jedná o moduly \textit{crce-core}, který sdružuje všechny komponenty jádra (takže není nutné definovat závislosti jednotlivě) a \textit{crce-compatibility-dao-api}, který obsahuje rozhraní pro přístup k datovému úložišti objektů \textit{Compatibility}. 
+Modul, jež je výsledkem mé práce, ke své správné funkčnosti vyžaduje několik dalších komponent. Tato závislost je znázorněna na obrázku \ref{fig:apicomp-crce-interaction}, porovnávací modul je zde zeleně označený. Diagram obsahující zasazení porovnávacího modulu do celkového kontextu CRCE je přiložen k tomuto textu. Závislost se konkrétně týká modulů \textit{crce-core}, který sdružuje všechny komponenty jádra (takže není nutné definovat závislosti jednotlivě) a \textit{crce-compatibility-dao-api}, který obsahuje rozhraní pro přístup k datovému úložišti objektů \textit{Compatibility}. 
 
 Výsledky porovnání webových služeb jsou ukládány do perzistentního úložiště a není tedy nutné znovu počítat rozdíly pro již porovnané dvojice. Ukládání těchto dat obstarává modul \textit{crce-compatibility-dao-mongodb}, jež implementuje výše  zmíněné rozhraní. V rámci mé práce jsem tyto moduly rozšířil o funkcionalitu pro získání objektu \textit{Compatibility} podle zadané dvojice \textit{Resource} a mazání existujících objektů \textit{Compatibility}.
 
@@ -2103,5 +2103,12 @@ V rámci budoucích prací by mohlo dojít k stávajících indexerů o podporu 
 \section*{Formát WADL}
 
 \section*{Formát WSDL}
+
+\chapter{Moduly CRCE a závislosti mezi nimi}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{crce-modules}
+\end{figure}
 
 \end{document}
