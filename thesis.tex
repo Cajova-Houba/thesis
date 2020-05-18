@@ -2100,10 +2100,192 @@ V rámci budoucích prací by mohlo dojít k stávajících indexerů o podporu 
 \chapter{Výčet metadat služeb získaných z popisu}
 
 \section*{Formát JSON-WSP}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline
+		name&Attribute&Jméno služby\\ 
+		\hline 
+		url&Attribute&URL, na které je služba dostupná\\ 
+		\hline 
+		type&Attribute&\makecell{Komunikační protokol služby\\ (např REST nebo RPC)}\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro službu obecně}
+\end{table}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline
+		name&Attribute&Název endpointu\\ 
+		\hline 
+		parameter&Property&Parametr endpointu\\ 
+		\hline 
+		response&Property&Odpověď endpointu\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro endpoint služby}
+\end{table}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline
+		name&Attribute&Název parametru\\ 
+		\hline 
+		type&Attribute&Datový typ parametru\\ 
+		\hline 
+		order&Attribute&Pořadí parametru\\ 
+		\hline 
+		isOptional&Attribute&Příznak určující povinnost parametru\\ 
+		\hline 
+		isArray&Attribute&Příznak určující, zda je parametr pole\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro parametr endpointu}
+\end{table}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline 
+		type&Attribute&Datový typ odpovědi\\ 
+		\hline 
+		isArray&Attribute&Příznak určující, zda je odpověď pole\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro odpověď endpointu}
+\end{table}
 
 \section*{Formát WADL}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline
+		mime&Attribute&MIME typ služby\\ 
+		\hline 
+		idlHash&Attribute&Hash IDL dokumentu\\ 
+		\hline 
+		name&Attribute&Jméno REST služby\\ 
+		\hline 
+		type&Attribute&Typ služby (současně pouze 'rest')\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro službu obecně}
+\end{table}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline 
+		name&Attribute&Název endpointu\\ 
+		\hline 
+		url&Attribute&URL, na které je endpoint dostupný\\ 
+		\hline 
+		parameter&Attribute&Parametr endpointu\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro endpoint služby}
+\end{table}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline
+		name&Attribute&Název parametru\\ 
+		\hline 
+		type&Attribute&Datový typ parametru\\ 
+		\hline 
+		isOptional&Attribute&Příznak určující povinnost parametru\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro parametr endpointu}
+\end{table}
 
 \section*{Formát WSDL}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline
+		mime&Attribute&MIME typ služby\\ 
+		\hline 
+		idlHash&Attribute&Hash IDL dokumentu\\ 
+		\hline 
+		idlVersion&Attribute&Verze IDL (1.1, 2.0)\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro službu obecně}
+\end{table}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline
+		name&Attribute&Název service\\ 
+		\hline 
+		type&Attribute&Typ komunikačního protokolu\\ 
+		\hline 
+		endpoint&Capability&Endpoint v service\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro service služby}
+\end{table}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline
+		name&Attribute&Název endpointu\\ 
+		\hline 
+		url&Attribute&URL, na které je endpoint dostupný\\ 
+		\hline 
+		parameter&Property&Parametr endpointu\\ 
+		\hline 
+		response&Property&Odpověď endpointu\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro endpoint v service}
+\end{table}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline 
+		name&Attribute&Název parametru\\ 
+		\hline 
+		type&Attribute&Datový typ parametru\\ 
+		\hline 
+		order&Attribute&Pořadí parametru\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro parametr endpointu}
+\end{table}
+\begin{table}[!h]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		Název elementu&Typ elementu&Popis\\ 
+		\hline \hline 
+		type&Attribute&Datový typ odpovědi\\ 
+		\hline 
+	\end{tabular}
+	\caption{Metadata indexovaná pro odpověď endpointu}
+\end{table}
 
 \chapter{Moduly CRCE a závislosti mezi nimi}
 
