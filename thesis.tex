@@ -309,7 +309,7 @@ Příklad XML dokumentu je znázorněn na obrázku \ref{fig:xml-example}. Kořen
 \end{figure} 
 
 \subsubsection{JSON} 
-JavaScript object notation (dále jen JSON) je formát výměny dat vzešlý z části standardu jazyka JavaScript\footnote{https://www.ecma-international.org/publications/standards/Ecma-262-arch.htm} publikovaného v roce 1999. Samotný JSON byl poprvé standardizován specifikací ECMA-404\footnote{https://www.ecma-international.org/publications/standards/Ecma-404-arch.htm} v roce 2013. Stejně jako zmíněný XML, je i tento čitelný pro člověka a stroj.  MIME typ pro označení JSON je \verb|application/json|.
+JavaScript Object Notation (dále jen JSON) je formát výměny dat vzešlý z části standardu jazyka JavaScript\footnote{https://www.ecma-international.org/publications/standards/Ecma-262-arch.htm} publikovaného v roce 1999. Samotný JSON byl poprvé standardizován specifikací ECMA-404\footnote{https://www.ecma-international.org/publications/standards/Ecma-404-arch.htm} v roce 2013. Stejně jako zmíněný XML, je i tento čitelný pro člověka a stroj.  MIME typ pro označení JSON je \verb|application/json|.
 
 JSON je založen na dvou základních strukturách, jež by měly být podporovány většinou dnešních moderních programovacích jazyků. Těmito strukturami jsou kolekce párů klíč-hodnota zvaná \textit{objekt} a seřazený seznam hodnot zvaný \textit{pole}. Objekt je ohraničen složenými závorkami \verb|{|, \verb|}| a obsahuje neseřazený výčet párů klíč-hodnota. Klíč je od hodnoty oddělen dvojtečkou a celé páry jsou oddělené čárkami. Pole je ohraničeno hranatými závorkami \verb|[|, \verb|]| a obsahuje seřazený výčet hodnot, jež jsou vzájemně odděleny čárkou.
 
@@ -1404,7 +1404,7 @@ První část kapitoly, v návaznosti na zmíněnou modulární architekturu CRC
 
 \section{Rozšíření CRCE}
 
-V kapitole \ref{sec:crce} byla zmíněna modulární architektura CRCE, jehož jednotlivé moduly jsou tvořeny OSGi bundly v podobě maven artefaktů. Základní funkcionalita CRCE je rozprostřena mezi několik modulů tvořící jádro. Ostatní moduly představující nadstavbou jádra jsou podřazené agregačnímu modulu \verb|crce-modules-reactor| a zde je umístěno i mnou vytvořené rozšíření.
+V kapitole \ref{sec:crce} byla zmíněna modulární architektura CRCE, jehož jednotlivé moduly jsou tvořeny OSGi bundly v podobě maven artefaktů. Základní funkcionalita CRCE je rozprostřena mezi několik modulů tvořících jádro. Ostatní moduly představující nadstavbu jádra jsou podřazené agregačnímu modulu \verb|crce-modules-reactor| a zde je umístěno i mnou vytvořené rozšíření.
 
 \subsection{Integrace porovnávacího modulu}
 
@@ -1421,7 +1421,7 @@ Výsledky porovnání webových služeb jsou ukládány do perzistentního úlo�
 
 \section{Porovnávací rozšíření}
 
-Vnitřně je struktura modulu rozdělena na několik částí. Těmi nejdůležitějšími jsou část implementační nacházející se v balíku \verb|impl|, část pro reprezentaci výsledků v balíku \verb|result| a veřejné rozhraní porovnávací služby v \textit{ApiCompatibilityCheckerService}. Implementace tohoto rozhraní je zpřístupněná formou OSGi služby (anotace \textit{Component}), v níž jsou obsaženy všechny porovnávače jednotlivých typů webových služeb a implementace sama je schopná vybrat správný porovnávač pro zadanou dvojici \textit{Resource}.
+Vnitřně je struktura modulu rozdělena na několik částí. Těmi nejdůležitějšími jsou: část implementační nacházející se v balíku \verb|impl|, část pro reprezentaci výsledků v balíku \verb|result| a veřejné rozhraní porovnávací služby v \textit{ApiCompatibilityCheckerService}. Implementace tohoto rozhraní je zpřístupněná formou OSGi služby (anotace \textit{Component}), v níž jsou obsaženy všechny porovnávače jednotlivých typů webových služeb a implementace sama je schopná vybrat správný porovnávač pro zadanou dvojici \textit{Resource}.
 
 \subsection{Struktura tříd porovnávačů}
 
@@ -1456,19 +1456,19 @@ Abstraktní třída \textit{EndpointFeatureComparator} obsahuje pouze extrakci d
 
 \subsubsection{Vestavěné datové typy}
 
-Porovnávání vestavěných datových typů je řešeno obalovací třídou, jejíž vstupním parametrem je jméno obalovaného datového typu. Tato třída obsahuje logiku, která je schopná vyhodnotit, zda se doopravdy jedná o jméno vestavěného typu a také logiku porovnání dvou vestavěných typů. V současné době je toto porovnání omezeno na rovnost a generalizaci (jak bylo uvedeno v sekci \ref{sec:type-cmp}). Konkrétní obalové třídy jsou \textit{JavaTypeWrapper} pro vestavěné typy Javy a \textit{XsdDataType} pro vestavěné typy XML. 
+Porovnávání vestavěných datových typů je řešeno obalovací třídou, jejímž vstupním parametrem je jméno obalovaného datového typu. Tato třída obsahuje logiku, která je schopná vyhodnotit, zda se doopravdy jedná o jméno vestavěného typu a také logiku porovnání dvou vestavěných typů. V současné době je toto porovnání omezeno na rovnost a generalizaci (jak bylo uvedeno v sekci \ref{sec:type-cmp}). Konkrétní obalové třídy jsou \textit{JavaTypeWrapper} pro vestavěné typy Javy a \textit{XsdDataType} pro vestavěné typy XML. 
 
 Obalové třídy nepokrývají všechny vestavěné typy, ale pouze jejich podmnožinu. Zejména se jedná o čísla (i s plovoucí desetinnou čárkou) a řetězce.
 
 \section{Sestavení a nasazení modulu}
 
-Jedním z hlavních bodů oborového projektu, který předcházel této diplomové práci, bylo zprovoznění automatického sestavení a nasazení CRCE do vývojového prostředí. Toho jsem využil při vývoji porovnávacího modulu zejména k rychlému nasazení nových verzí, které pak bylo možné pohodlně otestovat. Sestavením CRCE na nezávislém stroji jsem zároveň ověřil, že mnou vytvořený kód netrpí chybami typu "funguje na mém stroji".
+Jedním z hlavních bodů oborového projektu, který předcházel této diplomové práci, bylo zprovoznění automatického sestavení a nasazení CRCE do vývojového prostředí. Toho jsem využil při vývoji porovnávacího modulu, zejména k rychlému nasazení nových verzí, které pak bylo možné pohodlně otestovat. Sestavením CRCE na nezávislém stroji jsem zároveň ověřil, že mnou vytvořený kód netrpí chybami typu "funguje na mém stroji".
 
 Kód CRCE je oficiálně udržován na verzovacím úložišti GitHub\footnote{https://github.com/ReliSA/CRCE}. Zde je na Wiki projektu CRCE\footnote{https://github.com/ReliSA/CRCE/wiki/Web-services-comparator} umístěn stručný popis vytvořeného modulu. Tento popis je součástí dokumentace k mé práci.
 
 Vývoj porovnávacího rozšíření nicméně probíhal na verzovacím úložišti GitLab, jež je spravováno univerzitou. Toto úložiště  kromě podpory verzování nástrojem GIT umožňuje také kontinuální integraci a nasazení pomocí Gitlab Pipelines\footnote{https://docs.gitlab.com/ee/ci/pipelines/index.html}, což byl důvod jeho použití. Vstupem tohoto nástroje je deklarativní konfigurace jednotlivých kroků od překladu až po nasazení. Pipeline se automaticky spustí vždy při nahrání nového commitu do úložiště. Součástí nakonfigurované pipeline je také spuštění unit testů.
 
-Soubor \verb|.gitlab-ci| obsahující nastavení pipeline ve formátu YAML se nachází v kořenovém adresáři projektu a obsahuje definici kroků pro sestavení a následné nasazení do testovacího prostředí. Obrázek \ref{fig:pipeline-example} znázorňuje příklad zjednodušené pipeline, její plná verze je uvedena v přiloženém archivu obsahujícím zdrojový kód CRCE. 
+Soubor \verb|.gitlab-ci| obsahující nastavení pipeline ve formátu YAML se nachází v kořenovém adresáři projektu a obsahuje definici kroků pro sestavení a následné nasazení do testovacího prostředí. Obrázek \ref{fig:pipeline-example} znázorňuje příklad zjednodušené pipeline, jejíž plná verze je uvedena v přiloženém archivu obsahujícím zdrojový kód CRCE. 
 
 \begin{figure}
 	\centering
@@ -1486,7 +1486,7 @@ Rozšíření do systému CRCE, jež bylo předmětem mé práce, bylo testován
 
 \section{Spouštění modulu}
 
-Na rozdíl od indexerů zmíněných v kapitole \ref{sec:api-index} není modul pro počítání kompatibility přímo napojen na žádnou z fází životního cyklu komponenty v CRCE a je potřeba jej manuálně spouštět pomocí rozhraní webových služeb CRCE. To je v současné době implementováno v modulu \textit{crce-rest-v2}. Zde je pomocí dependency injection zpřístupněná služba \textit{ApiCompatibilityCheckerService}, která na základě předaných vstupních parametrů provede porovnání a vrátí výsledek v podobě objektu \textit{Compatibility}. Ten je pak vrácen klientovi. Endpoint na němž je zpřístupněn porovnávací modul je dostupný na URI\footnote{'<adresa.serveru>' slouží pouze jako zástupce pro reálnou IP adresu nebo hostname}:
+Na rozdíl od indexerů zmíněných v kapitole \ref{sec:api-index} není modul pro počítání kompatibility přímo napojen na žádnou z fází životního cyklu komponenty v CRCE a je potřeba jej manuálně spouštět pomocí rozhraní webových služeb CRCE. To je v současné době implementováno v modulu \textit{crce-rest-v2}. Zde je pomocí dependency injection zpřístupněná služba \textit{ApiCompatibilityCheckerService}, která na základě předaných vstupních parametrů provede porovnání a vrátí výsledek v podobě objektu \textit{Compatibility}. Ten je pak vrácen klientovi. Endpoint na němž je zpřístupněn porovnávací modul, je dostupný na URI\footnote{'<adresa.serveru>' slouží pouze jako zástupce pro reálnou IP adresu nebo hostname}:
 \begin{figure}[h]
 \centering
 \verb|http://<adresa.serveru>/rest/v2/apicomp/compare|
@@ -1515,7 +1515,7 @@ Parametry volání jsou uvedeny v tabulce \ref{tab:rest-cmp-params}. Nepovinný 
 \section{Použití modulu}
 \label{sec:module-how-to}
 
-Aby bylo možné modul použít, je nejprve potřeba nahrát testovací data. Tato sekce popisuje proces nahrání artefaktu obsahujícího implementaci webové služby, do CRCE a jeho následného porovnání se sebou samým. Uživatelské rozhraní testovací instance systému CRCE je dostupné na adrese:
+Aby bylo možné modul použít, je nejprve potřeba nahrát testovací data. Tato sekce popisuje proces nahrání artefaktu obsahujícího implementaci webové služby do CRCE a jeho následného porovnání se sebou samým. Uživatelské rozhraní testovací instance systému CRCE je dostupné na adrese:
 
 \begin{figure}[h]
 	\centering
@@ -1564,7 +1564,7 @@ Identifikátor získaný v předchozím kroku lze použít k volání REST služ
 \end{figure}
 
 \paragraph{Výsledky porovnání}
-Výsledek vrácený porovnávací službou je uveden na obrázku \ref{fig:apicomp-res}. Pro jednoduchost jsou některé části výsledného JSON dokumentu vypuštěny. Ve výsledku je obsažena finální úroveň rozdílu (\textit{diffValue}), příznaky nastavené během porovnání (\textit{additionalInfo}) a také struktura \textit{diffDetails} tvořenou stromem objektů \textit{Diff} popisující detailní rozdíly mezi službami.
+Výsledek vrácený porovnávací službou je uveden na obrázku \ref{fig:apicomp-res}. Pro jednoduchost jsou některé části výsledného JSON dokumentu vypuštěny. Ve výsledku je obsažena finální úroveň rozdílu (\textit{diffValue}), příznaky nastavené během porovnání (\textit{additionalInfo}) a také struktura \textit{diffDetails}, tvořená stromem objektů \textit{Diff}, popisující detailní rozdíly mezi službami.
 
 \begin{figure}[h]
 	\centering
@@ -1606,7 +1606,7 @@ V tomto scénáři jsou testovány dvě verze REST služby implementované frame
 
 Rozdíl mezi jednotlivými verzemi je pouze v datovém typu parametru \textit{longParam} endpointu \textit{myresource/special/pet/}. V první verzi je tento parametr typován na \textit{java.lang.Number}, v druhé pak na \textit{java.lang.Long}.
 
-Účelem tohoto testovacího scénáře je kromě ověření funkčnosti modulu pro indexaci REST služeb z bytecode také ověření správné aplikace principu kontravariance v případě změn datových typů parametrů endpointů. Změna datového typu z \textit{Long} na \textit{Number} je změnou \textit{GEN}. Po použití kontravariance by změna na úrovni endpointu měla být \textit{SPE} a protože je to jediný rozdíl mezi službami, měla by tato změna označovat také celkový rozdíl.
+Účelem tohoto testovacího scénáře je, kromě ověření funkčnosti modulu pro indexaci REST služeb z bytecode, také ověření správné aplikace principu kontravariance v případě změn datových typů parametrů endpointů. Změna datového typu z \textit{Long} na \textit{Number} je změnou \textit{GEN}. Po použití kontravariance by změna na úrovni endpointu měla být \textit{SPE} a protože je to jediný rozdíl mezi službami, měla by tato změna označovat také celkový rozdíl.
 
 Výsledky vrácené voláním porovnávací služby jsou zobrazeny v tabulce \ref{tab:jersey-cmp-res}. Výsledky odpovídají očekávání a princip kontravariance v případě změn \textit{GEN} a \textit{SPE} u datového typu parametru endpointu služby je tedy aplikován správně.
 
@@ -1736,7 +1736,7 @@ Testovací scénář je zaměřen na SOAP služby popsané dokumentem ve formát
 		\hline
 		v1 & Základní verze s přidanou operací \textit{testOperation} \\
 		\hline
-		v2 & Změna hostname v url operací \\
+		v2 & Změna hostname v url operace \\
 		\hline
 		v3 & Změna typu \textit{insertPracoviste} \\
 		\hline
@@ -1777,11 +1777,11 @@ Výsledky vzájemných porovnání všech verzí služby obsažené v tabulce \r
 
 \section{Shrnutí testů}
 
-Testovací scénáře popsané v předchozích sekcích úspěšně ověřily základní funkčnost porovnávacího modulu na všech typech indexovaných služeb, včetně jeho dostupnosti skrze REST API a tedy i úspěšné integrace do systému CRCE. 
+Testovací scénáře, popsané v předchozích sekcích, úspěšně ověřily základní funkčnost porovnávacího modulu na všech typech indexovaných služeb, včetně jeho dostupnosti skrze REST API a tedy i úspěšné integrace do systému CRCE. 
 
-V případě testování webové služby STAG-Číselníky bylo ověřeno správné vyhodnocení kombinace změn URL a datového typu parametru operace, jehož výsledkem bylo nastavení příznaku MOV v případě bezpečné změny tak jak bylo popsáno v sekci \ref{subsec:mov}. Testy rovněž potvrdily limity indexování a následného porovnání vlastních datových typů. Jejich zdůvodnění je v sekcích \ref{sec:type-cmp} a \ref{sec:index-limits} předchozích kapitol. 
+V případě testování webové služby STAG-Číselníky bylo ověřeno správné vyhodnocení kombinace změn URL a datového typu parametru operace, jehož výsledkem bylo nastavení příznaku MOV v případě bezpečné změny, tak jak bylo popsáno v sekci \ref{subsec:mov}. Testy rovněž potvrdily limity indexování a následného porovnání vlastních datových typů. Jejich zdůvodnění je v sekcích \ref{sec:type-cmp} a \ref{sec:index-limits} předchozích kapitol. 
 
-Jednotkové testy určené k ověření funkčnosti elementárních prvků implementace (např. porovnání metadat endpointu nebo detekce změn v URL) jsou spouštěny v rámci Gitlab Pipeline popsané v kapitole \ref{sec:impl}. Jejich případné selhání by znamenalo zastavení celé pipeline a tím by bylo zabráněno nasazení chybné verze.
+Jednotkové testy, určené k ověření funkčnosti elementárních prvků implementace (např. porovnání metadat endpointu nebo detekce změn v URL), jsou spouštěny v rámci Gitlab Pipeline popsané v kapitole \ref{sec:impl}. Jejich případné selhání by znamenalo zastavení celé pipeline a tím by bylo zabráněno nasazení chybné verze.
 
 Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům, včetně exportovaných metadat pro jednotlivé verze služeb. Stejně tak jsou přiloženy konfigurace testů pro nástroj Postman.
 
@@ -1790,13 +1790,13 @@ Na přiloženém CD jsou k dispozici testovací data k jednotlivým scénářům
 
 V rámci výzkumu softwarových architektur, jsou na Katedře Informatiky a Výpočetní techniky vyvíjeny metody jejich analýzy, mezi než patří i ověřování kompatibility rozhraní komponent a webových služeb. K tomu je mimo jiné využíváno úložiště CRCE, taktéž vyvíjené na KIV ZČU, které poskytuje možnosti indexace komponent a ukládání metadat v jednotném datovém modelu. 
 
-Tato práce přímo navazuje na předešlé diplomové práce Bc. Gabriely Hessové a Bc. Davida Pejřimovského, ve kterých byly představeny metody pro analýzu webových služeb a následného uložení jejich popisů do CRCE. Předmětem mé práce pak bylo takto získané popisy vzájemně porovnat a na základě rozdílů rozhodnou o kompatibilitě jimi reprezentovaných služeb.
+Tato práce přímo navazuje na předešlé diplomové práce Bc. Gabriely Hessové a Bc. Davida Pejřimovského, ve kterých byly představeny metody pro analýzu webových služeb a následného uložení jejich popisů do CRCE. Předmětem mé práce pak bylo takto získané popisy vzájemně porovnat a na základě rozdílů rozhodnout o kompatibilitě jimi reprezentovaných služeb.
 
-Prvním krokem v mé práci byla analýza implementace a následné ověření funkčnosti výše zmíněných rozšíření. To odhalilo několik drobných chyb jež se projevovaly uložením vadných metadat a byly následně opraveny. Po ověření funkčnosti byl na základě analýzy datového modelu webových služeb navržen algoritmus porovnání zmíněných metadat, způsob reprezentace takto získaných výsledků a jejich následné vyhodnocení a uložení do CRCE. 
+Prvním krokem v mé práci byla analýza implementace a následné ověření funkčnosti výše zmíněných rozšíření. To odhalilo několik drobných chyb jež se projevovaly uložením vadných metadat a byly následně opraveny. Po ověření funkčnosti byl, na základě analýzy datového modelu webových služeb, navržen algoritmus porovnání zmíněných metadat, způsob reprezentace takto získaných výsledků a jejich následné vyhodnocení a uložení do CRCE. 
 
-Tento návrh byl realizován v podobě rozšiřujícího modulu integrovaného do CRCE, jež byl zpřístupněn skrze REST API, které CRCE poskytuje. Součástí integrace bylo také napojení modulu na komponenty, zajišťující persistenci dat. Celé řešení bylo následně nasazeno do vývojového prostředí a otestováno na kombinaci reálných a umělých dat, čímž byla potvrzena předpokládaná funkcionalita.
+Tento návrh byl realizován v podobě rozšiřujícího modulu integrovaného do CRCE, jež byl zpřístupněn skrze REST API, které CRCE poskytuje. Součástí integrace bylo také napojení modulu na komponenty, zajišťující persistenci dat. Celé řešení bylo následně nasazeno do vývojového prostředí a otestováno na kombinaci reálných a umělých dat, čímž byla potvrzena předpokládaná funkcionalita. Jedním z výstupů této práce byl také článek \cite{vales2020}, který byl přijat na recenzovanou konferenci Euromicro SEAA 2020\footnote{https://dsd-seaa2020.um.si/seaa}.
 
-V rámci budoucích prací by mohlo dojít k stávajících indexerů o podporu dalších typů služeb, například popsaných jazyky OpenAPI nebo RAML, jež byly zmíněny v kapitole \ref{sec:web-services-principles}. Důležitým rozšířením je také indexování datových typů definovaných v popisu služby, na základě kterého by mohl být porovnávací algoritmus doplněn o možnost sofistikovanějšího porovnání těchto typů, například způsoby, jež byly popsány v kapitole \ref{cap:data-types}. Tím by bylo dosaženo přesnějších výsledků při porovnávání služeb a také zlepšení celkové použitelnosti CRCE, v rámci jeho zamýšleného použití.
+V rámci budoucích prací by mohlo dojít k rozšíření stávajících indexerů o podporu dalších typů služeb, například popsaných jazyky OpenAPI nebo RAML, jež byly zmíněny v kapitole \ref{sec:web-services-principles}. Důležitým rozšířením je také indexování datových typů definovaných v popisu služby, na základě kterého by mohl být porovnávací algoritmus doplněn o možnost sofistikovanějšího porovnání těchto typů, například způsoby, jež byly popsány v kapitole \ref{cap:data-types}. Tím by bylo dosaženo přesnějších výsledků při porovnávání služeb a také zlepšení celkové použitelnosti CRCE, v rámci jeho zamýšleného použití.
 
 
 
