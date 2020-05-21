@@ -32,13 +32,13 @@
 %
 \abstracttexten{The goal of this thesis is to explore the current possibilities of web service
 	analysis provided by existing modules in the CRCE repository. Following
-	this analysis, a new extension for CRCE in the form of a module is to be created.
-	This extension will be capable of comparing said metadata and evaluating
+	this analysis, a new extension for CRCE in the form of a module has been created.
+	This extension is capable of comparing said metadata and evaluating
 	the compatibility of web services they represent. The implementation should
 	be easily scalable as more work on this topic is expected in the future.
 }
 
-\abstracttextcz{Cílem této práce je seznámit se se stávajícími rozšířeními systému CRCE pro analýzu webových služeb a v návaznosti na tyto vytvořit nástroj schopný porovnávat analyzované webové služby a vyhodnocovat jejich vzájemnou kompatibilitu. Nástroj bude implementován v podobě rozšiřujícího modulu pro systém CRCE s ohledem na budoucí rozšiřitelnost.
+\abstracttextcz{Cílem této práce je seznámit se se stávajícími rozšířeními systému CRCE pro analýzu webových služeb a v návaznosti na tyto vytvořit nástroj schopný porovnávat analyzované webové služby a vyhodnocovat jejich vzájemnou kompatibilitu. V rámci práce byl nástroj implementován v podobě rozšiřujícího modulu pro systém CRCE s ohledem na budoucí rozšiřitelnost.
 }
 
 % Na titulní stranu a do textu prohlášení se automaticky vkládá 
@@ -690,7 +690,7 @@ K určení vztahu mezi ne-primitivními typy, zejména v objektových jazycích,
 \subsection{Subtyping}
 \label{sec:subtyping}
 
-Subtyping je binární relace definovaná nad datovými typy. Zápis $A <: B$ čteme jako ``\textit{A} je sub-typ \textit{B}'' což znamená, že typ \textit{A} může být použit kdekoliv tam, kde je očekáván typ \textit{B}. Například \textit{java.lang.Long} je sub-typ \textit{java.lang.Number}, protože proměnnou typovanou na \textit{Long} lze použít kdekoliv, kde je očekávána proměnná typu \textit{Number}. Relace subtypingu je reflexivní ($A <: A$) a tranzitivní ($A <: B, B <: C \vdash A <: C$).
+Subtyping je binární relace definovaná nad datovými typy. Zápis $A <: B$ čteme jako ``\textit{A} je sub-typ \textit{B}'' což znamená, že typ \textit{A} může být použit kdekoliv tam, kde je očekáván typ \textit{B}. Například v jazyce Java je \textit{java.lang.Long} sub-typ \textit{java.lang.Number}, protože proměnnou typovanou na \textit{Long} lze použít kdekoliv, kde je očekávána proměnná typu \textit{Number}. Relace subtypingu je reflexivní ($A <: A$) a tranzitivní ($A <: B, B <: C \vdash A <: C$).
 
 
 Následující odstavce popisují způsob konstrukce této relace pro jednotlivé skupiny datových typů, jež byly uvedené v \ref{sec:data-types-repr}. Informace a postupy vycházejí především z publikací \cite{pierce2002} a  \cite{abadi1995subytping}.
@@ -1324,7 +1324,7 @@ Příklad na obrázku \ref{fig:mov-bad-example} tento problém znázorňuje. Oba
 \subsubsection{Algoritmus 'pick best'}
 Řešením zmíněného problému je algoritmus 'pick  best', který postupně porovnává dvojice endpointů (k tomu předem vybrané) a jako výsledek vrátí dvojici s co možná nejmenším rozdílem. Vstupem algoritmu je tedy endpoint z první webové služby \textit{e1} a množina endpointů druhé webové služby \textit{endpoints2}. 
 
-Algoritmus postupně vybírá elementy \textit{e2} z \textit{endpoints2} a pokud je pár $e1,e2$ vyhodnocen jako porovnatelný (viz sekce \ref{sec:alg-desc}), dojde k detailnímu porovnání. V případě výsledku spadajícího do bezpečné množiny (${NON, GEN, SPE}$) je pár $e1,e2$ vrácen a porovnání pro endpoint \textit{e1} je ukončeno. V opačném případě je negativní výsledek uložen a z množiny \textit{endpoints2} jsou vybírány další porovnatelné endpointy, dokud algoritmus nedojde ke dvojici, jejíž rozdíl spadá do bezpečné množiny, nebo dokud není \textit{endpoints2} vyčerpána. Pokud je množina \textit{endpoints2} vyprázdněna, znamená to (alespoň částečnou) nekompatibilitu obou webových služeb a je vrácen první porovnávaný pár $e1,e2$.
+Algoritmus postupně vybírá elementy \textit{e2} z \textit{endpoints2} a pokud je pár $e1,e2$ vyhodnocen jako porovnatelný (viz sekce \ref{sec:alg-desc}), dojde k detailnímu porovnání. V případě výsledku spadajícího do bezpečné množiny ($\{NON, GEN$, $ SPE\}$) je pár $e1,e2$ vrácen a porovnání pro endpoint \textit{e1} je ukončeno. V opačném případě je negativní výsledek uložen a z množiny \textit{endpoints2} jsou vybírány další porovnatelné endpointy, dokud algoritmus nedojde ke dvojici, jejíž rozdíl spadá do bezpečné množiny, nebo dokud není \textit{endpoints2} vyčerpána. Pokud je množina \textit{endpoints2} vyprázdněna, znamená to (alespoň částečnou) nekompatibilitu obou webových služeb a je vrácen první porovnávaný pár $e1,e2$.
 
 \subsection{Verze REST API v cestě k endpointu}	
 \label{sec:api-path-version}
